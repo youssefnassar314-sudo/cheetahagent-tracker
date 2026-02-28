@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheetah Agent Cloud</title>
+    <title>Cheetah Agent Cloud v3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -45,7 +45,6 @@
         .client-card { background: var(--card-dark); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
         .client-installed { border-left: 5px solid var(--green-installed); }
         .client-cancelled { opacity: 0.5; border-left: 5px solid var(--red-alert); }
-        .hidden { display: none; }
         .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; }
         .tag-res { background: rgba(255, 140, 0, 0.2); color: var(--primary-orange); }
         .tag-biz { background: rgba(59, 130, 246, 0.2); color: var(--blue-biz); }
@@ -54,52 +53,16 @@
         #progressFill { height: 100%; background: var(--primary-orange); width: 0%; transition: 0.5s; }
 
         .sidebar { 
-    position: fixed; 
-    right: -350px; /* Nakatago sa kanan */
-    top: 0; 
-    width: 320px; 
-    height: 100%; 
-    background: var(--bg-deep); 
-    padding: 20px; 
-    z-index: 200; 
-    box-shadow: -10px 0 30px rgba(0,0,0,0.5); 
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-    overflow-y: auto;
-}
+            position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: var(--bg-deep); 
+            padding: 20px; z-index: 200; box-shadow: -10px 0 30px rgba(0,0,0,0.5); 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto;
+        }
+        .sidebar.active { right: 0; }
 
-.sidebar.active { 
-    right: 0; 
-}
         .toggle-ledger-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary-orange); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-   .floating-locator-btn {
-    position: fixed;
-    bottom: 105px; /* Mas mataas kesa sa wallet icon (na usually 30px o 40px) */
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--blue-biz); /* Kulay Blue para maiba sa Orange na Wallet */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 100;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    color: white;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.floating-locator-btn:hover {
-    transform: scale(1.1);
-    background: #2563eb; /* Darker blue on hover */
-}
-
-/* Siguraduhin na ang wallet icon mo ay may tamang bottom position din */
-.toggle-ledger-btn {
-    bottom: 30px; /* Standard position */
-    right: 30px;
-}
+        .floating-locator-btn { position: fixed; bottom: 105px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--blue-biz); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; text-decoration: none; }
+        .hidden { display: none; }
+        .del-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -174,7 +137,7 @@
             <button class="primary-btn" onclick="addClient()">Add Client</button>
         </div>
 
-        <input type="text" id="searchInput" placeholder="Search by name or area..." onkeyup="render()">
+        <input type="text" id="searchInput" placeholder="Search..." onkeyup="render()">
         <div class="filter-row">
             <div class="filter-pill active" onclick="setStatusFilter('all', this)">All</div>
             <div class="filter-pill" onclick="setStatusFilter('pending', this)">Pending</div>
@@ -183,49 +146,45 @@
         </div>
 
         <div id="clientList"></div>
-    </div>
 
-<div id="ledgerSidebar" class="sidebar">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h3 style="margin:0;">Personal Ledger</h3>
-        <i class="fa-solid fa-xmark" onclick="toggleLedger()" style="cursor:pointer; font-size:1.5rem; color:var(--red-alert);"></i>
-    </div>
-    
-    <input type="text" id="ledgerDesc" placeholder="Description">
-    <input type="number" id="ledgerAmount" placeholder="Amount">
-    <input type="date" id="ledgerDate">
-    <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
-    <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
-
-    <a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" 
-           target="_blank" 
-           class="floating-locator-btn">
+        <a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" target="_blank" class="floating-locator-btn">
             <i class="fa-solid fa-map-location-dot"></i>
         </a>
-
         <div class="toggle-ledger-btn" onclick="toggleLedger()">
             <i class="fa-solid fa-wallet"></i>
-             <div class="toggle-ledger-btn" onclick="document.getElementById('ledgerSidebar').classList.toggle('active')"><i class="fa-solid fa-wallet"></i></div>
-    
-</div>
-   
-   
+        </div>
+    </div>
+
+    <div id="ledgerSidebar" class="sidebar">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0;">Personal Ledger</h3>
+            <i class="fa-solid fa-xmark" onclick="toggleLedger()" style="cursor:pointer; font-size:1.5rem; color:var(--red-alert);"></i>
+        </div>
+        <input type="text" id="ledgerDesc" placeholder="Description">
+        <input type="number" id="ledgerAmount" placeholder="Amount">
+        <input type="date" id="ledgerDate">
+        <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
+        <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
+        <div style="margin-top:15px; text-align:right">
+            <small>Total Ledger:</small>
+            <div id="extraTotal" style="font-weight:700; color:var(--primary-orange); font-size:1.2rem">₱0</div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Gamitin ang configuration na ito mula sa iyong Firebase setup
-const firebaseConfig = {
-  apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
-  authDomain: "cheetah-tracker-app.firebaseapp.com",
-  projectId: "cheetah-tracker-app",
-  storageBucket: "cheetah-tracker-app.firebasestorage.app",
-  messagingSenderId: "981209296948",
-  appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
-  measurementId: "G-KGTBSKD57D"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
+            authDomain: "cheetah-tracker-app.firebaseapp.com",
+            projectId: "cheetah-tracker-app",
+            storageBucket: "cheetah-tracker-app.firebasestorage.app",
+            messagingSenderId: "981209296948",
+            appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
+            measurementId: "G-KGTBSKD57D"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -234,11 +193,9 @@ const firebaseConfig = {
         let currentUser = null, clients = [], ledger = [], currentType = 'residential', currentStatusFilter = 'all';
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-        // Auth Logic
         window.handleAuth = async (type) => {
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPass').value;
-            if(!email || !pass) return alert("Punan ang email at password!");
+            const email = document.getElementById('authEmail').value, pass = document.getElementById('authPass').value;
+            if(!email || !pass) return alert("Punan ang lahat!");
             try {
                 if(type === 'signup') await createUserWithEmailAndPassword(auth, email, pass);
                 else await signInWithEmailAndPassword(auth, email, pass);
@@ -259,7 +216,6 @@ const firebaseConfig = {
             }
         });
 
-        // Database Sync
         function syncData() {
             onSnapshot(query(collection(db, "clients"), where("uid", "==", currentUser.uid)), snap => {
                 clients = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -271,12 +227,10 @@ const firebaseConfig = {
             });
         }
 
-        // Functions
         window.addClient = async () => {
             const fn = document.getElementById('fn').value, ln = document.getElementById('ln').value, area = document.getElementById('areaSelect').value;
             const ps = currentType === 'residential' ? document.getElementById('resPlans') : document.getElementById('bizPlans');
             if(!fn || !ln || !area || !ps.value) return alert("Punan lahat!");
-            
             await addDoc(collection(db, "clients"), {
                 uid: currentUser.uid, name: `${fn} ${ln}`, area, type: currentType,
                 plan: ps.options[ps.selectedIndex].text, commi: parseInt(ps.options[ps.selectedIndex].dataset.commi),
@@ -298,28 +252,13 @@ const firebaseConfig = {
         };
 
         window.updateField = async (id, field, val) => await updateDoc(doc(db, "clients", id), {[field]: val});
-        window.deleteItem = async (id, type) => { if(confirm("Burahin ito?")) await deleteDoc(doc(db, type === 'client' ? "clients" : "ledger", id)); };
+        window.deleteItem = async (id, type) => { if(confirm("Burahin?")) await deleteDoc(doc(db, type === 'client' ? "clients" : "ledger", id)); };
 
         window.addLedgerEntry = async () => {
             const desc = document.getElementById('ledgerDesc').value, amt = document.getElementById('ledgerAmount').value, dt = document.getElementById('ledgerDate').value;
             if(!desc || !amt || !dt) return alert("Punan ang lahat!");
             await addDoc(collection(db, "ledger"), { uid: currentUser.uid, desc, amount: parseFloat(amt), date: dt });
             document.getElementById('ledgerDesc').value = ''; document.getElementById('ledgerAmount').value = '';
-        };
-
-        window.setClientType = (t) => {
-            currentType = t;
-            document.getElementById('resBtn').classList.toggle('active', t === 'residential');
-            document.getElementById('bizBtn').classList.toggle('active', t === 'business');
-            document.getElementById('resPlans').classList.toggle('hidden', t === 'business');
-            document.getElementById('bizPlans').classList.toggle('hidden', t === 'residential');
-        };
-
-        window.setStatusFilter = (s, el) => {
-            currentStatusFilter = s;
-            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-            el.classList.add('active');
-            render();
         };
 
         window.render = () => {
@@ -329,7 +268,7 @@ const firebaseConfig = {
             list.innerHTML = ""; lList.innerHTML = "";
 
             let rT = 0, bT = 0, rC = 0, bC = 0;
-            const sorted = [...clients].sort((a, b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
+            const sorted = [...clients].sort((a,b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
 
             sorted.forEach(c => {
                 if(st && !c.name.toLowerCase().includes(st) && !c.area.toLowerCase().includes(st)) return;
@@ -338,7 +277,7 @@ const firebaseConfig = {
                 if(currentStatusFilter === 'cancelled' && !c.cancelled) return;
 
                 let show = false;
-                if(!c.installed && !c.cancelled) show = true; // Carry Over Pending
+                if(!c.installed && !c.cancelled) show = true;
                 else if(c.installed && c.installDate) {
                     const iDate = new Date(c.installDate);
                     if(iDate.getMonth() === sm) {
@@ -349,24 +288,16 @@ const firebaseConfig = {
 
                 if(show) {
                     const card = document.createElement('div');
-                    card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''} ${c.commiReceived?'commi-done':''}`;
+                    card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''}`;
                     card.innerHTML = `
                         <div style="display:flex; justify-content:space-between">
-                            <div><span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br><strong style="font-size: 1.1rem">${c.name}</strong><br><small style="color:var(--text-muted)">${c.area} | ${c.plan}</small></div>
-                            <div style="text-align:right"><button class="del-btn" onclick="deleteItem('${c.id}', 'client')"><i class="fa-solid fa-trash"></i></button><br><div style="font-weight:700; color:var(--primary-orange); margin-top:5px">₱${c.commi}</div></div>
+                            <div><span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br><strong>${c.name}</strong></div>
+                            <div style="text-align:right"><i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:var(--text-muted)"></i><br>₱${c.commi}</div>
                         </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px">
-                            <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.installed?'var(--green-installed)':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">Install</button>
-                            <button style="padding:8px; font-size: 0.8rem; background:${c.cancelled?'var(--red-alert)':'transparent'}; color:${c.cancelled?'white':'var(--red-alert)'}; border:1px solid var(--red-alert); border-radius:12px; font-weight:600; cursor:pointer" onclick="toggleStatus('${c.id}', 'cancelled')">Cancel</button>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
+                            <button class="primary-btn" style="padding:5px; background:${c.installed?'var(--green-installed)':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">Install</button>
+                            <button class="primary-btn" style="padding:5px; background:${c.cancelled?'var(--red-alert)':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'cancelled')">Cancel</button>
                         </div>
-                        ${c.cancelled ? `<textarea placeholder="Reason..." style="margin-top:10px; height:50px; font-size:0.8rem" onchange="updateField('${c.id}', 'remarks', this.value)">${c.remarks || ''}</textarea>` : ''}
-                        ${c.installed ? `
-                            <div style="margin-top:10px; background:rgba(0,0,0,0.2); padding:10px; border-radius:12px">
-                                <label style="font-size:0.7rem; color:var(--text-muted)">Install Date:</label>
-                                <input type="date" value="${c.installDate}" style="margin-bottom:8px; padding:5px" onchange="updateField('${c.id}', 'installDate', this.value)">
-                                <button class="primary-btn ${c.commiReceived?'':'active'}" style="background:${c.commiReceived?'var(--green-installed)':'rgba(16,185,129,0.1)'}; color:${c.commiReceived?'white':'var(--green-installed)'}; border:1px solid var(--green-installed); padding: 5px; font-size: 0.8rem;" onclick="toggleStatus('${c.id}', 'commiReceived')">Commi Received</button>
-                            </div>
-                        ` : ''}
                     `;
                     list.appendChild(card);
                 }
@@ -377,7 +308,6 @@ const firebaseConfig = {
             document.getElementById('targetCount').innerText = `${rC+bC} / 20`;
             document.getElementById('targetBreakdown').innerText = `${rC} Res | ${bC} Biz`;
             document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/20)*100, 100)}%`;
-            updateMotivation(rC+bC);
             
             let exT = 0;
             ledger.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(l => {
@@ -387,32 +317,22 @@ const firebaseConfig = {
             document.getElementById('extraTotal').innerText = `₱${exT.toLocaleString()}`;
         };
 
-        function updateMotivation(count) {
-            const q = document.getElementById('quoteText'), s = document.getElementById('subQuote');
-            const quotes = [
-                { q: "Consistency is key.", s: "Small wins every day lead to big results." },
-                { q: "Don't stop until you're proud.", s: "The harder you work, the luckier you get." },
-                { q: "Focus on the goal.", s: "Obstacles are what you see when you take your eyes off the prize." }
-            ];
-            if(count === 0) { q.innerText = "Fresh Start!"; s.innerText = "Every expert was once a beginner. Let's close one today."; }
-            else { let pick = quotes[Math.min(count % quotes.length, quotes.length - 1)]; q.innerText = pick.q; s.innerText = pick.s; }
-        }
+        window.toggleLedger = () => document.getElementById('ledgerSidebar').classList.toggle('active');
+        window.setStatusFilter = (s, el) => {
+            currentStatusFilter = s;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active'); render();
+        };
+        window.setClientType = (t) => {
+            currentType = t;
+            document.getElementById('resBtn').classList.toggle('active', t==='residential');
+            document.getElementById('bizBtn').classList.toggle('active', t==='business');
+            document.getElementById('resPlans').classList.toggle('hidden', t==='business');
+            document.getElementById('bizPlans').classList.toggle('hidden', t==='residential');
+        };
 
         const vm = document.getElementById('viewMonth');
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
-        window.toggleLedger = () => {
-    const sidebar = document.getElementById('ledgerSidebar');
-    sidebar.classList.toggle('active'); // Ito ang mag-o-open at mag-co-close
-};
-
-// Dagdag: Close sidebar pag ni-click sa labas (optional pero goods 'to)
-document.addEventListener('mousedown', (e) => {
-    const sidebar = document.getElementById('ledgerSidebar');
-    const btn = document.querySelector('.toggle-ledger-btn');
-    if (!sidebar.contains(e.target) && !btn.contains(e.target) && sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
-    }
-});
     </script>
 </body>
 </html>
