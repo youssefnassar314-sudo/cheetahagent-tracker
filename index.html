@@ -53,8 +53,23 @@
         .progress-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; width: 100%; overflow: hidden; }
         #progressFill { height: 100%; background: var(--primary-orange); width: 0%; transition: 0.5s; }
 
-        .sidebar { position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: var(--bg-deep); padding: 20px; z-index: 200; box-shadow: -10px 0 30px rgba(0,0,0,0.5); transition: 0.4s; }
-        .sidebar.active { right: 0; }
+        .sidebar { 
+    position: fixed; 
+    right: -350px; /* Nakatago sa kanan */
+    top: 0; 
+    width: 320px; 
+    height: 100%; 
+    background: var(--bg-deep); 
+    padding: 20px; 
+    z-index: 200; 
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5); 
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    overflow-y: auto;
+}
+
+.sidebar.active { 
+    right: 0; 
+}
         .toggle-ledger-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary-orange); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
     </style>
 </head>
@@ -141,18 +156,18 @@
         <div id="clientList"></div>
     </div>
 
-    <div id="ledgerSidebar" class="sidebar">
-        <h3>Personal Ledger</h3>
-        <input type="text" id="ledgerDesc" placeholder="Description">
-        <input type="number" id="ledgerAmount" placeholder="Amount">
-        <input type="date" id="ledgerDate">
-        <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
-        <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
-        <div style="margin-top: 15px; text-align: right;">
-            <small style="color:var(--text-muted)">Total Ledger Funds:</small>
-            <div id="extraTotal" style="font-weight:700; color:var(--primary-orange); font-size: 1.2rem;">₱0</div>
-        </div>
+<div id="ledgerSidebar" class="sidebar">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="margin:0;">Personal Ledger</h3>
+        <i class="fa-solid fa-xmark" onclick="toggleLedger()" style="cursor:pointer; font-size:1.5rem; color:var(--red-alert);"></i>
     </div>
+    
+    <input type="text" id="ledgerDesc" placeholder="Description">
+    <input type="number" id="ledgerAmount" placeholder="Amount">
+    <input type="date" id="ledgerDate">
+    <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
+    <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
+</div>
     
     <div class="toggle-ledger-btn" onclick="document.getElementById('ledgerSidebar').classList.toggle('active')"><i class="fa-solid fa-wallet"></i></div>
 
@@ -345,6 +360,19 @@ const firebaseConfig = {
 
         const vm = document.getElementById('viewMonth');
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
+        window.toggleLedger = () => {
+    const sidebar = document.getElementById('ledgerSidebar');
+    sidebar.classList.toggle('active'); // Ito ang mag-o-open at mag-co-close
+};
+
+// Dagdag: Close sidebar pag ni-click sa labas (optional pero goods 'to)
+document.addEventListener('mousedown', (e) => {
+    const sidebar = document.getElementById('ledgerSidebar');
+    const btn = document.querySelector('.toggle-ledger-btn');
+    if (!sidebar.contains(e.target) && !btn.contains(e.target) && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+    }
+});
     </script>
 </body>
 </html>
