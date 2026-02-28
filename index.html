@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheetah Pro Cloud v3.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0b0d0f; --bg-deep: #111418; --card-dark: rgba(18, 22, 26, 0.95);
+            --primary-orange: #FF8C00; --accent-orange: #ff4500; --text-main: #f1f5f9;
+            --text-muted: #64748b; --glass-border: rgba(255, 255, 255, 0.05);
+            --green-installed: #10b981; --red-alert: #ef4444; --blue-biz: #3b82f6;
+        }
+
+        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+        body {
+            background: radial-gradient(circle at 20% 20%, rgba(255,140,0,0.08), transparent 40%),
+                        linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-deep) 100%);
+            color: var(--text-main); margin: 0; padding: 20px; min-height: 100vh;
+        }
+
+        .auth-container { max-width: 400px; margin: 100px auto; text-align: center; }
+        .main-app { display: none; max-width: 800px; margin: 0 auto; }
+        
+        .glass-panel { background: var(--card-dark); backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid var(--glass-border); padding: 20px; margin-bottom: 20px; }
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--card-dark); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        
+        .type-toggle { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 5px; margin-bottom: 15px; }
+        .type-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: 8px; font-weight: 600; }
+        .type-btn.active { background: var(--primary-orange); color: white; }
+        .type-btn.active.biz { background: var(--blue-biz); }
+
+        .filter-row { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); white-space: nowrap; }
+        .filter-pill.active { background: var(--primary-orange); color: white; }
+
+        input, select, textarea { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; color: white; margin-bottom: 12px; width: 100%; }
+        select option { background-color: white; color: black; }
+        .primary-btn { background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); padding: 12px; border-radius: 12px; border: none; font-weight: 600; color: white; cursor: pointer; width: 100%; }
+        
+        .client-card { background: var(--card-dark); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
+        .client-installed { border-left: 5px solid var(--green-installed); }
+        .client-cancelled { opacity: 0.5; border-left: 5px solid var(--red-alert); }
+        .hidden { display: none; }
+        .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; }
+        .tag-res { background: rgba(255, 140, 0, 0.2); color: var(--primary-orange); }
+        .tag-biz { background: rgba(59, 130, 246, 0.2); color: var(--blue-biz); }
+        
+        .progress-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; width: 100%; overflow: hidden; }
+        #progressFill { height: 100%; background: var(--primary-orange); width: 0%; transition: 0.5s; }
+
+        .sidebar { position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: var(--bg-deep); padding: 20px; z-index: 200; box-shadow: -10px 0 30px rgba(0,0,0,0.5); transition: 0.4s; }
+        .sidebar.active { right: 0; }
+        .toggle-ledger-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary-orange); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+    </style>
+</head>
+<body>
+
+    <div id="authSection" class="auth-container glass-panel">
+        <h1>Cheetah <span>PRO</span></h1>
+        <p>Login to Sync Data</p>
+        <input type="email" id="authEmail" placeholder="Email">
+        <input type="password" id="authPass" placeholder="Password">
+        <button class="primary-btn" onclick="handleAuth('login')">Login</button>
+        <button class="primary-btn" style="background:transparent; border:1px solid var(--primary-orange); margin-top:10px" onclick="handleAuth('signup')">Sign Up</button>
+    </div>
+
+    <div id="appSection" class="main-app">
+        <header style="text-align:center">
+            <h1>Cheetah <span>PRO</span></h1>
+            <div style="display:flex; justify-content:center; gap:10px; align-items:center">
+                <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: var(--primary-orange); color: white; border: none; border-radius: 5px;" onchange="render()"></select>
+                <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer"><i class="fa-solid fa-power-off"></i></button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="stat-card glass-panel">
+                <div><h3>Residential</h3><p id="resCommi" style="color:var(--primary-orange)">₱0</p></div>
+                <div style="text-align:right"><h3>Business</h3><p id="bizCommi" style="color:var(--blue-biz)">₱0</p></div>
+            </div>
+            <div class="stat-card glass-panel" style="flex-direction:column; align-items: flex-start;">
+                <div style="display:flex; justify-content:space-between; width:100%">
+                    <h3 id="targetCount">0 / 20</h3>
+                    <small id="targetBreakdown" style="color:var(--text-muted)">0 Res | 0 Biz</small>
+                </div>
+                <div class="progress-bar"><div id="progressFill"></div></div>
+            </div>
+        </div>
+
+        <div id="motivationBox" class="glass-panel" style="text-align:center; border: 1px solid var(--primary-orange);">
+            <h4 id="quoteText" style="margin:0; color:var(--primary-orange); font-size: 1rem;">"Great things take time."</h4>
+            <small id="subQuote" style="color:var(--text-muted);">Stay consistent, results will follow.</small>
+        </div>
+
+        <div class="glass-panel">
+            <div class="type-toggle">
+                <button class="type-btn active" id="resBtn" onclick="setClientType('residential')">Residential</button>
+                <button class="type-btn" id="bizBtn" onclick="setClientType('business')">Business</button>
+            </div>
+            <div style="display:flex; gap:10px">
+                <input type="text" id="fn" placeholder="First Name">
+                <input type="text" id="ln" placeholder="Last Name">
+            </div>
+            <select id="areaSelect">
+                <option value="" disabled selected>Select Area</option>
+                <option value="Baras">Baras</option><option value="Tanay">Tanay</option><option value="Morong">Morong</option>
+                <option value="Pililla">Pililla</option><option value="Angono">Angono</option><option value="Binangonan">Binangonan</option>
+                <option value="Antipolo">Antipolo</option><option value="Taytay">Taytay</option><option value="Teresa">Teresa</option>
+                <option value="Cardona">Cardona</option><option value="Jala-Jala">Jala-Jala</option>
+            </select>
+            <select id="resPlans">
+                <option value="" disabled selected>Select Plan</option>
+                <option value="80" data-commi="300">80 Mbps (₱699) - 300 Commi</option>
+                <option value="150" data-commi="400">150 Mbps (₱999) - 400 Commi</option>
+                <option value="300" data-commi="500">300 Mbps (₱1250) - 500 Commi</option>
+                <option value="500" data-commi="600">500 Mbps (₱1500) - 600 Commi</option>
+                <option value="1000" data-commi="1000">1000 Mbps (₱4000) - 1000 Commi</option>
+            </select>
+            <select id="bizPlans" class="hidden">
+                <option value="" disabled selected>Select Biz Plan</option>
+                <option value="Biz Lite" data-commi="600">Biz Lite 1.5 - 600 Commi</option>
+                <option value="Biz Professional" data-commi="1200">Biz Professional 3.0 - 1200 Commi</option>
+                <option value="Biz Enterprise" data-commi="2400">Biz Enterprise 6.0 - 2400 Commi</option>
+            </select>
+            <button class="primary-btn" onclick="addClient()">Add Client</button>
+        </div>
+
+        <input type="text" id="searchInput" placeholder="Search by name or area..." onkeyup="render()">
+        <div class="filter-row">
+            <div class="filter-pill active" onclick="setStatusFilter('all', this)">All</div>
+            <div class="filter-pill" onclick="setStatusFilter('pending', this)">Pending</div>
+            <div class="filter-pill" onclick="setStatusFilter('installed', this)">Installed</div>
+            <div class="filter-pill" onclick="setStatusFilter('cancelled', this)">Cancelled</div>
+        </div>
+
+        <div id="clientList"></div>
+    </div>
+
+    <div id="ledgerSidebar" class="sidebar">
+        <h3>Personal Ledger</h3>
+        <input type="text" id="ledgerDesc" placeholder="Description">
+        <input type="number" id="ledgerAmount" placeholder="Amount">
+        <input type="date" id="ledgerDate">
+        <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
+        <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
+        <div style="margin-top: 15px; text-align: right;">
+            <small style="color:var(--text-muted)">Total Ledger Funds:</small>
+            <div id="extraTotal" style="font-weight:700; color:var(--primary-orange); font-size: 1.2rem;">₱0</div>
+        </div>
+    </div>
+    
+    <div class="toggle-ledger-btn" onclick="document.getElementById('ledgerSidebar').classList.toggle('active')"><i class="fa-solid fa-wallet"></i></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // !!! PALITAN MO ITO NG NASA FIREBASE SETTINGS MO !!!
+        // !!! PALITAN MO ITO NG NASA FIREBASE SETTINGS MO !!!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
+            authDomain: "cheetah-tracker-app.firebaseapp.com",
+            projectId: "cheetah-tracker-app",
+            storageBucket: "cheetah-tracker-app.firebasestorage.app",
+            messagingSenderId: "981209296948",
+            appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
+            measurementId: "G-KGTBSKD57D"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null, clients = [], ledger = [], currentType = 'residential', currentStatusFilter = 'all';
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        // Auth Logic
+        window.handleAuth = async (type) => {
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPass').value;
+            if(!email || !pass) return alert("Punan ang email at password!");
+            try {
+                if(type === 'signup') await createUserWithEmailAndPassword(auth, email, pass);
+                else await signInWithEmailAndPassword(auth, email, pass);
+            } catch (e) { alert(e.message); }
+        };
+
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                currentUser = user;
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('appSection').style.display = 'block';
+                syncData();
+            } else {
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('appSection').style.display = 'none';
+            }
+        });
+
+        // Database Sync
+        function syncData() {
+            onSnapshot(query(collection(db, "clients"), where("uid", "==", currentUser.uid)), snap => {
+                clients = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                render();
+            });
+            onSnapshot(query(collection(db, "ledger"), where("uid", "==", currentUser.uid)), snap => {
+                ledger = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                render();
+            });
+        }
+
+        // Functions
+        window.addClient = async () => {
+            const fn = document.getElementById('fn').value, ln = document.getElementById('ln').value, area = document.getElementById('areaSelect').value;
+            const ps = currentType === 'residential' ? document.getElementById('resPlans') : document.getElementById('bizPlans');
+            if(!fn || !ln || !area || !ps.value) return alert("Punan lahat!");
+            
+            await addDoc(collection(db, "clients"), {
+                uid: currentUser.uid, name: `${fn} ${ln}`, area, type: currentType,
+                plan: ps.options[ps.selectedIndex].text, commi: parseInt(ps.options[ps.selectedIndex].dataset.commi),
+                installed: false, cancelled: false, commiReceived: false, installDate: "", remarks: ""
+            });
+            document.getElementById('fn').value = ''; document.getElementById('ln').value = '';
+        };
+
+        window.toggleStatus = async (id, field) => {
+            const c = clients.find(x => x.id === id);
+            const update = { [field]: !c[field] };
+            if(field === 'installed' && !c.installed) {
+                update.cancelled = false;
+                update.installDate = new Date().toISOString().split('T')[0];
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
+            if(field === 'cancelled' && !c.cancelled) update.installed = false;
+            await updateDoc(doc(db, "clients", id), update);
+        };
+
+        window.updateField = async (id, field, val) => await updateDoc(doc(db, "clients", id), {[field]: val});
+        window.deleteItem = async (id, type) => { if(confirm("Burahin ito?")) await deleteDoc(doc(db, type === 'client' ? "clients" : "ledger", id)); };
+
+        window.addLedgerEntry = async () => {
+            const desc = document.getElementById('ledgerDesc').value, amt = document.getElementById('ledgerAmount').value, dt = document.getElementById('ledgerDate').value;
+            if(!desc || !amt || !dt) return alert("Punan ang lahat!");
+            await addDoc(collection(db, "ledger"), { uid: currentUser.uid, desc, amount: parseFloat(amt), date: dt });
+            document.getElementById('ledgerDesc').value = ''; document.getElementById('ledgerAmount').value = '';
+        };
+
+        window.setClientType = (t) => {
+            currentType = t;
+            document.getElementById('resBtn').classList.toggle('active', t === 'residential');
+            document.getElementById('bizBtn').classList.toggle('active', t === 'business');
+            document.getElementById('resPlans').classList.toggle('hidden', t === 'business');
+            document.getElementById('bizPlans').classList.toggle('hidden', t === 'residential');
+        };
+
+        window.setStatusFilter = (s, el) => {
+            currentStatusFilter = s;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            render();
+        };
+
+        window.render = () => {
+            const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
+            const st = document.getElementById('searchInput').value.toLowerCase();
+            const sm = parseInt(document.getElementById('viewMonth').value);
+            list.innerHTML = ""; lList.innerHTML = "";
+
+            let rT = 0, bT = 0, rC = 0, bC = 0;
+            const sorted = [...clients].sort((a, b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
+
+            sorted.forEach(c => {
+                if(st && !c.name.toLowerCase().includes(st) && !c.area.toLowerCase().includes(st)) return;
+                if(currentStatusFilter === 'pending' && (c.installed || c.cancelled)) return;
+                if(currentStatusFilter === 'installed' && !c.installed) return;
+                if(currentStatusFilter === 'cancelled' && !c.cancelled) return;
+
+                let show = false;
+                if(!c.installed && !c.cancelled) show = true; // Carry Over Pending
+                else if(c.installed && c.installDate) {
+                    const iDate = new Date(c.installDate);
+                    if(iDate.getMonth() === sm) {
+                        show = true;
+                        if(c.type === 'business') { bT += c.commi; bC++; } else { rT += c.commi; rC++; }
+                    }
+                } else if(c.cancelled) show = true;
+
+                if(show) {
+                    const card = document.createElement('div');
+                    card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''} ${c.commiReceived?'commi-done':''}`;
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between">
+                            <div><span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br><strong style="font-size: 1.1rem">${c.name}</strong><br><small style="color:var(--text-muted)">${c.area} | ${c.plan}</small></div>
+                            <div style="text-align:right"><button class="del-btn" onclick="deleteItem('${c.id}', 'client')"><i class="fa-solid fa-trash"></i></button><br><div style="font-weight:700; color:var(--primary-orange); margin-top:5px">₱${c.commi}</div></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px">
+                            <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.installed?'var(--green-installed)':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">Install</button>
+                            <button style="padding:8px; font-size: 0.8rem; background:${c.cancelled?'var(--red-alert)':'transparent'}; color:${c.cancelled?'white':'var(--red-alert)'}; border:1px solid var(--red-alert); border-radius:12px; font-weight:600; cursor:pointer" onclick="toggleStatus('${c.id}', 'cancelled')">Cancel</button>
+                        </div>
+                        ${c.cancelled ? `<textarea placeholder="Reason..." style="margin-top:10px; height:50px; font-size:0.8rem" onchange="updateField('${c.id}', 'remarks', this.value)">${c.remarks || ''}</textarea>` : ''}
+                        ${c.installed ? `
+                            <div style="margin-top:10px; background:rgba(0,0,0,0.2); padding:10px; border-radius:12px">
+                                <label style="font-size:0.7rem; color:var(--text-muted)">Install Date:</label>
+                                <input type="date" value="${c.installDate}" style="margin-bottom:8px; padding:5px" onchange="updateField('${c.id}', 'installDate', this.value)">
+                                <button class="primary-btn ${c.commiReceived?'':'active'}" style="background:${c.commiReceived?'var(--green-installed)':'rgba(16,185,129,0.1)'}; color:${c.commiReceived?'white':'var(--green-installed)'}; border:1px solid var(--green-installed); padding: 5px; font-size: 0.8rem;" onclick="toggleStatus('${c.id}', 'commiReceived')">Commi Received</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    list.appendChild(card);
+                }
+            });
+
+            document.getElementById('resCommi').innerText = `₱${rT.toLocaleString()}`;
+            document.getElementById('bizCommi').innerText = `₱${bT.toLocaleString()}`;
+            document.getElementById('targetCount').innerText = `${rC+bC} / 20`;
+            document.getElementById('targetBreakdown').innerText = `${rC} Res | ${bC} Biz`;
+            document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/20)*100, 100)}%`;
+            updateMotivation(rC+bC);
+            
+            let exT = 0;
+            ledger.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(l => {
+                exT += l.amount;
+                lList.innerHTML += `<div class="ledger-item"><div>${l.desc}<br><small>${l.date}</small></div><div>₱${l.amount.toLocaleString()} <i class="fa-solid fa-trash" onclick="deleteItem('${l.id}', 'ledger')" style="color:var(--red-alert); cursor:pointer; margin-left:5px"></i></div></div>`;
+            });
+            document.getElementById('extraTotal').innerText = `₱${exT.toLocaleString()}`;
+        };
+
+        function updateMotivation(count) {
+            const q = document.getElementById('quoteText'), s = document.getElementById('subQuote');
+            const quotes = [
+                { q: "Consistency is key.", s: "Small wins every day lead to big results." },
+                { q: "Don't stop until you're proud.", s: "The harder you work, the luckier you get." },
+                { q: "Focus on the goal.", s: "Obstacles are what you see when you take your eyes off the prize." }
+            ];
+            if(count === 0) { q.innerText = "Fresh Start!"; s.innerText = "Every expert was once a beginner. Let's close one today."; }
+            else { let pick = quotes[Math.min(count % quotes.length, quotes.length - 1)]; q.innerText = pick.q; s.innerText = pick.s; }
+        }
+
+        const vm = document.getElementById('viewMonth');
+        months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
+    </script>
+</body>
+</html>
