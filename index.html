@@ -196,17 +196,20 @@
     <input type="date" id="ledgerDate">
     <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
     <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
-</div>
-<a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" 
-   target="_blank" 
-   class="floating-locator-btn">
-    <i class="fa-solid fa-map-location-dot"></i>
-</a>
 
-<div class="toggle-ledger-btn" onclick="toggleLedger()">
-    <i class="fa-solid fa-wallet"></i>
-</div>    
-    <div class="toggle-ledger-btn" onclick="document.getElementById('ledgerSidebar').classList.toggle('active')"><i class="fa-solid fa-wallet"></i></div>
+    <a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" 
+           target="_blank" 
+           class="floating-locator-btn">
+            <i class="fa-solid fa-map-location-dot"></i>
+        </a>
+
+        <div class="toggle-ledger-btn" onclick="toggleLedger()">
+            <i class="fa-solid fa-wallet"></i>
+             <div class="toggle-ledger-btn" onclick="document.getElementById('ledgerSidebar').classList.toggle('active')"><i class="fa-solid fa-wallet"></i></div>
+    
+</div>
+   
+   
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
