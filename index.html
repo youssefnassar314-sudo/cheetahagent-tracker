@@ -161,17 +161,16 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // !!! PALITAN MO ITO NG NASA FIREBASE SETTINGS MO !!!
-        // !!! PALITAN MO ITO NG NASA FIREBASE SETTINGS MO !!!
-        const firebaseConfig = {
-            apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
-            authDomain: "cheetah-tracker-app.firebaseapp.com",
-            projectId: "cheetah-tracker-app",
-            storageBucket: "cheetah-tracker-app.firebasestorage.app",
-            messagingSenderId: "981209296948",
-            appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
-            measurementId: "G-KGTBSKD57D"
-        };
+// Gamitin ang configuration na ito mula sa iyong Firebase setup
+const firebaseConfig = {
+  apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
+  authDomain: "cheetah-tracker-app.firebaseapp.com",
+  projectId: "cheetah-tracker-app",
+  storageBucket: "cheetah-tracker-app.firebasestorage.app",
+  messagingSenderId: "981209296948",
+  appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
+  measurementId: "G-KGTBSKD57D"
+};
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
