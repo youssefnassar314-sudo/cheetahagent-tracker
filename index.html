@@ -244,7 +244,10 @@
             const update = { [field]: !c[field] };
             if(field === 'installed' && !c.installed) {
                 update.cancelled = false;
-                update.installDate = new Date().toISOString().split('T')[0];
+                // I-check muna kung may existing date na. Kung wala, tsaka lang ilagay ang date ngayon.
+                if (!c.installDate) {
+                    update.installDate = new Date().toISOString().split('T')[0];
+                }
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             }
             if(field === 'cancelled' && !c.cancelled) update.installed = false;
@@ -299,6 +302,11 @@
                         <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem;">
                             <label style="color: var(--text-muted);"><i class="fa-regular fa-calendar-check"></i> Date:</label>
                             <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 6px; font-size: 0.8rem;">
+                        </div>` : ''}
+
+                        ${c.cancelled ? `
+                        <div style="margin-top: 10px;">
+                            <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 8px; width: 100%; border-radius: 6px; font-size: 0.8rem; border: 1px solid var(--red-alert); background: rgba(239, 68, 68, 0.05); color: white;">
                         </div>` : ''}
 
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
