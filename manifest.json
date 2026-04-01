@@ -2,7 +2,7 @@
   "name": "Cheetah Agent Cloud",
   "short_name": "Cheetah PRO",
   "description": "Agent Workspace and Tracker",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b0d0f",
   "theme_color": "#FF8C00",
