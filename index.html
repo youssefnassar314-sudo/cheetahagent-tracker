@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheetah Agent Cloud v3.0</title>
+    <link rel="icon" type="image/png" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FF8C00">
     <link rel="apple-touch-icon" href="icon-192.png">
@@ -99,12 +100,25 @@
     </div>
 
     <div id="appSection" class="main-app">
-        <header style="text-align:center">
-            <h1>Cheetah <span>PRO</span></h1>
-            <div style="display:flex; justify-content:center; gap:10px; align-items:center">
-                <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: var(--primary-orange); color: white; border: none; border-radius: 5px;" onchange="render()"></select>
-                <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer"><i class="fa-solid fa-power-off"></i></button>
+        <header style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+            
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                <img src="icon-192.png" alt="Cheetah Logo" style="width: 50px; height: 50px; border-radius: 12px; box-shadow: 0 4px 10px rgba(255,140,0,0.3);">
+                <h1 style="margin: 0;">Cheetah <span>PRO</span></h1>
             </div>
+
+            <div style="display:flex; justify-content:center; gap:15px; align-items:center">
+                <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: var(--primary-orange); color: white; border: none; border-radius: 5px;" onchange="render()"></select>
+                
+                <a href="ILAGAY_MO_DITO_YUNG_LINK_NG_WORKSPACE" target="_blank" style="color:var(--text-main); font-size: 1.2rem; text-decoration: none;" title="Go to Workspace">
+                    <i class="fa-solid fa-briefcase"></i>
+                </a>
+
+                <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer; font-size: 1.2rem;" title="Logout">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
+            
         </header>
 
         <div class="dashboard">
