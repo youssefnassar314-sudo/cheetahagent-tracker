@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheetah Agent Cloud v3.0</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF8C00">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -371,6 +374,15 @@
 
         const vm = document.getElementById('viewMonth');
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker Registered!', reg))
+                    .catch(err => console.error('Service Worker Registration Failed!', err));
+            });
+        }
     </script>
 </body>
 </html>
