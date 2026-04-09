@@ -6,91 +6,150 @@
     <title>Cheetah Agent Cloud v3.0</title>
     <link rel="icon" type="image/png" href="icon-192.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#FF8C00">
+    <meta name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0b0d0f; --bg-deep: #111418; --card-dark: rgba(18, 22, 26, 0.95);
-            --primary-orange: #FF8C00; --accent-orange: #ff4500; --text-main: #f1f5f9;
-            --text-muted: #64748b; --glass-border: rgba(255, 255, 255, 0.05);
-            --green-installed: #10b981; --red-alert: #ef4444; --blue-biz: #3b82f6;
+            --bg-dark: #ffffff; 
+            --bg-deep: #f4f4f0; 
+            --card-dark: #ffffff;
+            --primary-orange: #000000; 
+            --accent-orange: #333333; 
+            --text-main: #000000; 
+            --text-muted: #555555; 
+            --glass-border: #000000; 
+            --green-installed: #000000; 
+            --red-alert: #000000; 
+            --blue-biz: #000000;
         }
 
-        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.2s ease-in-out; }
+        
         body {
-            background: radial-gradient(circle at 20% 20%, rgba(255,140,0,0.08), transparent 40%),
-                        linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-deep) 100%);
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(#cccccc 1px, transparent 1px);
+            background-size: 20px 20px; 
             color: var(--text-main); margin: 0; padding: 20px; min-height: 100vh;
         }
+
+        /* Scrollbar Theme */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: black; border-radius: 4px; }
 
         .auth-container { max-width: 400px; margin: 100px auto; text-align: center; }
         .main-app { display: none; max-width: 800px; margin: 0 auto; }
         
-        .glass-panel { background: var(--card-dark); backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid var(--glass-border); padding: 20px; margin-bottom: 20px; }
+        /* Panels - Solid Borders and Shadows */
+        .glass-panel { 
+            background: var(--card-dark);
+            border-radius: 8px; 
+            border: 2px solid var(--glass-border); 
+            padding: 20px; margin-bottom: 20px;
+            box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); 
+        }
+
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-dark); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         
-        .type-toggle { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 5px; margin-bottom: 15px; }
-        .type-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: 8px; font-weight: 600; }
-        .type-btn.active { background: var(--primary-orange); color: white; }
-        .type-btn.active.biz { background: var(--blue-biz); }
+        .stat-card { 
+            background: var(--card-dark); padding: 20px; border-radius: 8px; 
+            border: 2px solid var(--glass-border); 
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        
+        .type-toggle { display: flex; border: 2px solid black; border-radius: 6px; padding: 4px; margin-bottom: 15px; background: white; }
+        .type-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+        .type-btn.active { background: black; color: white; }
 
         .filter-row { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .filter-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); white-space: nowrap; }
-        .filter-pill.active { background: var(--primary-orange); color: white; }
+        .filter-pill { background: white; border: 2px solid black; padding: 6px 15px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: black; white-space: nowrap; box-shadow: 2px 2px 0px black; }
+        .filter-pill.active { background: black; color: white; box-shadow: none; transform: translate(2px, 2px); }
 
-        input, select, textarea { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; color: white; margin-bottom: 12px; width: 100%; }
+        /* Inputs */
+        input, select, textarea { 
+            background: transparent; 
+            border: 2px solid black; 
+            padding: 12px; border-radius: 4px; color: black; margin-bottom: 12px; width: 100%; 
+            font-weight: 600;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; background: white;
+            box-shadow: 4px 4px 0px black;
+        }
         select option { background-color: white; color: black; }
-        .primary-btn { background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); padding: 12px; border-radius: 12px; border: none; font-weight: 600; color: white; cursor: pointer; width: 100%; }
+
+        /* Buttons */
+        .primary-btn { 
+            background: white; 
+            padding: 12px; border-radius: 4px; border: 2px solid black; font-weight: 700; color: black; 
+            cursor: pointer; width: 100%; 
+            box-shadow: 4px 4px 0px black;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .primary-btn:hover {
+            transform: translate(2px, 2px); 
+            box-shadow: 2px 2px 0px black; 
+        }
         
-        .client-card { background: var(--card-dark); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
-        .client-installed { border-left: 5px solid var(--green-installed); }
-        .client-cancelled { opacity: 0.5; border-left: 5px solid var(--red-alert); }
-        .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; text-transform: uppercase; }
-        .tag-res { background: rgba(255, 140, 0, 0.2); color: var(--primary-orange); }
-        .tag-biz { background: rgba(59, 130, 246, 0.2); color: var(--blue-biz); }
+        /* Client Cards */
+        .client-card { 
+            background: var(--card-dark); 
+            border-radius: 8px; padding: 20px; margin-bottom: 15px; 
+            border: 2px solid var(--glass-border); 
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
+        }
+        .client-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px rgba(0, 0, 0, 1);
+        }
+        .client-installed { border-left: 8px solid black; }
+        .client-cancelled { opacity: 0.7; background: #eaeaea; border-style: dashed; }
         
-        .progress-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; width: 100%; overflow: hidden; }
-        #progressFill { height: 100%; background: var(--primary-orange); width: 0%; transition: 0.5s; }
+        /* Tags for Res/Biz */
+        .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; font-weight: 700; text-transform: uppercase; border: 1px solid black; }
+        .tag-res { background: white; color: black; }
+        .tag-biz { background: #d4d4d4; color: black; } 
+        
+        /* Sketchy Progress Bar */
+        .progress-bar { height: 16px; background: transparent; border: 2px solid black; border-radius: 4px; margin-top: 10px; width: 100%; overflow: hidden; }
+        #progressFill { 
+            height: 100%; 
+            background: repeating-linear-gradient(45deg, #000, #000 2px, #fff 2px, #fff 6px); 
+            width: 0%; transition: 0.5s; 
+        }
 
         .sidebar { 
             position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: var(--bg-deep); 
-            padding: 20px; z-index: 200; box-shadow: -10px 0 30px rgba(0,0,0,0.5); 
+            padding: 20px; z-index: 200; box-shadow: -10px 0 30px rgba(0,0,0,0.2); 
+            border-left: 4px solid black;
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto;
         }
         .sidebar.active { right: 0; }
 
         .hidden { display: none; }
-        .del-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
-
-        /* FAB MENU MAIN BUTTON */
+        
+        /* FAB Menu Sketchy Theme */
         .fab-main-btn {
             position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; 
-            border-radius: 50%; background: var(--bg-deep); border: 2px solid var(--text-muted);
+            border-radius: 50%; background: white; border: 2px solid black;
             display: flex; align-items: center; justify-content: center; cursor: pointer; 
-            z-index: 110; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; font-size: 1.5rem;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 110; box-shadow: 4px 4px 0px black; color: black; font-size: 1.5rem;
         }
-        /* Pag active, iikot yung plus icon para maging "X" at mag-o-orange */
-        .fab-menu.active .fab-main-btn { transform: rotate(135deg); background: var(--primary-orange); border-color: var(--primary-orange); }
+        .fab-menu.active .fab-main-btn { transform: rotate(135deg); background: black; color: white; box-shadow: 2px 2px 0px black; }
 
-        /* COLLAPSIBLE BUTTONS (Nakatago by default) */
         .toggle-ledger-btn, .floating-locator-btn, .floating-workspace-btn {
             position: fixed; right: 35px; width: 50px; height: 50px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; cursor: pointer; 
-            z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; text-decoration: none; font-size: 1.2rem;
+            z-index: 100; box-shadow: 3px 3px 0px black; color: black; font-size: 1.2rem;
+            background: white; border: 2px solid black; text-decoration: none;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             bottom: 35px; opacity: 0; pointer-events: none; transform: scale(0.5) translateY(20px);
         }
         
-        .toggle-ledger-btn { background: var(--primary-orange); }
-        .floating-locator-btn { background: var(--blue-biz); }
-        .floating-workspace-btn { background: #64748b; }
-
-        /* EXPANDED STATES (Lilitaw pag pinindot ang main button) */
         .fab-menu.active .toggle-ledger-btn { bottom: 105px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
         .fab-menu.active .floating-locator-btn { bottom: 170px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
         .fab-menu.active .floating-workspace-btn { bottom: 235px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
@@ -99,53 +158,51 @@
 <body>
 
     <div id="authSection" class="auth-container glass-panel">
-        <h1>Cheetah <span>PRO</span></h1>
-        <p>Login to Sync Data</p>
+        <h1 style="font-weight: 900;">Cheetah <span style="background: black; color: white; padding: 2px 8px; border-radius: 4px;">PRO</span></h1>
+        <p style="font-weight: 600;">Login to Sync Data</p>
         <input type="email" id="authEmail" placeholder="Email">
         <input type="password" id="authPass" placeholder="Password">
         <button class="primary-btn" onclick="handleAuth('login')">Login</button>
-        <button class="primary-btn" style="background:transparent; border:1px solid var(--primary-orange); margin-top:10px" onclick="handleAuth('signup')">Sign Up</button>
+        <button class="primary-btn" style="background:transparent; margin-top:10px" onclick="handleAuth('signup')">Sign Up</button>
     </div>
 
     <div id="appSection" class="main-app">
         <header style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
-            
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                <img src="icon-192.png" alt="Cheetah Logo" style="width: 50px; height: 50px; border-radius: 12px; box-shadow: 0 4px 10px rgba(255,140,0,0.3);">
-                <h1 style="margin: 0;">Cheetah <span>PRO</span></h1>
+                <img src="icon-192.png" alt="Cheetah Logo" style="width: 50px; height: 50px; border-radius: 8px; border: 2px solid black; box-shadow: 4px 4px 0px black;">
+                <h1 style="margin: 0; font-weight: 900;">Cheetah <span style="background: black; color: white; padding: 2px 8px; border-radius: 4px;">PRO</span></h1>
             </div>
 
             <div style="display:flex; justify-content:center; gap:15px; align-items:center">
-                <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: var(--primary-orange); color: white; border: none; border-radius: 5px;" onchange="render()"></select>
+                <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 8px; background: white; color: black; box-shadow: 2px 2px 0px black;" onchange="render()"></select>
 
-                <button onclick="clearCache()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1.2rem; margin-right: 5px;" title="Clear Cache & Reload">
+                <button onclick="clearCache()" style="background:transparent; border:none; color:black; cursor:pointer; font-size: 1.2rem; margin-right: 5px;" title="Clear Cache & Reload">
                     <i class="fa-solid fa-broom"></i>
                 </button>
 
-                <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer; font-size: 1.2rem;" title="Logout">
+                <button onclick="logout()" style="background:transparent; border:none; color:black; cursor:pointer; font-size: 1.2rem;" title="Logout">
                     <i class="fa-solid fa-power-off"></i>
                 </button>
             </div>
-            
         </header>
 
         <div class="dashboard">
-            <div class="stat-card glass-panel">
-                <div><h3>Residential</h3><p id="resCommi" style="color:var(--primary-orange)">₱0</p></div>
-                <div style="text-align:right"><h3>Business</h3><p id="bizCommi" style="color:var(--blue-biz)">₱0</p></div>
+            <div class="stat-card">
+                <div><h3 style="margin:0;">Residential</h3><p id="resCommi" style="font-weight:800; font-size:1.2rem; margin:5px 0 0 0;">₱0</p></div>
+                <div style="text-align:right"><h3 style="margin:0;">Business</h3><p id="bizCommi" style="font-weight:800; font-size:1.2rem; margin:5px 0 0 0;">₱0</p></div>
             </div>
-            <div class="stat-card glass-panel" style="flex-direction:column; align-items: flex-start;">
+            <div class="stat-card" style="flex-direction:column; align-items: flex-start;">
                 <div style="display:flex; justify-content:space-between; width:100%">
-                    <h3 id="targetCount">0 / 20</h3>
-                    <small id="targetBreakdown" style="color:var(--text-muted)">0 Res | 0 Biz</small>
+                    <h3 id="targetCount" style="margin:0;">0 / 20</h3>
+                    <small id="targetBreakdown" style="font-weight: 600;">0 Res | 0 Biz</small>
                 </div>
                 <div class="progress-bar"><div id="progressFill"></div></div>
             </div>
         </div>
 
-        <div id="motivationBox" class="glass-panel" style="text-align:center; border: 1px solid var(--primary-orange);">
-            <h4 id="quoteText" style="margin:0; color:var(--primary-orange); font-size: 1rem;">"Great things take time."</h4>
-            <small id="subQuote" style="color:var(--text-muted);">Stay consistent, results will follow.</small>
+        <div id="motivationBox" class="glass-panel" style="text-align:center;">
+            <h4 id="quoteText" style="margin:0; font-size: 1.1rem; font-weight: 800;">"Great things take time."</h4>
+            <small id="subQuote" style="font-weight: 600;">Stay consistent, results will follow.</small>
         </div>
 
         <div class="glass-panel">
@@ -178,7 +235,7 @@
                 <option value="Biz Professional" data-commi="1200">Biz Professional 3.0 - 1200 Commi</option>
                 <option value="Biz Enterprise" data-commi="2400">Biz Enterprise 6.0 - 2400 Commi</option>
             </select>
-            <button class="primary-btn" onclick="addClient()">Add Client</button>
+            <button class="primary-btn" onclick="addClient()"><i class="fa-solid fa-user-plus"></i> Add Client</button>
         </div>
 
         <input type="text" id="searchInput" placeholder="Search..." onkeyup="render()">
@@ -191,7 +248,7 @@
 
         <div id="clientList"></div>
 
-       <div id="fabMenu" class="fab-menu">
+        <div id="fabMenu" class="fab-menu">
             <a href="https://youssefnassar314-sudo.github.io/auto-fillout/" target="_blank" class="floating-workspace-btn" title="Workspace">
                 <i class="fa-solid fa-briefcase"></i>
             </a>
@@ -212,8 +269,8 @@
 
     <div id="ledgerSidebar" class="sidebar">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0;">Personal Ledger</h3>
-            <i class="fa-solid fa-xmark" onclick="toggleLedger()" style="cursor:pointer; font-size:1.5rem; color:var(--red-alert);"></i>
+            <h3 style="margin:0; font-weight: 900;">Personal Ledger</h3>
+            <i class="fa-solid fa-xmark" onclick="toggleLedger()" style="cursor:pointer; font-size:1.5rem; color:black;"></i>
         </div>
         <input type="text" id="ledgerDesc" placeholder="Description">
         <input type="number" id="ledgerAmount" placeholder="Amount">
@@ -221,11 +278,10 @@
         <button class="primary-btn" onclick="addLedgerEntry()">Save Entry</button>
         <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
         <div style="margin-top:15px; text-align:right">
-            <small>Total Ledger:</small>
-            <div id="extraTotal" style="font-weight:700; color:var(--primary-orange); font-size:1.2rem">₱0</div>
+            <small style="font-weight: 600;">Total Ledger:</small>
+            <div id="extraTotal" style="font-weight:900; font-size:1.2rem; border-top: 2px solid black; padding-top: 5px;">₱0</div>
         </div>
     </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -299,11 +355,10 @@
             const update = { [field]: !c[field] };
             if(field === 'installed' && !c.installed) {
                 update.cancelled = false;
-                // I-check muna kung may existing date na. Kung wala, tsaka lang ilagay ang date ngayon.
                 if (!c.installDate) {
                     update.installDate = new Date().toISOString().split('T')[0];
                 }
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#000000', '#555555', '#aaaaaa'] }); // B&W Confetti!
             }
             if(field === 'cancelled' && !c.cancelled) update.installed = false;
             await updateDoc(doc(db, "clients", id), update);
@@ -347,32 +402,34 @@
                 if(show) {
                     const card = document.createElement('div');
                     card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''}`;
+                    
+                    // IN-UPDATE KO YUNG INLINE STYLES DITO PARA BUMAGAY SA B&W THEME
                     card.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items: flex-start;">
                             <div>
                                 <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br>
-                                <strong style="font-size: 1.05rem;">${c.name}</strong><br>
-                                <small style="color:var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-location-dot"></i> ${c.area}</small>
+                                <strong style="font-size: 1.05rem; font-weight: 800;">${c.name}</strong><br>
+                                <small style="color:var(--text-muted); font-size: 0.75rem; font-weight: 600;"><i class="fa-solid fa-location-dot"></i> ${c.area}</small>
                             </div>
                             <div style="text-align:right">
-                                <i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:var(--text-muted)"></i><br>
-                                <span style="font-weight: 600; color: var(--text-main);">₱${c.commi}</span>
+                                <i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:black;"></i><br>
+                                <span style="font-weight: 800; font-size: 1.1rem; color: black;">₱${c.commi}</span>
                             </div>
                         </div>
                         
                         ${c.installed ? `
                         <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem;">
-                            <label style="color: var(--text-muted);"><i class="fa-regular fa-calendar-check"></i> Date:</label>
-                            <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 6px; font-size: 0.8rem;">
+                            <label style="color: black; font-weight: 700;"><i class="fa-regular fa-calendar-check"></i> Date:</label>
+                            <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 4px; font-size: 0.8rem; border: 2px solid black; font-weight: 600;">
                         </div>
                         
-                        <div style="margin-top: 10px; display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border);">
-                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main);">
-                                <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                        <div style="margin-top: 10px; display: flex; justify-content: space-around; font-size: 0.8rem; background: white; padding: 10px; border-radius: 4px; border: 2px solid black; box-shadow: 2px 2px 0px black;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: black; font-weight: 700;">
+                                <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: black;">
                                 Billing Explained
                             </label>
-                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'};">
-                                <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: black; font-weight: 700; text-decoration: ${c.commiReceived ? 'line-through' : 'none'};">
+                                <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: black;">
                                 Commi Received
                             </label>
                         </div>
@@ -380,12 +437,12 @@
 
                         ${c.cancelled ? `
                         <div style="margin-top: 10px;">
-                            <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 8px; width: 100%; border-radius: 6px; font-size: 0.8rem; border: 1px solid var(--red-alert); background: rgba(239, 68, 68, 0.05); color: white;">
+                            <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 8px; width: 100%; border-radius: 4px; font-size: 0.8rem; border: 2px dashed black; background: #f4f4f0; color: black; font-weight: 600;">
                         </div>` : ''}
 
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-                            <button class="primary-btn" style="padding:5px; background:${c.installed?'var(--green-installed)':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">Install</button>
-                            <button class="primary-btn" style="padding:5px; background:${c.cancelled?'var(--red-alert)':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'cancelled')">Cancel</button>
+                            <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.installed?'black':'white'}; color:${c.installed?'white':'black'}; box-shadow:${c.installed?'2px 2px 0px #555':'2px 2px 0px black'};" onclick="toggleStatus('${c.id}', 'installed')">${c.installed ? '<i class="fa-solid fa-check"></i> Installed' : 'Install'}</button>
+                            <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.cancelled?'#eaeaea':'white'}; color:black; border-style:${c.cancelled?'dashed':'solid'};" onclick="toggleStatus('${c.id}', 'cancelled')">${c.cancelled ? 'Cancelled' : 'Cancel'}</button>
                         </div>
                     `;
                     list.appendChild(card);
@@ -401,7 +458,11 @@
             let exT = 0;
             ledger.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(l => {
                 exT += l.amount;
-                lList.innerHTML += `<div class="ledger-item"><div>${l.desc}<br><small>${l.date}</small></div><div>₱${l.amount.toLocaleString()} <i class="fa-solid fa-trash" onclick="deleteItem('${l.id}', 'ledger')" style="color:var(--red-alert); cursor:pointer; margin-left:5px"></i></div></div>`;
+                lList.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; border-bottom: 2px dashed black; padding: 10px 0; margin-bottom: 5px;">
+                        <div><strong>${l.desc}</strong><br><small style="font-weight: 600;">${l.date}</small></div>
+                        <div style="font-weight: 800;">₱${l.amount.toLocaleString()} <i class="fa-solid fa-trash" onclick="deleteItem('${l.id}', 'ledger')" style="color:black; cursor:pointer; margin-left:10px"></i></div>
+                    </div>`;
             });
             document.getElementById('extraTotal').innerText = `₱${exT.toLocaleString()}`;
         };
@@ -423,6 +484,7 @@
         const vm = document.getElementById('viewMonth');
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
     </script>
+    
     <script>
         // SERVICE WORKER REGISTRATION
         if ('serviceWorker' in navigator) {
@@ -436,7 +498,6 @@
         // FORCE CLEAR CACHE AND RELOAD FUNCTION
         window.clearCache = () => {
             if (confirm("Gusto mo bang i-clear ang cache at i-reload ang app?")) {
-                // 1. Unregister all Service Workers
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.getRegistrations().then(function(registrations) {
                         for(let registration of registrations) {
@@ -444,8 +505,6 @@
                         }
                     });
                 }
-                
-                // 2. Clear lahat ng PWA Caches
                 if ('caches' in window) {
                     caches.keys().then((names) => {
                         for (let name of names) {
@@ -453,8 +512,6 @@
                         }
                     });
                 }
-                
-                // 3. Force reload ang page para makuha ang bagong files
                 setTimeout(() => {
                     window.location.reload(true);
                 }, 500);
