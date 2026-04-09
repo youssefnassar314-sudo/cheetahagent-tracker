@@ -348,9 +348,16 @@
                     const card = document.createElement('div');
                     card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''}`;
                     card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between">
-                            <div><span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br><strong>${c.name}</strong></div>
-                            <div style="text-align:right"><i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:var(--text-muted)"></i><br>₱${c.commi}</div>
+                        <div style="display:flex; justify-content:space-between; align-items: flex-start;">
+                            <div>
+                                <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br>
+                                <strong style="font-size: 1.05rem;">${c.name}</strong><br>
+                                <small style="color:var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-location-dot"></i> ${c.area}</small>
+                            </div>
+                            <div style="text-align:right">
+                                <i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:var(--text-muted)"></i><br>
+                                <span style="font-weight: 600; color: var(--text-main);">₱${c.commi}</span>
+                            </div>
                         </div>
                         
                         ${c.installed ? `
