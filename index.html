@@ -63,29 +63,37 @@
         }
         .sidebar.active { right: 0; }
 
-        .toggle-ledger-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary-orange); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .floating-locator-btn { position: fixed; bottom: 105px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: var(--blue-biz); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; text-decoration: none; }
         .hidden { display: none; }
         .del-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; }
 
-        .floating-workspace-btn { 
-            position: fixed; 
-            bottom: 180px; /* Mas mataas sa locator button para hindi mag-patong */
-            right: 30px; 
-            width: 60px; 
-            height: 60px; 
-            border-radius: 50%; 
-            background: #64748b; /* Kulay gray na babagay sa dark mode, pwede mo palitan */
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            z-index: 100; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
-            color: white; 
-            text-decoration: none; 
-            font-size: 1.5rem;
+        /* FAB MENU MAIN BUTTON */
+        .fab-main-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; 
+            border-radius: 50%; background: var(--bg-deep); border: 2px solid var(--text-muted);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+            z-index: 110; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; font-size: 1.5rem;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        /* Pag active, iikot yung plus icon para maging "X" at mag-o-orange */
+        .fab-menu.active .fab-main-btn { transform: rotate(135deg); background: var(--primary-orange); border-color: var(--primary-orange); }
+
+        /* COLLAPSIBLE BUTTONS (Nakatago by default) */
+        .toggle-ledger-btn, .floating-locator-btn, .floating-workspace-btn {
+            position: fixed; right: 35px; width: 50px; height: 50px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; 
+            z-index: 100; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; text-decoration: none; font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            bottom: 35px; opacity: 0; pointer-events: none; transform: scale(0.5) translateY(20px);
+        }
+        
+        .toggle-ledger-btn { background: var(--primary-orange); }
+        .floating-locator-btn { background: var(--blue-biz); }
+        .floating-workspace-btn { background: #64748b; }
+
+        /* EXPANDED STATES (Lilitaw pag pinindot ang main button) */
+        .fab-menu.active .toggle-ledger-btn { bottom: 105px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+        .fab-menu.active .floating-locator-btn { bottom: 170px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+        .fab-menu.active .floating-workspace-btn { bottom: 235px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
     </style>
 </head>
 <body>
@@ -109,6 +117,10 @@
 
             <div style="display:flex; justify-content:center; gap:15px; align-items:center">
                 <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: var(--primary-orange); color: white; border: none; border-radius: 5px;" onchange="render()"></select>
+
+                <button onclick="clearCache()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1.2rem; margin-right: 5px;" title="Clear Cache & Reload">
+                    <i class="fa-solid fa-broom"></i>
+                </button>
 
                 <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer; font-size: 1.2rem;" title="Logout">
                     <i class="fa-solid fa-power-off"></i>
@@ -179,15 +191,22 @@
 
         <div id="clientList"></div>
 
-        <a href="https://youssefnassar314-sudo.github.io/auto-fillout/" target="_blank" class="floating-workspace-btn">
-            <i class="fa-solid fa-briefcase"></i>
-        </a>
-
-        <a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" target="_blank" class="floating-locator-btn">
-            <i class="fa-solid fa-map-location-dot"></i>
-        </a>
-        <div class="toggle-ledger-btn" onclick="toggleLedger()">
-            <i class="fa-solid fa-wallet"></i>
+       <div id="fabMenu" class="fab-menu">
+            <a href="https://youssefnassar314-sudo.github.io/auto-fillout/" target="_blank" class="floating-workspace-btn" title="Workspace">
+                <i class="fa-solid fa-briefcase"></i>
+            </a>
+            
+            <a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" target="_blank" class="floating-locator-btn" title="Locator">
+                <i class="fa-solid fa-map-location-dot"></i>
+            </a>
+            
+            <div class="toggle-ledger-btn" onclick="toggleLedger()" title="Ledger">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            
+            <div class="fab-main-btn" onclick="document.getElementById('fabMenu').classList.toggle('active')">
+                <i class="fa-solid fa-plus"></i>
+            </div>
         </div>
     </div>
 
@@ -270,7 +289,7 @@
             await addDoc(collection(db, "clients"), {
                 uid: currentUser.uid, name: `${fn} ${ln}`, area, type: currentType,
                 plan: ps.options[ps.selectedIndex].text, commi: parseInt(ps.options[ps.selectedIndex].dataset.commi),
-                installed: false, cancelled: false, commiReceived: false, installDate: "", remarks: ""
+                installed: false, cancelled: false, commiReceived: false, billingExplained: false, installDate: "", remarks: ""
             });
             document.getElementById('fn').value = ''; document.getElementById('ln').value = '';
         };
@@ -338,7 +357,19 @@
                         <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem;">
                             <label style="color: var(--text-muted);"><i class="fa-regular fa-calendar-check"></i> Date:</label>
                             <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 6px; font-size: 0.8rem;">
-                        </div>` : ''}
+                        </div>
+                        
+                        <div style="margin-top: 10px; display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; border: 1px solid var(--glass-border);">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                                Billing Explained
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'};">
+                                <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                                Commi Received
+                            </label>
+                        </div>
+                        ` : ''}
 
                         ${c.cancelled ? `
                         <div style="margin-top: 10px;">
@@ -386,6 +417,7 @@
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
     </script>
     <script>
+        // SERVICE WORKER REGISTRATION
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
@@ -393,6 +425,34 @@
                     .catch(err => console.error('Service Worker Registration Failed!', err));
             });
         }
+
+        // FORCE CLEAR CACHE AND RELOAD FUNCTION
+        window.clearCache = () => {
+            if (confirm("Gusto mo bang i-clear ang cache at i-reload ang app?")) {
+                // 1. Unregister all Service Workers
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        for(let registration of registrations) {
+                            registration.unregister();
+                        }
+                    });
+                }
+                
+                // 2. Clear lahat ng PWA Caches
+                if ('caches' in window) {
+                    caches.keys().then((names) => {
+                        for (let name of names) {
+                            caches.delete(name);
+                        }
+                    });
+                }
+                
+                // 3. Force reload ang page para makuha ang bagong files
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 500);
+            }
+        };
     </script>
 </body>
 </html>
