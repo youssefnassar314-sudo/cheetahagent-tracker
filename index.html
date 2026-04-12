@@ -430,11 +430,57 @@
         window.updateField = async (id, field, val) => await updateDoc(doc(db, "clients", id), {[field]: val});
         window.deleteItem = async (id, type) => { if(confirm("Ide-delete ba itong record?")) await deleteDoc(doc(db, type === 'client' ? "clients" : "ledger", id)); };
 
-        window.addLedgerEntry = async () => {
+window.addLedgerEntry = async () => {
             const desc = document.getElementById('ledgerDesc').value, amt = document.getElementById('ledgerAmount').value, dt = document.getElementById('ledgerDate').value;
             if(!desc || !amt || !dt) return alert("Punan ang lahat!");
             await addDoc(collection(db, "ledger"), { uid: currentUser.uid, desc, amount: parseFloat(amt), date: dt });
             document.getElementById('ledgerDesc').value = ''; document.getElementById('ledgerAmount').value = '';
+        };
+
+        // --- SIMULA NG KOKOPYAHIN MO ---
+        window.copyBilling = (installDate, planString) => {
+            if (!installDate) return alert("Paki-set muna ang Install Date para ma-compute ang billing!");
+            
+            const date = new Date(installDate);
+            const day = date.getDate();
+            const month = date.toLocaleString('default', { month: 'long' });
+            const year = date.getFullYear();
+            const daysInMonth = new Date(year, date.getMonth() + 1, 0).getDate();
+            
+            const nextMonthDate = new Date(year, date.getMonth() + 1, 1);
+            const nextMonth = nextMonthDate.toLocaleString('default', { month: 'long' });
+            const daysInNextMonth = new Date(year, date.getMonth() + 2, 0).getDate();
+            
+            const nextNextMonthDate = new Date(year, date.getMonth() + 2, 1);
+            const nextNextMonth = nextNextMonthDate.toLocaleString('default', { month: 'long' });
+
+            // Hanapin yung presyo sa plan name (e.g. "80 Mbps (₱699)")
+            const priceMatch = planString.match(/₱(\d+,?\d*)/);
+            let price = 0;
+            let proratedAmtText = "";
+            let totalAmtText = "";
+            
+            if (priceMatch) {
+                price = parseFloat(priceMatch[1].replace(',', ''));
+                const proratedDays = daysInMonth - day + 1;
+                const computedProrated = Math.round((price / 30) * proratedDays);
+                proratedAmtText = `na ₱${computedProrated} `;
+                totalAmtText = ` (Estimated Total: ₱${price + computedProrated})`;
+            }
+
+            let msg = "";
+            
+            if (day <= 15) {
+                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Dadating po ito sa email sa ${month} 17 to 18. Ito po ay pwedeng bayaran sa ${month} ${daysInMonth}, extended po hanggang ${nextMonth} 10 if online babayaran tas if sa office ay ${nextMonth} 14 po.`;
+            } else {
+                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Since delay po bigayan ng billing kapag 16 to end of month, dadating po ang billing sa email sa ${nextMonth} 17 to 18, bale consist of first and second billing na po ito${totalAmtText}. First and second billing po ay pwedeng bayaran sa ${nextMonth} ${daysInNextMonth}, extended po hanggang ${nextNextMonth} 10 if online babayaran tas if sa office ay ${nextNextMonth} 14 po.`;
+            }
+            
+            navigator.clipboard.writeText(msg).then(() => {
+                alert("Copied to clipboard! Pwede mo na i-paste sa client.");
+            }).catch(err => {
+                alert("Failed to copy. Try again.");
+            });
         };
 
         window.render = () => {
@@ -494,6 +540,11 @@
                                 <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--green-installed);">
                                 Commi Received
                             </label>
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}')">
+                                <i class="fa-solid fa-copy"></i> Copy Billing Message
+                            </button>
                         </div>
                         ` : ''}
 
