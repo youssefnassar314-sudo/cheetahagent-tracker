@@ -173,7 +173,51 @@
         .fab-menu.active .floating-workspace-btn { bottom: 235px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
         .fab-menu.active .floating-calc-btn { bottom: 300px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
         .fab-menu.active .floating-id-btn { bottom: 365px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+/* --- ABOUT CREATOR MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 10, 15, 0.8); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 3000; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
 
+        .about-box {
+            background: var(--card-dark); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); width: 100%; max-width: 380px; 
+            border-radius: 20px; padding: 35px 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; text-align: center;
+        }
+        .modal-overlay.active .about-box { transform: translateY(0); }
+
+        .modal-close {
+            position: absolute; top: 15px; right: 20px; background: none; border: none; 
+            font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--red-alert); }
+
+        .creator-avatar {
+            width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px auto;
+            background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange));
+            padding: 3px; box-shadow: 0 10px 20px rgba(255,106,0,0.3);
+        }
+        .creator-avatar img {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--bg-deep); background: #1e2330;
+        }
+        
+        .creator-name { margin: 0; font-size: 1.4rem; font-weight: 800; color: white; letter-spacing: 1px; }
+        .creator-title { font-size: 0.8rem; font-weight: 800; color: var(--primary-orange); text-transform: uppercase; letter-spacing: 1.5px; margin: 5px 0 20px 0; }
+        .creator-bio { font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 25px; }
+        
+        .social-links { display: flex; justify-content: center; gap: 15px; }
+        .social-btn {
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease; text-decoration: none; font-size: 1.1rem;
+        }
+        .social-btn:hover { background: var(--primary-orange); border-color: var(--primary-orange); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,106,0,0.4); }
         /* =========================================
            SKETCH THEME OVERRIDES (BLACK & WHITE)
            ========================================= */
@@ -215,6 +259,8 @@
         body[data-theme="sketch"] input[type="checkbox"] { accent-color: black !important; border: 2px solid black !important; }
         body[data-theme="sketch"] .tag { border: 1px solid black !important; background: transparent !important; color: black !important; border-radius: 4px; }
         body[data-theme="sketch"] .tag-biz { background: #e0e0e0 !important; }
+
+        
     </style>
 </head>
 <body>
@@ -240,6 +286,10 @@
 
                 <button onclick="toggleTheme()" id="themeBtn" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Toggle Sketch Theme">
                     <i class="fa-solid fa-palette"></i>
+                </button>
+
+                <button onclick="toggleAboutModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='var(--primary-orange)'" onmouseout="this.style.color='var(--text-muted)'" title="About Creator">
+                    <i class="fa-solid fa-circle-info"></i>
                 </button>
 
                 <button onclick="clearCache()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Force Sync / Clear Cache">
@@ -354,6 +404,29 @@
         <div style="margin-top:15px; text-align:right; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
             <small style="color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Net Balance:</small>
             <div id="extraTotal" style="font-weight:800; color:var(--primary-orange); font-size:1.5rem; text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱0</div>
+        </div>
+
+        <div class="modal-overlay" id="aboutModal">
+            <div class="about-box">
+                <button class="modal-close" onclick="toggleAboutModal()">&times;</button>
+                
+                <div class="creator-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin+Dev&background=12141d&color=ff6a00" alt="Creator">
+                </div>
+                
+                <h3 class="creator-name">YOUSSEF NASSAR</h3>
+                <p class="creator-title">System Architect</p>
+                
+                <p class="creator-bio">
+                    Electronics Engineering student by day, full-stack developer and internet agent by night. I built the Cheetah Space ecosystem to bridge the gap between hard code and field operations—automating the hustle so we can focus on closing deals.
+                </p>
+                
+                <div class="social-links">
+                    <a href="https://www.facebook.com/BizniPatRM" class="social-btn" title="Facebook" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://github.com/youssefnassar314-sudo" class="social-btn" title="GitHub" target="_blank"><i class="fa-brands fa-github"></i></a>
+                    <a href="mailto:gpmillado.w@gmail.com" class="social-btn" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+            </div>
         </div>
     </div>
     <script type="module">
@@ -673,6 +746,18 @@ window.addLedgerEntry = async () => {
             } else {
                 document.body.setAttribute('data-theme', 'sketch');
                 localStorage.setItem('cheetah_theme', 'sketch');
+            }
+        };
+
+        // ABOUT CREATOR MODAL TOGGLE
+        window.toggleAboutModal = () => {
+            const modal = document.getElementById('aboutModal');
+            if(modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
             }
         };
     </script>
