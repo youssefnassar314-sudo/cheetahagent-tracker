@@ -280,12 +280,14 @@
 <div id="authSection" class="auth-container">
         
         <div class="glass-panel" style="margin-bottom: 15px;">
-            <h1 style="font-weight:800;letter-spacing:1px; margin-top: 5px;">CHEETAH<span style="color:var(--primary-orange)">//</span>SPACE</h1>
-            <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:20px;">Agent Secure Access</p>
+            <h1 style="font-weight:800; letter-spacing:1px; margin-top: 5px; font-size: clamp(1.5rem, 7vw, 2.2rem); white-space: nowrap;">CHEETAH<span style="color:var(--primary-orange)">//</span>SPACE</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Agent Secure Access</p>
+            
             <input type="email" id="authEmail" placeholder="Agent Email">
             <input type="password" id="authPass" placeholder="Password">
+            
             <button class="primary-btn" onclick="handleAuth('login')">Access Systems</button>
-            <button class="primary-btn" style="background:transparent;border:1px solid rgba(255,106,0,0.5);box-shadow:none;margin-top:10px; margin-bottom: 5px;" onclick="handleAuth('signup')">Register Agent</button>
+            <button class="primary-btn" style="background:transparent; border:1px solid rgba(255,106,0,0.5); box-shadow:none; margin-top:10px; margin-bottom: 5px;" onclick="handleAuth('signup')">Register Agent</button>
         </div>
 
         <div style="display: flex; justify-content: center;">
