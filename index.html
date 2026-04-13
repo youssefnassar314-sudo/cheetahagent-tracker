@@ -1,1083 +1,469 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Cheetah Space | Workspace</title>
-
     <link rel="icon" type="image/png" href="icon.png">
-
     <link rel="manifest" href="manifest.json">
-
     <meta name="theme-color" content="#090a0f">
-
     <link rel="apple-touch-icon" href="icon.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
     <style>
-
         :root {
-
             /* DEEP SPACE DARK MODE COLORS */
-
             --bg-dark: #090a0f; 
-
             --bg-deep: #12141d;
-
             --card-dark: rgba(20, 24, 36, 0.7);
-
-            
-
             /* CHEETAH ORANGE NEON */
-
             --primary-orange: #ff6a00; 
-
             --accent-orange: #ff9100; 
-
-            
-
             --text-main: #f8fafc;
-
             --text-muted: #64748b;
-
             --glass-border: rgba(255, 106, 0, 0.15); /* Subtle orange border */
-
             --green-installed: #10b981; 
-
             --red-alert: #f43f5e; 
-
             --blue-biz: #3b82f6;
-
         }
-
-
-
         * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        
-
         body {
-
             /* Ambient Orange & Blue Glow */
-
             background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
-
                         radial-gradient(circle at 90% 90%, rgba(59,130,246,0.05), transparent 40%),
-
                         var(--bg-dark);
-
             background-attachment: fixed;
-
             color: var(--text-main); margin: 0; padding: 20px; min-height: 100vh;
-
         }
-
-
-
         /* Sleek Scrollbar */
-
         ::-webkit-scrollbar { width: 6px; }
-
         ::-webkit-scrollbar-track { background: transparent; }
-
         ::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
-
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
-
-
-
         .auth-container { max-width: 400px; margin: 100px auto; text-align: center; }
-
         .main-app { display: none; max-width: 800px; margin: 0 auto; }
-
-        
-
         /* Premium Glass Panels */
-
         .glass-panel { 
-
             background: var(--card-dark);
-
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-
             border-radius: 20px; 
-
             border: 1px solid var(--glass-border); 
-
             padding: 20px; margin-bottom: 20px;
-
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-
         }
-
-
-
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
-
-        
-
         .stat-card { 
-
             background: linear-gradient(145deg, rgba(30, 35, 48, 0.8), rgba(20, 24, 36, 0.9)); 
-
             padding: 20px; border-radius: 20px; 
-
             border: 1px solid rgba(255,255,255,0.05); 
-
             display: flex; justify-content: space-between; align-items: center; 
-
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-
         }
-
-        
-
         /* Toggles and Pills */
-
         .type-toggle { display: flex; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 5px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-
         .type-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: 8px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 0.85rem; }
-
         .type-btn.active { background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); color: white; box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3); }
-
         .type-btn.active.biz { background: linear-gradient(135deg, #2563eb, #3b82f6); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-
-
-
         .filter-row { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-
         .filter-pill { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 8px 18px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted); white-space: nowrap; }
-
         .filter-pill.active { background: var(--primary-orange); color: white; border-color: var(--primary-orange); box-shadow: 0 4px 15px rgba(255,106,0,0.3); }
-
-
-
         /* Sleek Neon Inputs */
-
         input, select, textarea { 
-
             background: rgba(0, 0, 0, 0.4); 
-
             border: 1px solid rgba(255,255,255,0.1); 
-
             padding: 14px; border-radius: 12px; color: white; margin-bottom: 12px; width: 100%; 
-
             font-size: 0.9rem; transition: 0.3s;
-
         }
-
         input:focus, select:focus, textarea:focus {
-
             outline: none; border-color: var(--primary-orange);
-
             box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
-
             background: rgba(0, 0, 0, 0.6);
-
         }
-
         select option { background-color: var(--bg-deep); color: white; }
-
-
-
         /* Neon Buttons */
-
         .primary-btn { 
-
             background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
-
             padding: 14px; border-radius: 12px; border: none; font-weight: 800; color: white; 
-
             cursor: pointer; width: 100%; 
-
             box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3);
-
             text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.85rem;
-
         }
-
         .primary-btn:hover {
-
             transform: translateY(-2px); 
-
             box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); 
-
         }
-
-        
-
         /* Client Cards */
-
         .client-card { 
-
             background: var(--card-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-
             border-radius: 16px; padding: 20px; margin-bottom: 15px; 
-
             border: 1px solid rgba(255,255,255,0.05); 
-
         }
-
         .client-card:hover {
-
             transform: translateY(-3px);
-
             border-color: rgba(255, 106, 0, 0.3);
-
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-
         }
-
         .client-installed { border-left: 4px solid var(--green-installed); }
-
         .client-cancelled { opacity: 0.6; border-left: 4px solid var(--red-alert); }
-
-        
-
         /* Tags for Res/Biz */
-
         .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-
         .tag-res { background: rgba(255, 106, 0, 0.15); color: var(--primary-orange); border: 1px solid rgba(255,106,0,0.3); }
-
         .tag-biz { background: rgba(59, 130, 246, 0.15); color: var(--blue-biz); border: 1px solid rgba(59,130,246,0.3); } 
-
-        
-
         /* Glowing Progress Bar */
-
         .progress-bar { height: 10px; background: rgba(0,0,0,0.5); border-radius: 10px; margin-top: 10px; width: 100%; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
-
         #progressFill { 
-
             height: 100%; 
-
             background: linear-gradient(90deg, var(--primary-orange), var(--accent-orange)); 
-
             width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
-
             box-shadow: 0 0 10px rgba(255, 106, 0, 0.6);
-
         }
-
-
-
         .sidebar { 
-
             position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: var(--bg-deep); 
-
             padding: 20px; z-index: 200; box-shadow: -10px 0 30px rgba(0,0,0,0.8); 
-
             border-left: 1px solid rgba(255,255,255,0.05);
-
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto;
-
         }
-
         .sidebar.active { right: 0; }
-
-
-
         .hidden { display: none; }
-
-        
-
         /* Premium FAB Menu */
-
         .fab-main-btn {
-
             position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; 
-
             border-radius: 50%; background: var(--bg-deep); border: 1px solid rgba(255,255,255,0.1);
-
             display: flex; align-items: center; justify-content: center; cursor: pointer; 
-
             z-index: 110; box-shadow: 0 8px 25px rgba(0,0,0,0.6); color: white; font-size: 1.5rem;
-
         }
-
         .fab-menu.active .fab-main-btn { transform: rotate(135deg); background: var(--primary-orange); border-color: var(--primary-orange); box-shadow: 0 0 20px rgba(255,106,0,0.4); }
-
-
-
 .toggle-ledger-btn, .floating-locator-btn, .floating-workspace-btn, .floating-calc-btn, .floating-id-btn {
-
             position: fixed; right: 35px; width: 50px; height: 50px; border-radius: 50%; 
-
             display: flex; align-items: center; justify-content: center; cursor: pointer; 
-
             z-index: 100; color: white; font-size: 1.2rem;
-
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none;
-
             bottom: 35px; opacity: 0; pointer-events: none; transform: scale(0.5) translateY(20px);
-
         }
-
-        
-
         .toggle-ledger-btn { background: linear-gradient(135deg, #ff6a00, #ff9100); box-shadow: 0 4px 15px rgba(255,106,0,0.4); }
-
         .floating-locator-btn { background: linear-gradient(135deg, #2563eb, #3b82f6); box-shadow: 0 4px 15px rgba(59,130,246,0.4); }
-
         .floating-workspace-btn { background: linear-gradient(135deg, #475569, #64748b); box-shadow: 0 4px 15px rgba(100,116,139,0.4); }
-
         .floating-calc-btn { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
-
         .floating-id-btn { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 4px 15px rgba(139,92,246,0.4); }
-
-
-
         .fab-menu.active .toggle-ledger-btn { bottom: 105px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
-
         .fab-menu.active .floating-locator-btn { bottom: 170px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
-
         .fab-menu.active .floating-workspace-btn { bottom: 235px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
-
         .fab-menu.active .floating-calc-btn { bottom: 300px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
-
         .fab-menu.active .floating-id-btn { bottom: 365px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
-
 /* --- ABOUT CREATOR MODAL --- */
-
         .modal-overlay {
-
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-
             background: rgba(9, 10, 15, 0.8); backdrop-filter: blur(5px);
-
             display: none; align-items: center; justify-content: center;
-
             z-index: 3000; opacity: 0; transition: opacity 0.3s ease;
-
         }
-
         .modal-overlay.active { display: flex; opacity: 1; }
-
-
-
         .about-box {
-
             background: var(--card-dark); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-
             border: 1px solid var(--glass-border); width: 100%; max-width: 380px; 
-
             border-radius: 20px; padding: 35px 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-
             transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-
             position: relative; text-align: center;
-
         }
-
         .modal-overlay.active .about-box { transform: translateY(0); }
-
-
-
         .modal-close {
-
             position: absolute; top: 15px; right: 20px; background: none; border: none; 
-
             font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s;
-
         }
-
         .modal-close:hover { color: var(--red-alert); }
-
-
-
         .creator-avatar {
-
             width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px auto;
-
             background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange));
-
             padding: 3px; box-shadow: 0 10px 20px rgba(255,106,0,0.3);
-
         }
-
         .creator-avatar img {
-
             width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-
             border: 3px solid var(--bg-deep); background: #1e2330;
-
         }
-
-        
-
         .creator-name { margin: 0; font-size: 1.4rem; font-weight: 800; color: white; letter-spacing: 1px; }
-
         .creator-title { font-size: 0.8rem; font-weight: 800; color: var(--primary-orange); text-transform: uppercase; letter-spacing: 1.5px; margin: 5px 0 20px 0; }
-
         .creator-bio { font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 25px; }
-
-        
-
         .social-links { display: flex; justify-content: center; gap: 15px; }
-
         .social-btn {
-
             width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-
             background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1);
-
             transition: all 0.3s ease; text-decoration: none; font-size: 1.1rem;
-
         }
-
         .social-btn:hover { background: var(--primary-orange); border-color: var(--primary-orange); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,106,0,0.4); }
-
         /* =========================================
-
            SKETCH THEME OVERRIDES (BLACK & WHITE)
-
            ========================================= */
-
         body[data-theme="sketch"] {
-
             --bg-dark: #ffffff; --bg-deep: #f4f4f0; --card-dark: #ffffff;
-
             --primary-orange: #000000; --accent-orange: #333333; 
-
             --text-main: #000000; --text-muted: #555555; --glass-border: #000000;
-
             background: radial-gradient(#cccccc 1px, transparent 1px); background-size: 20px 20px; background-color: var(--bg-deep); color: black;
-
         }
-
         body[data-theme="sketch"] .glass-panel, body[data-theme="sketch"] .client-card {
-
             backdrop-filter: none; -webkit-backdrop-filter: none; border-radius: 8px;
-
             border: 2px solid black; box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); background: white;
-
         }
-
         body[data-theme="sketch"] .client-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px rgba(0, 0, 0, 1); border-color: black !important; }
-
         body[data-theme="sketch"] .stat-card { background: white; border: 2px solid black; box-shadow: 4px 4px 0px black; border-radius: 8px; }
-
-        
-
         body[data-theme="sketch"] .primary-btn { background: white !important; border: 2px solid black !important; box-shadow: 4px 4px 0px black !important; color: black !important; border-radius: 4px; text-shadow: none !important; }
-
         body[data-theme="sketch"] .primary-btn:hover { transform: translate(2px, 2px) !important; box-shadow: 2px 2px 0px black !important; }
-
         body[data-theme="sketch"] .filter-pill { background: white; border: 2px solid black; color: black; border-radius: 4px; box-shadow: 2px 2px 0px black; }
-
         body[data-theme="sketch"] .filter-pill.active { background: black; color: white; box-shadow: none; transform: translate(2px,2px); }
-
-        
-
         body[data-theme="sketch"] input, body[data-theme="sketch"] select, body[data-theme="sketch"] textarea { background: transparent !important; border: 2px solid black !important; border-radius: 4px; color: black !important; }
-
         body[data-theme="sketch"] input:focus, body[data-theme="sketch"] select:focus { box-shadow: 4px 4px 0px black !important; background: white !important; }
-
-        
-
         body[data-theme="sketch"] .type-toggle { background: white; border: 2px solid black; }
-
         body[data-theme="sketch"] .type-btn.active { background: black !important; color: white !important; box-shadow: none !important; }
-
-        
-
         body[data-theme="sketch"] #progressFill { background: repeating-linear-gradient(45deg, #000, #000 2px, #fff 2px, #fff 6px) !important; box-shadow: none !important; }
-
         body[data-theme="sketch"] .progress-bar { border: 2px solid black; background: transparent; border-radius: 4px; box-shadow: none; height: 16px; }
-
-        
-
         body[data-theme="sketch"] .fab-main-btn, body[data-theme="sketch"] .toggle-ledger-btn, body[data-theme="sketch"] .floating-locator-btn, body[data-theme="sketch"] .floating-workspace-btn, body[data-theme="sketch"] .floating-calc-btn, body[data-theme="sketch"] .floating-id-btn {
-
             background: white !important; border: 2px solid black !important; box-shadow: 4px 4px 0px black !important; color: black !important;
-
         }
-
         body[data-theme="sketch"] .fab-menu.active .fab-main-btn { background: black !important; color: white !important; box-shadow: 2px 2px 0px black !important; }
-
-        
-
         /* OVERRIDE INLINE JS STYLES */
-
         body[data-theme="sketch"] h1, body[data-theme="sketch"] h2, body[data-theme="sketch"] h3, body[data-theme="sketch"] h4, body[data-theme="sketch"] p, body[data-theme="sketch"] strong, body[data-theme="sketch"] span, body[data-theme="sketch"] small, body[data-theme="sketch"] label, body[data-theme="sketch"] i { color: black !important; text-shadow: none !important; }
-
         body[data-theme="sketch"] .client-card div[style*="background: rgba(0,0,0,0.3)"] { background: white !important; border: 2px solid black !important; box-shadow: 2px 2px 0px black !important; border-radius: 4px !important; }
-
         body[data-theme="sketch"] input[type="checkbox"] { accent-color: black !important; border: 2px solid black !important; }
-
         body[data-theme="sketch"] .tag { border: 1px solid black !important; background: transparent !important; color: black !important; border-radius: 4px; }
-
         body[data-theme="sketch"] .tag-biz { background: #e0e0e0 !important; }
-
-
-
         /* --- FORCED FULL-SCREEN AD --- */
-
         #forcedAdOverlay {
-
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-
             background: var(--bg-dark); 
-
             background: radial-gradient(circle at center, #1e2330 0%, #090a0f 100%);
-
             z-index: 9999; /* Pinaka-ibabaw sa lahat */
-
             display: none; /* Default hidden */
-
             flex-direction: column;
-
             align-items: center;
-
             justify-content: center;
-
             text-align: center;
-
             padding: 30px;
-
         }
-
-
-
         .ad-content {
-
             max-width: 400px;
-
             animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-
         }
-
-
-
         @keyframes scaleIn {
-
             from { opacity: 0; transform: scale(0.9); }
-
             to { opacity: 1; transform: scale(1); }
-
         }
-
-
-
         .ad-brand { font-size: 0.8rem; color: var(--primary-orange); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-
         .ad-title { font-size: 2rem; font-weight: 800; color: white; margin: 0 0 15px 0; line-height: 1.1; }
-
         .ad-desc { color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
-
-        
-
         .ad-image {
-
             width: 100%; height: 200px; border-radius: 15px;
-
             background: rgba(255,106,0,0.1); border: 1px solid var(--glass-border);
-
             margin-bottom: 25px; display: flex; align-items: center; justify-content: center;
-
             overflow: hidden;
-
         }
-
-
-
-        
-
     </style>
-
 </head>
-
 <body>
-
-
-
 <div id="forcedAdOverlay">
-
         <div class="ad-content">
-
             <p class="ad-brand">Sponsor Spotlight</p>
-
             <h2 class="ad-title">VIVACIOUS<br><span>PRINTS & CRAFTS</span></h2>
-
-            
-
             <div class="ad-image">
-
                 <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 4rem; color: var(--primary-orange); opacity: 0.5;"></i>
-
             </div>
-
-            
-
             <p class="ad-desc">
-
                 Elevate your agent game! Get custom <b>ID Laces, Stickers, and Resin Freebies</b> for your new clients. Exclusive discounts for Cheetah Space users!
-
             </p>
-
-            
-
             <button class="primary-btn" onclick="document.getElementById('forcedAdOverlay').style.display='none'">
-
                 Continue to Dashboard <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i>
-
             </button>
-
-            
-
             <a href="https://m.me/vivacious.craft" target="_blank" style="display: block; margin-top: 20px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; font-weight: 600;">
-
                 <i class="fa-brands fa-facebook-messenger"></i> Inquire via Messenger
-
             </a>
-
         </div>
-
     </div>
-
-    
-
     <div id="authSection" class="auth-container glass-panel">
-
         <h1 style="font-weight: 800; letter-spacing: 1px; font-size: clamp(1.5rem, 7vw, 2.2rem);">CHEETAH<span style="color:var(--primary-orange)">//</span>SPACE</h1>
-
         <p style="color: var(--text-muted); font-size: 0.9rem;">Agent Authentication</p>
-
         <input type="email" id="authEmail" placeholder="Agent Email">
-
         <input type="password" id="authPass" placeholder="Password">
-
         <button class="primary-btn" onclick="handleAuth('login')">Access Systems</button>
-
         <button class="primary-btn" style="background:transparent; border: 1px solid rgba(255,106,0,0.5); box-shadow: none; margin-top:10px" onclick="handleAuth('signup')">Register Agent</button>
-
     </div>
-
-
-
     <div id="appSection" class="main-app">
-
         <header style="display: flex; flex-direction: column; align-items: center; margin-bottom: 25px;">
-
             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-
                 <img src="icon.png" alt="Cheetah Logo" style="width: 45px; height: 45px; border-radius: 10px; box-shadow: 0 0 15px rgba(255,106,0,0.3);">
-
                 <h1 style="margin: 0; font-weight: 800; letter-spacing: 1px; font-size: clamp(1.5rem, 6vw, 2rem);">CHEETAH<span style="color:var(--primary-orange)">//</span>SPACE</h1>
-
             </div>
-
-
-
             <div style="display:flex; justify-content:center; gap:15px; align-items:center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
-
                 <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: transparent; color: var(--primary-orange); font-weight: 600; border: none; box-shadow: none;" onchange="render()"></select>
-
-
-
                 <button onclick="toggleTheme()" id="themeBtn" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Toggle Sketch Theme">
-
                     <i class="fa-solid fa-palette"></i>
-
                 </button>
-
-
-
                 <button onclick="toggleAboutModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='var(--primary-orange)'" onmouseout="this.style.color='var(--text-muted)'" title="About Creator">
-
                     <i class="fa-solid fa-circle-info"></i>
-
                 </button>
-
-
-
                 <button onclick="clearCache()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Force Sync / Clear Cache">
-
                     <i class="fa-solid fa-rotate"></i>
-
                 </button>
-
-
-
                 <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer; font-size: 1rem;" title="Disconnect">
-
                     <i class="fa-solid fa-power-off"></i>
-
                 </button>
-
             </div>
-
         </header>
-
 <div id="promoBanner" class="glass-panel" style="position: relative; background: linear-gradient(135deg, rgba(255,106,0,0.1), rgba(139,92,246,0.1)); border-color: rgba(139,92,246,0.3); display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; gap: 15px;">
-
             <button onclick="document.getElementById('promoBanner').style.display='none'" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; transition: 0.2s;" onmouseover="this.style.color='var(--red-alert)'" onmouseout="this.style.color='var(--text-muted)'">&times;</button>
-
-            
-
             <div style="flex: 1; padding-right: 15px;">
-
                 <h4 style="margin: 0 0 5px 0; color: white; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px;">
-
                     <i class="fa-solid fa-store" style="color: #8b5cf6;"></i> Vivacious Prints and Crafts
-
                 </h4>
-
                 <p style="margin: 0; font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">
-
                     Need giveaway stickers and keychains for your events? Message Kat for exclusive agent discounts!
-
                 </p>
-
             </div>
-
-            
-
             <a href="https://m.me/vivacious.craft" target="_blank" class="primary-btn" style="width: auto; padding: 10px 18px; font-size: 0.75rem; background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 4px 15px rgba(139,92,246,0.4); text-decoration: none; display: flex; align-items: center; gap: 5px; white-space: nowrap;">
-
                 <i class="fa-brands fa-facebook-messenger"></i> Message Us
-
             </a>
-
         </div>
-
         <div class="dashboard">
-
             <div class="stat-card">
-
                 <div><p style="color:var(--text-muted); margin:0; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Residential</p><h2 id="resCommi" style="color:var(--primary-orange); margin:5px 0 0 0; text-shadow: 0 0 10px rgba(255,106,0,0.4);">₱0</h2></div>
-
                 <div style="text-align:right"><p style="color:var(--text-muted); margin:0; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Business</p><h2 id="bizCommi" style="color:var(--blue-biz); margin:5px 0 0 0; text-shadow: 0 0 10px rgba(59,130,246,0.4);">₱0</h2></div>
-
             </div>
-
             <div class="stat-card" style="flex-direction:column; align-items: flex-start; padding-bottom: 25px;">
-
                 <div style="display:flex; justify-content:space-between; width:100%">
-
                     <h3 id="targetCount" style="margin:0;">0 / 20</h3>
-
                     <small id="targetBreakdown" style="color:var(--text-muted); font-weight: 600;">0 Res | 0 Biz</small>
-
                 </div>
-
                 <div class="progress-bar"><div id="progressFill"></div></div>
-
             </div>
-
         </div>
-
-
-
         <div id="motivationBox" class="glass-panel" style="text-align:center; border-color: rgba(255,106,0,0.2); background: linear-gradient(180deg, rgba(255,106,0,0.05), transparent);">
-
             <h4 id="quoteText" style="margin:0; font-size: 1rem; font-weight: 600; color: var(--primary-orange);">"Speed. Precision. Connection."</h4>
-
             <small id="subQuote" style="color: var(--text-muted);">Secure the line, secure the bag.</small>
-
         </div>
-
-
-
         <div class="glass-panel">
-
             <div class="type-toggle">
-
                 <button class="type-btn active" id="resBtn" onclick="setClientType('residential')">Residential</button>
-
                 <button class="type-btn" id="bizBtn" onclick="setClientType('business')">Business</button>
-
             </div>
-
             <div style="display:flex; gap:10px">
-
                 <input type="text" id="fn" placeholder="First Name">
-
                 <input type="text" id="ln" placeholder="Last Name">
-
             </div>
-
             <select id="areaSelect">
-
                 <option value="" disabled selected>Select Area Designation</option>
-
                 <option value="Baras">Baras</option><option value="Tanay">Tanay</option><option value="Morong">Morong</option>
-
                 <option value="Pililla">Pililla</option><option value="Angono">Angono</option><option value="Binangonan">Binangonan</option>
-
                 <option value="Antipolo">Antipolo</option><option value="Taytay">Taytay</option><option value="Teresa">Teresa</option>
-
                 <option value="Cardona">Cardona</option><option value="Jala-Jala">Jala-Jala</option>
-
             </select>
-
             <select id="resPlans">
-
                 <option value="" disabled selected>Select Plan</option>
-
                 <option value="80" data-commi="300">80 Mbps (₱699) - 300 Commi</option>
-
                 <option value="150" data-commi="400">150 Mbps (₱999) - 400 Commi</option>
-
                 <option value="300" data-commi="500">300 Mbps (₱1250) - 500 Commi</option>
-
                 <option value="500" data-commi="600">500 Mbps (₱1500) - 600 Commi</option>
-
                 <option value="1000" data-commi="1000">1000 Mbps (₱4000) - 1000 Commi</option>
-
             </select>
-
             <select id="bizPlans" class="hidden">
-
                 <option value="" disabled selected>Select Biz Plan</option>
-
                 <option value="Biz Lite" data-commi="600">Biz Lite 1.5 - 600 Commi</option>
-
                 <option value="Biz Professional" data-commi="1200">Biz Professional 3.0 - 1200 Commi</option>
-
                 <option value="Biz Enterprise" data-commi="2400">Biz Enterprise 6.0 - 2400 Commi</option>
-
             </select>
-
             <button class="primary-btn" onclick="addClient()"><i class="fa-solid fa-plus" style="margin-right:5px;"></i> Add Target</button>
-
         </div>
-
-
-
         <input type="text" id="searchInput" placeholder="Search Database..." onkeyup="render()">
-
         <div class="filter-row">
-
             <div class="filter-pill active" onclick="setStatusFilter('all', this)">All Targets</div>
-
             <div class="filter-pill" onclick="setStatusFilter('pending', this)">Pending</div>
-
             <div class="filter-pill" onclick="setStatusFilter('installed', this)">Installed</div>
-
             <div class="filter-pill" onclick="setStatusFilter('cancelled', this)">Cancelled</div>
-
         </div>
-
-
-
         <div id="clientList"></div>
-
-
-
 <div id="fabMenu" class="fab-menu">
-
             <a href="/id/" class="floating-id-btn" title="Digital ID Generator">
-
                 <i class="fa-solid fa-id-badge"></i>
-
             </a>
-
-
-
             <a href="/calculator/" class="floating-calc-btn" title="Prorated Calculator">
-
                 <i class="fa-solid fa-calculator"></i>
-
             </a>
-
-
-
             <a href="/workspace/" class="floating-workspace-btn" title="Launch Workspace">
-
                 <i class="fa-solid fa-briefcase"></i>
-
             </a>
-
-            
-
             <a href="/locator/" class="floating-locator-btn" title="Launch Locator">
-
                 <i class="fa-solid fa-map-location-dot"></i>
-
             </a>
-
-            
-
             <div class="toggle-ledger-btn" onclick="toggleLedger()" title="Open Ledger">
-
                 <i class="fa-solid fa-wallet"></i>
-
             </div>
-
-            
-
             <div class="fab-main-btn" onclick="document.getElementById('fabMenu').classList.toggle('active')">
-
                 <i class="fa-solid fa-plus"></i>
-
             </div>
-
         </div>
-
     </div>
-
-
-
     <div id="ledgerSidebar" class="sidebar">
-
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-
             <h3 style="margin:0; font-weight: 800; letter-spacing: 1px;">LEDGER</h3>
-
             <i class="fa-solid fa-xmark" onclick="toggleLedger()" style="cursor:pointer; font-size:1.5rem; color:var(--text-muted);"></i>
-
         </div>
-
         <input type="text" id="ledgerDesc" placeholder="Description">
-
         <input type="number" id="ledgerAmount" placeholder="Amount">
-
         <input type="date" id="ledgerDate">
-
         <button class="primary-btn" onclick="addLedgerEntry()">Log Entry</button>
-
         <div id="ledgerList" style="margin-top:20px; max-height: 400px; overflow-y: auto;"></div>
-
         <div style="margin-top:15px; text-align:right; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-
             <small style="color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Net Balance:</small>
-
             <div id="extraTotal" style="font-weight:800; color:var(--primary-orange); font-size:1.5rem; text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱0</div>
-
         </div>
-
-
-
         <div class="modal-overlay" id="aboutModal">
-
             <div class="about-box">
-
                 <button class="modal-close" onclick="toggleAboutModal()">&times;</button>
-
-                
-
                 <div class="creator-avatar">
-
                     <img src="creator.png" alt="Creator">
-
                 </div>
-
-                
-
                 <h3 class="creator-name">YOUSSEF NASSAR</h3>
-
                 <p class="creator-title">System Architect</p>
-
-                
-
                 <p class="creator-bio">
-
                     Electronics Engineering student by day, full-stack developer and internet agent by night. I built the Cheetah Space ecosystem to bridge the gap between hard code and field operations—automating the hustle so we can focus on closing deals.
-
                 </p>
-
-                
-
                 <div class="social-links">
-
                     <a href="https://www.facebook.com/BizniPatRM" class="social-btn" title="Facebook" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-
                     <a href="https://github.com/youssefnassar314-sudo" class="social-btn" title="GitHub" target="_blank"><i class="fa-brands fa-github"></i></a>
-
-                    <a href="mailto:gpmillado.w@gmail.com" class="social-btn" title="Email"><i class="fa-solid fa-envelope"></i></a>
-
+                    <a href="/cdn-cgi/l/email-protection#e58295888c898984818acb92a58288848c89cb868a88" class="social-btn" title="Email"><i class="fa-solid fa-envelope"></i></a>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
-    <script type="module">
-
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
         import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-
-
         const firebaseConfig = {
-
             apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
-
             authDomain: "cheetah-tracker-app.firebaseapp.com",
-
             projectId: "cheetah-tracker-app",
-
             storageBucket: "cheetah-tracker-app.firebasestorage.app",
-
             messagingSenderId: "981209296948",
-
             appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
-
             measurementId: "G-KGTBSKD57D"
-
         };
-
-
-
         const app = initializeApp(firebaseConfig);
-
         const auth = getAuth(app);
-
         const db = getFirestore(app);
-
-
-
         let currentUser = null, clients = [], ledger = [], currentType = 'residential', currentStatusFilter = 'all';
-
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-
-
         window.handleAuth = async (type) => {
-
             const email = document.getElementById('authEmail').value, pass = document.getElementById('authPass').value;
-
             if(!email || !pass) return alert("Punan ang lahat ng fields!");
-
             try {
-
                 if(type === 'signup') await createUserWithEmailAndPassword(auth, email, pass);
-
                 else await signInWithEmailAndPassword(auth, email, pass);
-
             } catch (e) { alert(e.message); }
-
         };
-
-
-
         window.logout = () => signOut(auth);
-
-
-
 onAuthStateChanged(auth, user => {
             if(user) {
                 currentUser = user;
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
-
                 // --- ITO YUNG NAWALA SA CODE MO ---
                 // Papalabasın ang ad pagka-login
                 const forcedAd = document.getElementById('forcedAdOverlay');
@@ -1089,7 +475,6 @@ onAuthStateChanged(auth, user => {
                         forcedAd.style.display = 'flex';
                     }
                 }
-                
                 syncData();
             } else {
                 document.getElementById('authSection').style.display = 'block';
@@ -1099,597 +484,262 @@ onAuthStateChanged(auth, user => {
                 if(forcedAd) forcedAd.style.display = 'none';
             }
         });
-
-
-
         function syncData() {
-
             onSnapshot(query(collection(db, "clients"), where("uid", "==", currentUser.uid)), snap => {
-
                 clients = snap.docs.map(d => ({id: d.id, ...d.data()}));
-
                 render();
-
             });
-
             onSnapshot(query(collection(db, "ledger"), where("uid", "==", currentUser.uid)), snap => {
-
                 ledger = snap.docs.map(d => ({id: d.id, ...d.data()}));
-
                 render();
-
             });
-
         }
-
-
-
         window.addClient = async () => {
-
             const fn = document.getElementById('fn').value, ln = document.getElementById('ln').value, area = document.getElementById('areaSelect').value;
-
             const ps = currentType === 'residential' ? document.getElementById('resPlans') : document.getElementById('bizPlans');
-
             if(!fn || !ln || !area || !ps.value) return alert("Punan lahat ng impormasyon!");
-
             await addDoc(collection(db, "clients"), {
-
                 uid: currentUser.uid, name: `${fn} ${ln}`, area, type: currentType,
-
                 plan: ps.options[ps.selectedIndex].text, commi: parseInt(ps.options[ps.selectedIndex].dataset.commi),
-
                 installed: false, cancelled: false, commiReceived: false, billingExplained: false, installDate: "", remarks: ""
-
             });
-
             document.getElementById('fn').value = ''; document.getElementById('ln').value = '';
-
         };
-
-
-
         window.toggleStatus = async (id, field) => {
-
             const c = clients.find(x => x.id === id);
-
             const update = { [field]: !c[field] };
-
             if(field === 'installed' && !c.installed) {
-
                 update.cancelled = false;
-
                 if (!c.installDate) {
-
                     update.installDate = new Date().toISOString().split('T')[0];
-
                 }
-
                 // Cheetah Colors para sa Confetti!
-
                 confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#ff6a00', '#ff9100', '#3b82f6', '#ffffff'] }); 
-
             }
-
             if(field === 'cancelled' && !c.cancelled) update.installed = false;
-
             await updateDoc(doc(db, "clients", id), update);
-
         };
-
-
-
         window.updateField = async (id, field, val) => await updateDoc(doc(db, "clients", id), {[field]: val});
-
         window.deleteItem = async (id, type) => { if(confirm("Ide-delete ba itong record?")) await deleteDoc(doc(db, type === 'client' ? "clients" : "ledger", id)); };
-
-
-
 window.addLedgerEntry = async () => {
-
             const desc = document.getElementById('ledgerDesc').value, amt = document.getElementById('ledgerAmount').value, dt = document.getElementById('ledgerDate').value;
-
             if(!desc || !amt || !dt) return alert("Punan ang lahat!");
-
             await addDoc(collection(db, "ledger"), { uid: currentUser.uid, desc, amount: parseFloat(amt), date: dt });
-
             document.getElementById('ledgerDesc').value = ''; document.getElementById('ledgerAmount').value = '';
-
         };
-
-
-
         // --- SIMULA NG KOKOPYAHIN MO ---
-
         // --- SIMULA NG KOKOPYAHIN MO ---
-
        window.copyBilling = (installDate, planString, area) => {
-
     alert("Na-detect na area: " + area); // Idagdag mo 'to pang-test
-
     // ... the rest of the code
-
             if (!installDate) return alert("Paki-set muna ang Install Date para ma-compute ang billing!");
-
-            
-
             const date = new Date(installDate);
-
             const day = date.getDate();
-
             const month = date.toLocaleString('default', { month: 'long' });
-
             const year = date.getFullYear();
-
             const daysInMonth = new Date(year, date.getMonth() + 1, 0).getDate();
-
-            
-
             const nextMonthDate = new Date(year, date.getMonth() + 1, 1);
-
             const nextMonth = nextMonthDate.toLocaleString('default', { month: 'long' });
-
             const daysInNextMonth = new Date(year, date.getMonth() + 2, 0).getDate();
-
-            
-
             const nextNextMonthDate = new Date(year, date.getMonth() + 2, 1);
-
             const nextNextMonth = nextNextMonthDate.toLocaleString('default', { month: 'long' });
-
-
-
             // Hanapin yung presyo sa plan name
-
             const priceMatch = planString.match(/₱(\d+,?\d*)/);
-
             let price = 0;
-
             let proratedAmtText = "";
-
             let totalAmtText = "";
-
-            
-
             if (priceMatch) {
-
                 price = parseFloat(priceMatch[1].replace(',', ''));
-
                 const proratedDays = daysInMonth - day + 1;
-
                 const computedProrated = Math.round((price / 30) * proratedDays);
-
                 proratedAmtText = `na ₱${computedProrated} `;
-
                 totalAmtText = ` (Estimated Total: ₱${price + computedProrated})`;
-
             }
-
-
-
             // --- DYNAMIC BILLER LOGIC ---
-
            // --- DYNAMIC BILLER LOGIC ---
-
             let billerName = "SKYLINE CATV"; // Default para sa "The rest"
-
-            
-
             // Lilinisin natin 'yung text para sure na mag-match kahit anong casing
-
             const cleanArea = area ? area.toLowerCase().trim() : "";
-
-
-
             if (cleanArea === "binangonan") {
-
                 billerName = "BINANGONAN CABLE";
-
             } else if (cleanArea === "taytay" || cleanArea === "antipolo") {
-
                 billerName = "KABAYAN CABLE (RIZAL)";
-
             }
-
-
-
             // --- INTRO GUIDE TEMPLATE ---
-
             const introText = `🌐 WIFI PAYMENT INFO 🌐\n\nHi po! Here’s a quick guide para sa payment schedule at options natin:\n\n💳 Payment Instructions:\nKung magbabayad po kayo online, hanapin lang sa biller list ang: ${billerName}\n\n🏢 List of Offices:\nHere are the nearest offices po (Pwede niyo i-search sa maps):\n- LEXAR ANGONO\n- LEXAR BINANGONAN\n- LEXAR MORONG\n- LEXAR TANAY\n- LEXAR TERESA\n- LEXAR TAYTAY\n\nChoose na lang po kayo kung ano pinaka-applicable at malapit na location ng office sa inyo.\n\n-------------------------\n\n`;
-
-
-
             let msg = "";
-
-            
-
             if (day <= 15) {
-
                 msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo estimated na ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Dadating po ito sa email sa ${month} 17 to 18. Ito po ay pwedeng bayaran sa ${month} ${daysInMonth}, extended po hanggang ${nextMonth} 10 if online babayaran tas if sa office ay ${nextMonth} 14 po.`;
-
             } else {
-
                 msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo estimated na ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Since delay po bigayan ng billing kapag 16 to end of month, dadating po ang billing sa email sa ${nextMonth} 17 to 18, bale consist of first and second billing na po ito${totalAmtText}. First and second billing po ay pwedeng bayaran sa ${nextMonth} ${daysInNextMonth}, extended po hanggang ${nextNextMonth} 10 if online babayaran tas if sa office ay ${nextNextMonth} 14 po.`;
-
             }
-
-            
-
             // Pagsasamahin ang intro at ang computation
-
             const finalMessage = introText + msg;
-
-            
-
             navigator.clipboard.writeText(finalMessage).then(() => {
-
                 alert(`Copied! (Biller used: ${billerName}) Pwede mo na i-paste sa client.`);
-
             }).catch(err => {
-
                 alert("Failed to copy. Try again.");
-
             });
-
         };
-
         // --- HANGGANG DITO LANG ---
-
-
-
         window.render = () => {
-
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
-
             const st = document.getElementById('searchInput').value.toLowerCase();
-
             const sm = parseInt(document.getElementById('viewMonth').value);
-
             list.innerHTML = ""; lList.innerHTML = "";
-
-
-
             let rT = 0, bT = 0, rC = 0, bC = 0;
-
             const sorted = [...clients].sort((a,b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
-
-
-
             sorted.forEach(c => {
-
                 if(st && !c.name.toLowerCase().includes(st) && !c.area.toLowerCase().includes(st)) return;
-
                 if(currentStatusFilter === 'pending' && (c.installed || c.cancelled)) return;
-
                 if(currentStatusFilter === 'installed' && !c.installed) return;
-
                 if(currentStatusFilter === 'cancelled' && !c.cancelled) return;
-
-
-
                 let show = false;
-
                 if(!c.installed && !c.cancelled) show = true;
-
                 else if(c.installed && c.installDate) {
-
                     const iDate = new Date(c.installDate);
-
                     if(iDate.getMonth() === sm) {
-
                         show = true;
-
                         if(c.type === 'business') { bT += c.commi; bC++; } else { rT += c.commi; rC++; }
-
                     }
-
                 } else if(c.cancelled) show = true;
-
-
-
                 if(show) {
-
                     const card = document.createElement('div');
-
                     card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''}`;
-
-                    
-
                     card.innerHTML = `
-
                         <div style="display:flex; justify-content:space-between; align-items: flex-start;">
-
                             <div>
-
                                 <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br>
-
                                 <strong style="font-size: 1.05rem; font-weight: 700; color: white;">${c.name}</strong><br>
-
                                 <small style="color:var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange)"></i> ${c.area}</small>
-
                             </div>
-
                             <div style="text-align:right">
-
                                 <i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:var(--text-muted); transition: 0.3s;" onmouseover="this.style.color='var(--red-alert)'" onmouseout="this.style.color='var(--text-muted)'"></i><br>
-
                                 <span style="font-weight: 800; font-size: 1.1rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi}</span>
-
                             </div>
-
                         </div>
-
-                        
-
                         ${c.installed ? `
-
                         <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem;">
-
                             <label style="color: var(--text-muted); font-weight: 600;"><i class="fa-regular fa-calendar-check"></i> Install Date:</label>
-
                             <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5);">
-
                         </div>
-
-                        
-
                         <div style="margin-top: 10px; display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
-
                             <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main); font-weight: 600;">
-
                                 <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--primary-orange);">
-
                                 Billing Explained
-
                             </label>
-
                             <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'}; font-weight: 600; text-decoration: ${c.commiReceived ? 'line-through' : 'none'};">
-
                                 <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--green-installed);">
-
                                 Commi Received
-
                             </label>
-
                         </div>
-
                         <div style="margin-top: 8px;">
-
                             <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}', '${c.area}')">
-
     <i class="fa-solid fa-copy"></i> Copy Billing Message
-
 </button>
-
                         </div>
-
                         ` : ''}
-
-
-
                         ${c.cancelled ? `
-
                         <div style="margin-top: 10px;">
-
                             <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 10px; width: 100%; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.05); color: white;">
-
                         </div>` : ''}
-
-
-
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-
                             <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.installed?'linear-gradient(135deg, #10b981, #059669)':'rgba(255,255,255,0.05)'}; color:white; box-shadow:${c.installed?'0 4px 15px rgba(16,185,129,0.3)':'none'}; border: 1px solid ${c.installed?'transparent':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">${c.installed ? '<i class="fa-solid fa-check"></i> Installed' : 'Install'}</button>
-
                             <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.cancelled?'rgba(244,63,94,0.1)':'rgba(255,255,255,0.05)'}; color:${c.cancelled?'#f43f5e':'white'}; box-shadow:none; border: 1px solid ${c.cancelled?'rgba(244,63,94,0.3)':'rgba(255,255,255,0.1)'};" onclick="toggleStatus('${c.id}', 'cancelled')">${c.cancelled ? 'Cancelled' : 'Cancel'}</button>
-
                         </div>
-
                     `;
-
                     list.appendChild(card);
-
                 }
-
             });
-
-
-
             document.getElementById('resCommi').innerText = `₱${rT.toLocaleString()}`;
-
             document.getElementById('bizCommi').innerText = `₱${bT.toLocaleString()}`;
-
             document.getElementById('targetCount').innerText = `${rC+bC} / 20`;
-
             document.getElementById('targetBreakdown').innerText = `${rC} Res | ${bC} Biz`;
-
             document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/20)*100, 100)}%`;
-
-            
-
             let exT = 0;
-
             ledger.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(l => {
-
                 exT += l.amount;
-
                 lList.innerHTML += `
-
                     <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; margin-bottom: 5px;">
-
                         <div><strong style="color: white; font-size: 0.95rem;">${l.desc}</strong><br><small style="color: var(--text-muted);"><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>${l.date}</small></div>
-
                         <div style="font-weight: 800; font-size: 1.1rem; color: white;">₱${l.amount.toLocaleString()} <i class="fa-solid fa-trash" onclick="deleteItem('${l.id}', 'ledger')" style="color:var(--text-muted); cursor:pointer; margin-left:10px; transition: 0.3s;" onmouseover="this.style.color='var(--red-alert)'" onmouseout="this.style.color='var(--text-muted)'"></i></div>
-
                     </div>`;
-
             });
-
             document.getElementById('extraTotal').innerText = `₱${exT.toLocaleString()}`;
-
         };
-
-
-
         window.toggleLedger = () => document.getElementById('ledgerSidebar').classList.toggle('active');
-
         window.setStatusFilter = (s, el) => {
-
             currentStatusFilter = s;
-
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-
             el.classList.add('active'); render();
-
         };
-
         window.setClientType = (t) => {
-
             currentType = t;
-
             document.getElementById('resBtn').classList.toggle('active', t==='residential');
-
             document.getElementById('bizBtn').classList.toggle('active', t==='business');
-
             document.getElementById('resPlans').classList.toggle('hidden', t==='business');
-
             document.getElementById('bizPlans').classList.toggle('hidden', t==='residential');
-
         };
-
-
-
         const vm = document.getElementById('viewMonth');
-
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
-
     </script>
-
-    
-
     <script>
-
         // SERVICE WORKER REGISTRATION
-
         if ('serviceWorker' in navigator) {
-
             window.addEventListener('load', () => {
-
                 navigator.serviceWorker.register('sw.js')
-
                     .then(reg => console.log('Service Worker Registered!', reg))
-
                     .catch(err => console.error('Service Worker Registration Failed!', err));
-
             });
-
         }
-
-
-
         // FORCE CLEAR CACHE AND RELOAD FUNCTION
-
         // FORCE CLEAR CACHE AND RELOAD FUNCTION
-
         window.clearCache = () => {
-
             if (confirm("Initiate App Refresh? This will clear cache and fetch latest updates.")) {
-
                 if ('serviceWorker' in navigator) {
-
                     navigator.serviceWorker.getRegistrations().then(function(registrations) {
-
                         for(let registration of registrations) {
-
                             registration.unregister();
-
                         }
-
                     });
-
                 }
-
                 if ('caches' in window) {
-
                     caches.keys().then((names) => {
-
                         for (let name of names) {
-
                             caches.delete(name);
-
                         }
-
                     });
-
                 }
-
                 setTimeout(() => {
-
                     window.location.reload(true);
-
                 }, 500);
-
             }
-
         };
-
-
-
         // THEME SWITCHER LOGIC & LOCAL STORAGE
-
         // Check saved theme on load
-
         if(localStorage.getItem('cheetah_theme') === 'sketch') {
-
             document.body.setAttribute('data-theme', 'sketch');
-
         }
-
-
-
         window.toggleTheme = () => {
-
             if (document.body.getAttribute('data-theme') === 'sketch') {
-
                 document.body.removeAttribute('data-theme');
-
                 localStorage.setItem('cheetah_theme', 'dark');
-
             } else {
-
                 document.body.setAttribute('data-theme', 'sketch');
-
                 localStorage.setItem('cheetah_theme', 'sketch');
-
             }
-
         };
-
-
-
         // ABOUT CREATOR MODAL TOGGLE
-
         window.toggleAboutModal = () => {
-
             const modal = document.getElementById('aboutModal');
-
             if(modal.classList.contains('active')) {
-
                 modal.classList.remove('active');
-
                 setTimeout(() => modal.style.display = 'none', 300);
-
             } else {
-
                 modal.style.display = 'flex';
-
                 setTimeout(() => modal.classList.add('active'), 10);
-
             }
-
         };
-
     </script>
-
 </body>
-
 </html>
