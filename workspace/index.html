@@ -242,9 +242,10 @@
             </svg>
             <span><strong>Double check details:</strong> Ensure all values are correctly formatted before generating.</span>
         </div>
-        <pre class="template-box" id="templateRaw">
+<pre class="template-box" id="templateRaw">
 📌APPLICATION FORM 
 
+AGENT NAME:
 LAST NAME:
 FIRST NAME:
 MIDDLE NAME:
@@ -330,14 +331,13 @@ PLAN VALUE:</pre>
         <div class="subtitle">Document Generator</div>
     </div>
 
-    <label>1. Application Form</label>
-    <div class="file-upload-wrapper">
-        <input type="file" id="tpl" accept=".docx">
-        <label for="tpl" class="file-upload-box" id="upload-label">
-            📄 Upload .docx Template
-        </label>
-    </div>
-
+<label>1. Select Area (Template)</label>
+    <select id="areaSelect" class="main-input">
+        <option value="bctv.docx">📺 BCTV</option>
+        <option value="skyline.docx">🏙️ Skyline</option>
+        <option value="kabayan.docx">🏘️ Kabayan</option>
+    </select>
+    
     <label>2. Client Information Block</label>
     <textarea id="raw" class="main-input" placeholder="Paste full client format here..."></textarea>
 
@@ -522,22 +522,8 @@ Indoor Fiber:
 
     document.addEventListener('DOMContentLoaded', updatePlanTerms);
 
-    // --- DOCUMENT GENERATION LOGIC ---
-    document.getElementById('tpl').addEventListener('change', function(e) {
-        const fileName = e.target.files[0] ? e.target.files[0].name : "📄 Upload .docx Template";
-        document.getElementById('upload-label').innerText = fileName;
-        if (e.target.files[0]) {
-            document.getElementById('upload-label').style.borderColor = "var(--primary-orange)";
-            document.getElementById('upload-label').style.color = "white";
-            document.getElementById('upload-label').style.background = "rgba(255, 106, 0, 0.1)";
-        }
-    });
-
-    const getBuf = (f) => new Promise((res) => {
-        if (!f) return res(null);
-        const r = new FileReader(); r.onload = (e) => res(e.target.result); r.readAsArrayBuffer(f);
-    });
-
+// --- DOCUMENT GENERATION LOGIC ---
+    
     function getFormattedDate() {
         return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
@@ -568,20 +554,26 @@ Indoor Fiber:
 
     function handleGenerate() {
         const status = document.getElementById('status');
-        const tFile = document.getElementById('tpl').files[0];
+        // Kukunin na natin kung anong file ang naka-select sa dropdown
+        const selectedFile = document.getElementById('areaSelect').value; 
         const rawText = document.getElementById('raw').value;
 
-        if (!tFile || !rawText) {
-            status.innerHTML = "⚠️ Awaiting template & data."; status.style.color = "var(--red-alert)"; return;
+        if (!rawText) {
+            status.innerHTML = "⚠️ Awaiting client data."; status.style.color = "var(--red-alert)"; return;
         }
-        status.innerHTML = "Processing data..."; status.style.color = "var(--blue-biz)";
+        status.innerHTML = `Fetching ${selectedFile} and processing data...`; status.style.color = "var(--blue-biz)";
         document.getElementById('emailSection').style.display = "none";
-        setTimeout(() => processDocument(tFile, rawText, status), 50);
+        setTimeout(() => processDocument(selectedFile, rawText, status), 50);
     }
 
-    async function processDocument(tFile, rawText, status) {
+    async function processDocument(fileName, rawText, status) {
         try {
-            const tBuf = await getBuf(tFile); const zip = new PizZip(tBuf);
+            // Fetch the document from the github/local folder
+            const response = await fetch(fileName);
+            if (!response.ok) throw new Error(`Hindi ma-load ang template: ${fileName}`);
+            
+            const tBuf = await response.arrayBuffer(); 
+            const zip = new PizZip(tBuf);
             const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
             const clientData = parseData(rawText);
 
@@ -590,7 +582,9 @@ Indoor Fiber:
                 return isEmail ? val : val.toUpperCase();
             }
 
+            // DITO IPAPASOK YUNG AGENT NAME AT IBANG DATA
             doc.render({
+                agent_name: get("AGENT NAME"),
                 date: getFormattedDate().toUpperCase(), last_name: get("LAST NAME"), first_name: get("FIRST NAME"), middle_name: get("MIDDLE NAME"),
                 hp: get("HOUSE PHONE"), op: get("OFFICE PHONE"), mobile: get("MOBILE PHONE"), email: get("EMAIL ADDRESS", true), id_no: get("ID TYPE/NO."), 
                 birthdate: get("BIRTHDATE"), age: get("AGE"), sex: get("SEX"), civil_status: get("CIVIL STATUS"), spouse_name: get("SPOUSE NAME"),
@@ -598,7 +592,7 @@ Indoor Fiber:
                 occupation: get("OCCUPATION/POSITION"), employer: get("EMPLOYER"), occ_address: get("ADDRESS"), spouse_occ: get("SPOUSE OCCUPATION"), spouse_emp: get("SPOUSE EMPLOYER"), spouse_add_occ: get("SPOUSE EMPLOYER ADDRESS"),
                 plan_name: get("PLAN"), plan_value: get("PLAN VALUE")
             });
-
+            
             const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             const lName = get("LAST NAME") || "UNKNOWN"; const fName = get("FIRST NAME") || "CLIENT"; const muni = get("MUNICIPALITY") || "NO_CITY"; const plan = get("PLAN") || "NO_PLAN";
             saveAs(out, `${lName}, ${fName} - ${muni}.docx`);
