@@ -154,7 +154,7 @@
         }
         .fab-menu.active .fab-main-btn { transform: rotate(135deg); background: var(--primary-orange); border-color: var(--primary-orange); box-shadow: 0 0 20px rgba(255,106,0,0.4); }
 
-        .toggle-ledger-btn, .floating-locator-btn, .floating-workspace-btn {
+.toggle-ledger-btn, .floating-locator-btn, .floating-workspace-btn, .floating-calc-btn, .floating-id-btn {
             position: fixed; right: 35px; width: 50px; height: 50px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; cursor: pointer; 
             z-index: 100; color: white; font-size: 1.2rem;
@@ -165,10 +165,14 @@
         .toggle-ledger-btn { background: linear-gradient(135deg, #ff6a00, #ff9100); box-shadow: 0 4px 15px rgba(255,106,0,0.4); }
         .floating-locator-btn { background: linear-gradient(135deg, #2563eb, #3b82f6); box-shadow: 0 4px 15px rgba(59,130,246,0.4); }
         .floating-workspace-btn { background: linear-gradient(135deg, #475569, #64748b); box-shadow: 0 4px 15px rgba(100,116,139,0.4); }
+        .floating-calc-btn { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+        .floating-id-btn { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 4px 15px rgba(139,92,246,0.4); }
 
         .fab-menu.active .toggle-ledger-btn { bottom: 105px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
         .fab-menu.active .floating-locator-btn { bottom: 170px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
         .fab-menu.active .floating-workspace-btn { bottom: 235px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+        .fab-menu.active .floating-calc-btn { bottom: 300px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
+        .fab-menu.active .floating-id-btn { bottom: 365px; opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
 
         /* =========================================
            SKETCH THEME OVERRIDES (BLACK & WHITE)
@@ -310,12 +314,20 @@
 
         <div id="clientList"></div>
 
-        <div id="fabMenu" class="fab-menu">
-            <a href="https://youssefnassar314-sudo.github.io/auto-fillout/" target="_blank" class="floating-workspace-btn" title="Launch Workspace">
+<div id="fabMenu" class="fab-menu">
+            <a href="/id/" class="floating-id-btn" title="Digital ID Generator">
+                <i class="fa-solid fa-id-badge"></i>
+            </a>
+
+            <a href="/calculator/" class="floating-calc-btn" title="Prorated Calculator">
+                <i class="fa-solid fa-calculator"></i>
+            </a>
+
+            <a href="/workspace/" class="floating-workspace-btn" title="Launch Workspace">
                 <i class="fa-solid fa-briefcase"></i>
             </a>
             
-            <a href="https://youssefnassar314-sudo.github.io/cheetah-locator/" target="_blank" class="floating-locator-btn" title="Launch Locator">
+            <a href="/locator/" class="floating-locator-btn" title="Launch Locator">
                 <i class="fa-solid fa-map-location-dot"></i>
             </a>
             
