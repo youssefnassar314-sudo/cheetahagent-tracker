@@ -681,8 +681,10 @@ Indoor Fiber:
     // Generic function para buksan ang kahit anong modal smoothly
     function openVaultModal(modalId) {
         const modal = document.getElementById(modalId);
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('active'), 10);
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
     }
 
     // Pang-close ng Real Vault
@@ -698,11 +700,13 @@ Indoor Fiber:
     // Generic function para isara ang kahit anong modal smoothly
     function closeVaultModal(modalId) {
         const modal = document.getElementById(modalId);
-        modal.classList.remove('active');
-        setTimeout(() => modal.style.display = 'none', 300);
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
     }
 
-    // Sig Extractor Logic
+    // --- SIG EXTRACTOR LOGIC ---
     document.getElementById('sigUpload').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
