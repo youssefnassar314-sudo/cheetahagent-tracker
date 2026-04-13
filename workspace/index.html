@@ -439,6 +439,23 @@ PLAN VALUE:</pre>
             Download Clean Signature
         </button>
     </div>
+    <div class="modal-overlay" id="fakeModal">
+    <div class="modal-box" style="max-width: 400px; text-align: center; border-color: var(--red-alert);">
+        <button class="modal-close" onclick="closeFakeModal()">&times;</button>
+        <h3 style="margin-top: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">
+            <svg width="24" height="24" fill="none" stroke="var(--red-alert)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            SYSTEM <span style="color:var(--red-alert)">ERROR</span>
+        </h3>
+        <p class="subtitle" style="margin-bottom: 25px; color: #fecdd3;">Restricted Access Detected.</p>
+        
+        <div style="font-size: 120px; margin: 20px 0; filter: drop-shadow(0 0 20px rgba(244,63,94,0.5));">🖕</div>
+        
+        <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.4;">
+            Attempt to access classified agent data has been logged.<br>
+            Please close this window immediately.
+        </p>
+    </div>
+</div>
 </div>
 
 <script>
@@ -644,18 +661,45 @@ Indoor Fiber:
     // --- TOP SECRET VAULT LOGIC ---
     let originalImage = null;
 
+// --- VAULT LOGIC (Real & Fake) ---
+    let originalImage = null;
+
     function checkSecretPassword() {
         let pass = prompt("CLASSIFIED ACCESS. Enter passcode:");
+        
+        if (pass === null) return; // Pag nag-cancel si user
+
         if (pass === "cheetahadmin") {
-            document.getElementById('secretModal').style.display = 'flex';
-            setTimeout(() => document.getElementById('secretModal').classList.add('active'), 10);
-        } else if (pass !== null) {
-            alert("Access Denied.");
+            // TOTOONG VAULT (Sig Extractor)
+            openVaultModal('secretModal');
+        } else if (pass === "1234") {
+            // FAKE VAULT (Prank)
+            openVaultModal('fakeModal');
+        } else {
+            alert("Access Denied. Invalid Security Code.");
         }
     }
 
+    // Generic function para buksan ang kahit anong modal smoothly
+    function openVaultModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+
+    // Pang-close ng Real Vault
     function closeSecretModal() {
-        const modal = document.getElementById('secretModal');
+        closeVaultModal('secretModal');
+    }
+
+    // Pang-close ng Fake Vault
+    function closeFakeModal() {
+        closeVaultModal('fakeModal');
+    }
+
+    // Generic function para isara ang kahit anong modal smoothly
+    function closeVaultModal(modalId) {
+        const modal = document.getElementById(modalId);
         modal.classList.remove('active');
         setTimeout(() => modal.style.display = 'none', 300);
     }
