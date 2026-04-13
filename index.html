@@ -308,23 +308,16 @@
                 <h1 style="margin: 0; font-weight: 800; letter-spacing: 1px; font-size: clamp(1.5rem, 6vw, 2rem);">CHEETAH<span style="color:var(--primary-orange)">//</span>SPACE</h1>
             </div>
             <div style="display:flex; justify-content:center; gap:15px; align-items:center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
-                <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: transparent; color: var(--primary-orange); font-weight: 600; border: none; box-shadow: none;" onchange="render()"></select>
-                <button onclick="toggleProfileModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='var(--primary-orange)'" onmouseout="this.style.color='var(--text-muted)'" title="My Profile">
-    <i class="fa-solid fa-user-astronaut"></i>
-</button>
-                <button onclick="toggleTheme()" id="themeBtn" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Toggle Sketch Theme">
-                    <i class="fa-solid fa-palette"></i>
-                </button>
-                <button onclick="toggleAboutModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='var(--primary-orange)'" onmouseout="this.style.color='var(--text-muted)'" title="About Creator">
-                    <i class="fa-solid fa-circle-info"></i>
-                </button>
-                <button onclick="clearCache()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Force Sync / Clear Cache">
-                    <i class="fa-solid fa-rotate"></i>
-                </button>
-                <button onclick="logout()" style="background:transparent; border:none; color:var(--red-alert); cursor:pointer; font-size: 1rem;" title="Disconnect">
-                    <i class="fa-solid fa-power-off"></i>
-                </button>
-            </div>
+    <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: transparent; color: var(--primary-orange); font-weight: 600; border: none; box-shadow: none;" onchange="render()"></select>
+    
+    <button onclick="toggleProfileModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem;" title="My Profile">
+        <i class="fa-solid fa-user-astronaut"></i>
+    </button>
+
+    <button onclick="toggleSettingsModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1.1rem;" title="Settings">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+</div>
         </header>
 <div id="promoBanner" class="glass-panel" style="position: relative; background: linear-gradient(135deg, rgba(255,106,0,0.1), rgba(139,92,246,0.1)); border-color: rgba(139,92,246,0.3); display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; gap: 15px;">
             <button onclick="document.getElementById('promoBanner').style.display='none'" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; transition: 0.2s;" onmouseover="this.style.color='var(--red-alert)'" onmouseout="this.style.color='var(--text-muted)'">&times;</button>
@@ -497,6 +490,57 @@
             <button class="primary-btn" style="margin-top: 20px;" onclick="toggleGuideModal()">Naiintindihan ko</button>
         </div>
     </div>
+        <div class="modal-overlay" id="helpCenterModal">
+    <div class="about-box" style="text-align: left; max-width: 450px; max-height: 80vh; overflow-y: auto;">
+        <button class="modal-close" onclick="toggleHelpCenter()">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fa-solid fa-book-bookmark" style="font-size: 2rem; color: var(--primary-orange);"></i>
+            <h2 style="color: white; margin: 10px 0 5px 0; font-weight: 800;">COMMAND CENTER</h2>
+        </div>
+
+        <details style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+            <summary style="color: white; font-weight: 700; cursor: pointer;">🎯 Target Management</summary>
+            <div style="padding: 10px; font-size: 0.85rem; color: #cbd5e1;">
+                * **Add Target:** Piliin ang Plan at Area para ma-save ang prospect.
+                * **Install:** I-click ang Install button kapag nakabitan na. Lalabas ang **Copy Billing** button para sa automated computation na ise-send sa client.
+            </div>
+        </details>
+
+        <details style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+            <summary style="color: white; font-weight: 700; cursor: pointer;">💰 Ledger (Recorder)</summary>
+            <div style="padding: 10px; font-size: 0.85rem; color: #cbd5e1;">
+                * Gamitin ang Ledger para i-record ang mga natanggap na commission o mga nagastos sa field. Simple "In and Out" log lang ito para ma-track ang iyong net balance.
+            </div>
+        </details>
+
+        <button class="primary-btn" style="margin-top: 15px;" onclick="toggleHelpCenter()">Nakuha ko na!</button>
+    </div>
+</div>
+ <div class="modal-overlay" id="settingsModal">
+    <div class="about-box" style="text-align: left; max-width: 320px;">
+        <button class="modal-close" onclick="toggleSettingsModal()">&times;</button>
+        <h3 style="color: white; margin-top: 0; font-weight: 800; text-align: center;">SYSTEM SETTINGS</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+            <button class="primary-btn" style="background: rgba(255,255,255,0.05); text-align: left; text-transform: none; border: 1px solid rgba(255,255,255,0.1); box-shadow: none;" onclick="toggleTheme(); toggleSettingsModal();">
+                <i class="fa-solid fa-palette" style="margin-right: 10px; color: var(--primary-orange);"></i> Change Theme
+            </button>
+
+            <button class="primary-btn" style="background: rgba(255,255,255,0.05); text-align: left; text-transform: none; border: 1px solid rgba(255,255,255,0.1); box-shadow: none;" onclick="toggleHelpCenter(); toggleSettingsModal();">
+                <i class="fa-solid fa-circle-question" style="margin-right: 10px; color: #3b82f6;"></i> Help Center
+            </button>
+
+            <button class="primary-btn" style="background: rgba(255,255,255,0.05); text-align: left; text-transform: none; border: 1px solid rgba(255,255,255,0.1); box-shadow: none;" onclick="clearCache()">
+                <i class="fa-solid fa-rotate" style="margin-right: 10px;"></i> Refresh / Sync Data
+            </button>
+
+            <button class="primary-btn" style="background: rgba(244,63,94,0.1); color: var(--red-alert); text-align: left; text-transform: none; border: 1px solid rgba(244,63,94,0.2); box-shadow: none; margin-top: 10px;" onclick="logout()">
+                <i class="fa-solid fa-power-off" style="margin-right: 10px;"></i> Log Out Agent
+            </button>
+        </div>
+    </div>
+</div>
     </div>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script type="module">
@@ -799,6 +843,30 @@ window.saveProfile = async () => {
         toggleProfileModal(); // Close modal after saving
     } catch (error) {
         alert("Error updating profile: " + error.message);
+    }
+};
+
+// Toggle para sa Gear/Settings
+window.toggleSettingsModal = () => {
+    const modal = document.getElementById('settingsModal');
+    if(modal.classList.contains('active')) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    } else {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+};
+
+// Toggle para sa Help Center
+window.toggleHelpCenter = () => {
+    const modal = document.getElementById('helpCenterModal');
+    if(modal.classList.contains('active')) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    } else {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
     }
 };
     </script>
