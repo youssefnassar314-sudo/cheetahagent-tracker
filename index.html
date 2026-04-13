@@ -575,9 +575,9 @@ window.addLedgerEntry = async () => {
             let msg = "";
             
             if (day <= 15) {
-                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Dadating po ito sa email sa ${month} 17 to 18. Ito po ay pwedeng bayaran sa ${month} ${daysInMonth}, extended po hanggang ${nextMonth} 10 if online babayaran tas if sa office ay ${nextMonth} 14 po.`;
+                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo estimated na ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Dadating po ito sa email sa ${month} 17 to 18. Ito po ay pwedeng bayaran sa ${month} ${daysInMonth}, extended po hanggang ${nextMonth} 10 if online babayaran tas if sa office ay ${nextMonth} 14 po.`;
             } else {
-                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Since delay po bigayan ng billing kapag 16 to end of month, dadating po ang billing sa email sa ${nextMonth} 17 to 18, bale consist of first and second billing na po ito${totalAmtText}. First and second billing po ay pwedeng bayaran sa ${nextMonth} ${daysInNextMonth}, extended po hanggang ${nextNextMonth} 10 if online babayaran tas if sa office ay ${nextNextMonth} 14 po.`;
+                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo estimated na ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Since delay po bigayan ng billing kapag 16 to end of month, dadating po ang billing sa email sa ${nextMonth} 17 to 18, bale consist of first and second billing na po ito${totalAmtText}. First and second billing po ay pwedeng bayaran sa ${nextMonth} ${daysInNextMonth}, extended po hanggang ${nextNextMonth} 10 if online babayaran tas if sa office ay ${nextNextMonth} 14 po.`;
             }
             
             // Pagsasamahin ang intro at ang computation
