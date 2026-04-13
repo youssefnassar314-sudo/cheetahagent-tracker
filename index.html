@@ -524,7 +524,9 @@ window.addLedgerEntry = async () => {
 
         // --- SIMULA NG KOKOPYAHIN MO ---
         // --- SIMULA NG KOKOPYAHIN MO ---
-        window.copyBilling = (installDate, planString, area) => {
+       window.copyBilling = (installDate, planString, area) => {
+    alert("Na-detect na area: " + area); // Idagdag mo 'to pang-test
+    // ... the rest of the code
             if (!installDate) return alert("Paki-set muna ang Install Date para ma-compute ang billing!");
             
             const date = new Date(installDate);
