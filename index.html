@@ -450,7 +450,8 @@ window.addLedgerEntry = async () => {
         };
 
         // --- SIMULA NG KOKOPYAHIN MO ---
-        window.copyBilling = (installDate, planString) => {
+        // --- SIMULA NG KOKOPYAHIN MO ---
+        window.copyBilling = (installDate, planString, area) => {
             if (!installDate) return alert("Paki-set muna ang Install Date para ma-compute ang billing!");
             
             const date = new Date(installDate);
@@ -466,7 +467,7 @@ window.addLedgerEntry = async () => {
             const nextNextMonthDate = new Date(year, date.getMonth() + 2, 1);
             const nextNextMonth = nextNextMonthDate.toLocaleString('default', { month: 'long' });
 
-            // Hanapin yung presyo sa plan name (e.g. "80 Mbps (₱699)")
+            // Hanapin yung presyo sa plan name
             const priceMatch = planString.match(/₱(\d+,?\d*)/);
             let price = 0;
             let proratedAmtText = "";
@@ -480,6 +481,17 @@ window.addLedgerEntry = async () => {
                 totalAmtText = ` (Estimated Total: ₱${price + computedProrated})`;
             }
 
+            // --- DYNAMIC BILLER LOGIC ---
+            let billerName = "SKYLINE CATV"; // Default para sa "The rest"
+            if (area === "Binangonan") {
+                billerName = "BINANGONAN CABLE";
+            } else if (area === "Taytay" || area === "Antipolo") {
+                billerName = "KABAYAN CABLE (RIZAL)";
+            }
+
+            // --- INTRO GUIDE TEMPLATE ---
+            const introText = `🌐 WIFI PAYMENT INFO 🌐\n\nHi po! Here’s a quick guide para sa payment schedule at options natin:\n\n💳 Payment Instructions:\nKung magbabayad po kayo online, hanapin lang sa biller list ang: ${billerName}\n\n🏢 List of Offices:\nHere are the nearest offices po (Pwede niyo i-search sa maps):\n- LEXAR ANGONO\n- LEXAR BINANGONAN\n- LEXAR MORONG\n- LEXAR TANAY\n- LEXAR TERESA\n- LEXAR TAYTAY\n\nChoose na lang po kayo kung ano pinaka-applicable at malapit na location ng office sa inyo.\n\n-------------------------\n\n`;
+
             let msg = "";
             
             if (day <= 15) {
@@ -488,12 +500,16 @@ window.addLedgerEntry = async () => {
                 msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Since delay po bigayan ng billing kapag 16 to end of month, dadating po ang billing sa email sa ${nextMonth} 17 to 18, bale consist of first and second billing na po ito${totalAmtText}. First and second billing po ay pwedeng bayaran sa ${nextMonth} ${daysInNextMonth}, extended po hanggang ${nextNextMonth} 10 if online babayaran tas if sa office ay ${nextNextMonth} 14 po.`;
             }
             
-            navigator.clipboard.writeText(msg).then(() => {
-                alert("Copied to clipboard! Pwede mo na i-paste sa client.");
+            // Pagsasamahin ang intro at ang computation
+            const finalMessage = introText + msg;
+            
+            navigator.clipboard.writeText(finalMessage).then(() => {
+                alert(`Copied! (Biller used: ${billerName}) Pwede mo na i-paste sa client.`);
             }).catch(err => {
                 alert("Failed to copy. Try again.");
             });
         };
+        // --- HANGGANG DITO LANG ---
 
         window.render = () => {
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
