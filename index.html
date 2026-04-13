@@ -650,9 +650,9 @@ window.addLedgerEntry = async () => {
                             </label>
                         </div>
                         <div style="margin-top: 8px;">
-                            <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}')">
-                                <i class="fa-solid fa-copy"></i> Copy Billing Message
-                            </button>
+                            <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}', '${c.area}')">
+    <i class="fa-solid fa-copy"></i> Copy Billing Message
+</button>
                         </div>
                         ` : ''}
 
