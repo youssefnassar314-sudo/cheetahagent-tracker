@@ -197,8 +197,46 @@
         </button>
     </div>
 
-    <script>
-        // Handle Photo Upload
+<script>
+        // --- AUTO-SAVE LOGIC (LOCAL STORAGE) ---
+        function saveProfile() {
+            const profile = {
+                name: document.getElementById('inputName').value,
+                area: document.getElementById('inputArea').value,
+                number: document.getElementById('inputNumber').value,
+                photo: document.getElementById('previewImage').src
+            };
+            
+            // Try-catch block dahil minsan masyadong malaki ang image file para i-save sa local storage
+            try {
+                localStorage.setItem('cheetah_id_profile', JSON.stringify(profile));
+            } catch (e) {
+                console.warn("Image might be too large to auto-save. Try a smaller file.");
+            }
+        }
+
+        function loadProfile() {
+            const savedData = localStorage.getItem('cheetah_id_profile');
+            if (savedData) {
+                const profile = JSON.parse(savedData);
+                
+                // I-load ang text fields
+                if (profile.name) document.getElementById('inputName').value = profile.name;
+                if (profile.area) document.getElementById('inputArea').value = profile.area;
+                if (profile.number) document.getElementById('inputNumber').value = profile.number;
+                
+                // I-load ang picture kung meron at valid base64 image
+                if (profile.photo && profile.photo.startsWith('data:image')) {
+                    document.getElementById('previewImage').src = profile.photo;
+                    document.getElementById('upload-label').innerHTML = `<i class="fa-solid fa-check" style="color:var(--green-installed); margin-right: 8px;"></i> Saved Photo Loaded`;
+                    document.getElementById('upload-label').style.borderColor = "var(--primary-orange)";
+                }
+                
+                updateID(); // I-refresh ang live preview
+            }
+        }
+
+        // --- HANDLE UPLOADS & TYPING ---
         document.getElementById('photoUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -208,12 +246,12 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     document.getElementById('previewImage').src = event.target.result;
+                    saveProfile(); // I-save agad pagka-upload
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Real-time Text Update
         function updateID() {
             const name = document.getElementById('inputName').value.trim();
             const area = document.getElementById('inputArea').value.trim();
@@ -222,9 +260,11 @@
             document.getElementById('display-name').innerText = name ? name : "JUAN DELA CRUZ";
             document.getElementById('display-area').innerText = area ? area : "TAYTAY";
             document.getElementById('display-number').innerText = number ? number : "CHT-000-000";
+            
+            saveProfile(); // I-save tuwing may tina-type
         }
 
-        // Export to JPG
+        // --- EXPORT TO JPG ---
         function exportID() {
             const btn = document.getElementById('exportBtn');
             const idCard = document.getElementById('idPreviewCanvas');
@@ -233,10 +273,9 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> GENERATING...`;
             btn.disabled = true;
 
-            // Optional timeout to ensure fonts and images are fully rendered
             setTimeout(() => {
                 html2canvas(idCard, { 
-                    scale: 3, // High resolution output
+                    scale: 3, 
                     backgroundColor: '#090a0f',
                     useCORS: true,
                     logging: false
@@ -261,6 +300,9 @@
                 });
             }, 300);
         }
+
+        // I-load ang profile kapag nabuksan ang page
+        window.addEventListener('DOMContentLoaded', loadProfile);
     </script>
 </body>
 </html>
