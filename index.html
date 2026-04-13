@@ -628,7 +628,7 @@ onAuthStateChanged(auth, user => {
                 const forcedAd = document.getElementById('forcedAdOverlay');
                 if(forcedAd) {
                     // Admin bypass: Kung email mo ang gamit, wag ipakita
-                    if(user.email === "gpmillado.w@gmail.com") {
+                    if(user.email === "gpmillado@gmail.com") {
                         forcedAd.style.display = 'none';
                     } else {
                         forcedAd.style.display = 'flex';
