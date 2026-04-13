@@ -331,7 +331,10 @@ PLAN VALUE:</pre>
         <div class="subtitle">Document Generator</div>
     </div>
 
-<label>1. Select Area (Template)</label>
+    <label>Agent Name / AE</label>
+    <input type="text" id="agentName" class="main-input" placeholder="Type Agent Name here..." style="margin-bottom: 20px;">
+
+    <label>1. Select Area (Template)</label>
     <select id="areaSelect" class="main-input">
         <option value="bctv.docx">📺 BCTV</option>
         <option value="skyline.docx">🏙️ Skyline</option>
@@ -568,8 +571,31 @@ Indoor Fiber:
         });
     }
 
-    document.addEventListener('DOMContentLoaded', updatePlanTerms);
+document.addEventListener('DOMContentLoaded', () => {
+        updatePlanTerms();
+        
+        // I-load ang nai-save na Client Data
+        const savedData = localStorage.getItem('cheetahRawData');
+        if (savedData) {
+            document.getElementById('raw').value = savedData;
+        }
 
+        // I-load ang nai-save na AGENT NAME
+        const savedAgent = localStorage.getItem('cheetahAgentName');
+        if (savedAgent) {
+            document.getElementById('agentName').value = savedAgent;
+        }
+    });
+
+    // I-save sa Local Storage ang Client Data
+    document.getElementById('raw').addEventListener('input', function() {
+        localStorage.setItem('cheetahRawData', this.value);
+    });
+
+    // I-save sa Local Storage ang AGENT NAME
+    document.getElementById('agentName').addEventListener('input', function() {
+        localStorage.setItem('cheetahAgentName', this.value);
+    });
     // --- DOCUMENT GENERATION LOGIC ---
     
     function getFormattedDate() {
@@ -628,8 +654,9 @@ Indoor Fiber:
                 return isEmail ? val : val.toUpperCase();
             }
 
-            doc.render({
-                agent_name: get("AGENT NAME"),
+doc.render({
+                // Dito na niya kukunin yung naka-type sa bagong text box
+                agent_name: document.getElementById('agentName').value.trim().toUpperCase(),
                 date: getFormattedDate().toUpperCase(), last_name: get("LAST NAME"), first_name: get("FIRST NAME"), middle_name: get("MIDDLE NAME"),
                 hp: get("HOUSE PHONE"), op: get("OFFICE PHONE"), mobile: get("MOBILE PHONE"), email: get("EMAIL ADDRESS", true), id_no: get("ID TYPE/NO."), 
                 birthdate: get("BIRTHDATE"), age: get("AGE"), sex: get("SEX"), civil_status: get("CIVIL STATUS"), spouse_name: get("SPOUSE NAME"),
