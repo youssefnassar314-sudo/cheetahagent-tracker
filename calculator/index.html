@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheetah Space | Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* DEEP SPACE DARK MODE COLORS */
+            --bg-dark: #090a0f; 
+            --bg-deep: #12141d;
+            --card-dark: rgba(20, 24, 36, 0.7);
+            
+            /* CHEETAH ORANGE NEON */
+            --primary-orange: #ff6a00; 
+            --accent-orange: #ff9100; 
+            
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --glass-border: rgba(255, 106, 0, 0.15);
+            --green-installed: #10b981; 
+            --blue-biz: #3b82f6;
+        }
+
+        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        body {
+            background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(59,130,246,0.05), transparent 40%),
+                        var(--bg-dark);
+            background-attachment: fixed;
+            color: var(--text-main); margin: 0; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+
+        .container { width: 100%; max-width: 480px; } 
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-weight: 800; font-size: 2rem; letter-spacing: 1px; }
+        .header h1 span { color: var(--primary-orange); }
+        .header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .glass-panel { 
+            background: var(--card-dark); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 25px; border-radius: 20px; margin-bottom: 20px; 
+            border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+        select, input[type="date"] { 
+            width: 100%; padding: 15px; background: rgba(0, 0, 0, 0.4); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; 
+            color: white; font-size: 0.95rem; margin-bottom: 20px; 
+            font-family: 'Poppins', sans-serif; cursor: pointer;
+        }
+        select:focus, input[type="date"]:focus {
+            outline: none; border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+        }
+        select option { background-color: var(--bg-deep); color: white; }
+
+        /* Output Display */
+        .result-box {
+            background: linear-gradient(145deg, rgba(30, 35, 48, 0.8), rgba(20, 24, 36, 0.9)); 
+            border-radius: 16px; padding: 25px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative; overflow: hidden;
+        }
+        
+        .result-box::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--primary-orange), var(--accent-orange));
+        }
+
+        .total-amount { 
+            font-size: 3rem; font-weight: 800; color: white; margin: 10px 0 5px 0; 
+            text-shadow: 0 0 20px rgba(255,106,0,0.4); line-height: 1;
+        }
+        .total-amount span { font-size: 1.5rem; vertical-align: top; color: var(--primary-orange); }
+
+        .breakdown-row { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+        }
+        .breakdown-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .breakdown-label { color: var(--text-muted); font-weight: 600; }
+        .breakdown-value { color: white; font-weight: 800; font-size: 0.95rem; }
+
+        .info-badge {
+            display: inline-block; padding: 6px 12px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            margin-top: 15px; background: rgba(59, 130, 246, 0.15); color: var(--blue-biz);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .info-badge.delay-billing {
+            background: rgba(244, 63, 94, 0.15); color: #f43f5e;
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>CHEETAH<span style="color:var(--primary-orange)">//</span>CALC</h1>
+            <p>Prorated First Bill Estimator</p>
+        </div>
+
+        <div class="glass-panel">
+            <label><i class="fa-solid fa-wifi" style="margin-right: 5px; color: var(--primary-orange)"></i> Select Internet Plan</label>
+            <select id="planSelect" onchange="calculateProrated()">
+                <option value="699">80 Mbps (₱699)</option>
+                <option value="999">150 Mbps (₱999)</option>
+                <option value="1250">300 Mbps (₱1250)</option>
+                <option value="1500">500 Mbps (₱1500)</option>
+                <option value="2500">800 Mbps (₱2500)</option>
+                <option value="4000">1000 Mbps (₱4000)</option>
+            </select>
+
+            <label><i class="fa-regular fa-calendar-check" style="margin-right: 5px; color: var(--primary-orange)"></i> Date of Installation</label>
+            <input type="date" id="installDate" onchange="calculateProrated()">
+        </div>
+
+        <div class="result-box" id="resultCard" style="display: none;">
+            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Estimated First Bill</p>
+            <div class="total-amount" id="displayTotal"><span>₱</span>0</div>
+            
+            <div id="badgeContainer"></div>
+
+            <div style="margin-top: 25px; text-align: left;">
+                <div class="breakdown-row">
+                    <span class="breakdown-label">Daily Rate (Plan ÷ 30)</span>
+                    <span class="breakdown-value" id="displayDaily">₱0.00</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="breakdown-label">Days to Compute</span>
+                    <span class="breakdown-value" id="displayDays">0 days</span>
+                </div>
+                <div class="breakdown-row">
+                    <span class="breakdown-label">Prorated Charge</span>
+                    <span class="breakdown-value" id="displayProrated" style="color: var(--primary-orange);">₱0</span>
+                </div>
+                <div class="breakdown-row" id="advanceMonthRow" style="display: none;">
+                    <span class="breakdown-label">Advance 1 Month</span>
+                    <span class="breakdown-value" id="displayAdvance">₱0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date as default
+        document.getElementById('installDate').valueAsDate = new Date();
+
+        function calculateProrated() {
+            const planValue = parseFloat(document.getElementById('planSelect').value);
+            const dateInput = document.getElementById('installDate').value;
+            const resultCard = document.getElementById('resultCard');
+            
+            if (!dateInput) {
+                resultCard.style.display = 'none';
+                return;
+            }
+
+            resultCard.style.display = 'block';
+
+            const date = new Date(dateInput);
+            const day = date.getDate();
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            // Get total days in the installation month
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Days active in the month (including the install day)
+            const activeDays = daysInMonth - day + 1;
+            
+            // Daily rate and prorated computation
+            const dailyRate = planValue / 30;
+            const proratedAmount = Math.round(dailyRate * activeDays);
+
+            let totalFirstBill = proratedAmount;
+            let showAdvance = false;
+            let badgeHtml = '';
+
+            if (day <= 15) {
+                // Generates within the same month
+                badgeHtml = `<div class="info-badge"><i class="fa-regular fa-envelope"></i> Bill arrives 17th of this month</div>`;
+            } else {
+                // Delayed billing, includes next full month
+                totalFirstBill += planValue;
+                showAdvance = true;
+                const nextMonthName = new Date(year, month + 1, 1).toLocaleString('default', { month: 'long' });
+                badgeHtml = `<div class="info-badge delay-billing"><i class="fa-solid fa-clock-rotate-left"></i> Delayed Billing: Arrives ${nextMonthName} 17th</div>`;
+            }
+
+            // Update UI Elements
+            document.getElementById('displayTotal').innerHTML = `<span>₱</span>${totalFirstBill.toLocaleString()}`;
+            document.getElementById('displayDaily').innerText = `₱${dailyRate.toFixed(2)}`;
+            document.getElementById('displayDays').innerText = `${activeDays} days`;
+            document.getElementById('displayProrated').innerText = `₱${proratedAmount.toLocaleString()}`;
+            document.getElementById('badgeContainer').innerHTML = badgeHtml;
+
+            const advanceRow = document.getElementById('advanceMonthRow');
+            if (showAdvance) {
+                advanceRow.style.display = 'flex';
+                document.getElementById('displayAdvance').innerText = `₱${planValue.toLocaleString()}`;
+            } else {
+                advanceRow.style.display = 'none';
+            }
+        }
+
+        // Run calculation on load
+        calculateProrated();
+    </script>
+</body>
+</html>
