@@ -284,6 +284,11 @@
         <input type="password" id="authPass" placeholder="Password">
         <button class="primary-btn" onclick="handleAuth('login')">Access Systems</button>
         <button class="primary-btn" style="background:transparent; border: 1px solid rgba(255,106,0,0.5); box-shadow: none; margin-top:10px" onclick="handleAuth('signup')">Register Agent</button>
+        
+        <button class="primary-btn" style="background:transparent; border: none; color: var(--text-muted); box-shadow: none; margin-top: 5px; font-size: 0.75rem; text-transform: none; letter-spacing: normal;" onclick="toggleGuideModal()">
+            <i class="fa-solid fa-circle-question"></i> Paano gamitin ang app?
+        </button>
+    </div>
     </div>
     <div id="appSection" class="main-app">
         <header style="display: flex; flex-direction: column; align-items: center; margin-bottom: 25px;">
@@ -431,6 +436,28 @@
                 </div>
             </div>
         </div>
+        <div class="modal-overlay" id="guideModal">
+        <div class="about-box" style="text-align: left; max-width: 450px;">
+            <button class="modal-close" onclick="toggleGuideModal()">&times;</button>
+            <h3 style="color: white; margin-top: 0; font-weight: 800; text-align: center;"><i class="fa-solid fa-book-open" style="color: var(--primary-orange);"></i> QUICK GUIDE</h3>
+            
+            <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; max-height: 60vh; overflow-y: auto; padding-right: 5px;">
+                <p><strong style="color: var(--primary-orange);">1. Pag-gawa ng Account:</strong><br>
+                Ilagay ang iyong email at gagawing password, tapos i-click ang <b>"Register Agent"</b>. Gamitin ang parehong details sa susunod mong pag-login.</p>
+                
+                <p><strong style="color: var(--primary-orange);">2. Pag-add ng Target:</strong><br>
+                Kapag nakapasok na, piliin kung Residential o Business. Ilagay ang pangalan, area, at internet plan ng client. I-click ang <b>"Add Target"</b>.</p>
+                
+                <p><strong style="color: var(--primary-orange);">3. Paggamit ng Tracker:</strong><br>
+                Kapag nakabitan na ang client, i-click ang <b>"Install"</b>. Lalabas ang date picker at ang <b>"Copy Bill Info"</b> button para madaling i-send sa Messenger ng client yung computation ng bill nila.</p>
+
+                <p><strong style="color: var(--primary-orange);">4. Ang FAB Menu:</strong><br>
+                I-click ang orange <b>(+)</b> button sa ibabang kanang bahagi para buksan ang mga extra tools: ID Generator, Calculator, Workspace, Area Locator, at Ledger.</p>
+            </div>
+            
+            <button class="primary-btn" style="margin-top: 20px;" onclick="toggleGuideModal()">Naiintindihan ko</button>
+        </div>
+    </div>
     </div>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -740,6 +767,7 @@ window.addLedgerEntry = async () => {
                 setTimeout(() => modal.classList.add('active'), 10);
             }
         };
+        window.toggleGuideModal = () => document.getElementById('guideModal').classList.toggle('active');
     </script>
 </body>
 </html>
