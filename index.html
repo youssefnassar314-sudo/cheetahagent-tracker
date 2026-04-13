@@ -555,10 +555,15 @@ window.addLedgerEntry = async () => {
             }
 
             // --- DYNAMIC BILLER LOGIC ---
+           // --- DYNAMIC BILLER LOGIC ---
             let billerName = "SKYLINE CATV"; // Default para sa "The rest"
-            if (area === "Binangonan") {
+            
+            // Lilinisin natin 'yung text para sure na mag-match kahit anong casing
+            const cleanArea = area ? area.toLowerCase().trim() : "";
+
+            if (cleanArea === "binangonan") {
                 billerName = "BINANGONAN CABLE";
-            } else if (area === "Taytay" || area === "Antipolo") {
+            } else if (cleanArea === "taytay" || cleanArea === "antipolo") {
                 billerName = "KABAYAN CABLE (RIZAL)";
             }
 
