@@ -7,331 +7,614 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
-    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-dark: #090a0f; --bg-deep: #12141d; --card-dark: rgba(20, 24, 36, 0.7);
-            --primary-orange: #ff6a00; --accent-orange: #ff9100;
-            --text-main: #f8fafc; --text-muted: #64748b; --glass-border: rgba(255, 106, 0, 0.15);
-            --green-installed: #10b981; --red-alert: #f43f5e; --blue-biz: #3b82f6;
+            /* DEEP SPACE DARK MODE COLORS */
+            --bg-dark: #090a0f; 
+            --bg-deep: #12141d;
+            --card-dark: rgba(20, 24, 36, 0.7);
+            
+            /* CHEETAH ORANGE NEON */
+            --primary-orange: #ff6a00; 
+            --accent-orange: #ff9100; 
+            
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --glass-border: rgba(255, 106, 0, 0.15);
+            --green-installed: #10b981; 
+            --red-alert: #f43f5e; 
+            --blue-biz: #3b82f6;
         }
-        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s; }
-        body { background: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; min-height: 100vh; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 600px; }
-        .card { background: var(--card-dark); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { margin-top: 0; font-weight: 800; color: var(--primary-orange); text-transform: uppercase; text-align: center; letter-spacing: 1px;}
-        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; margin-top: 15px; }
-        .main-input, select, textarea { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; color: white; width: 100%; font-size: 0.9rem; }
-        textarea { height: 130px; font-family: monospace; }
-        .btn { border: none; padding: 15px; border-radius: 10px; color: white; font-weight: 800; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; margin-top: 10px;}
-        .btn-orange { background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); }
-        .btn-orange:hover { box-shadow: 0 5px 15px rgba(255,106,0,0.4); transform: translateY(-2px); }
-        .btn-gray { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-gray:hover { background: rgba(255,255,255,0.2); }
-        .status { text-align: center; font-size: 0.85rem; margin-top: 15px; font-weight: 600; min-height: 20px;}
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        #pdfSection { display: none; margin-top: 25px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1); animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        body {
+            /* Ambient Orange & Blue Glow */
+            background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(59,130,246,0.05), transparent 40%),
+                        var(--bg-dark);
+            background-attachment: fixed;
+            color: var(--text-main); margin: 0; padding: 40px 20px; min-height: 100vh;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        /* Sleek Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+
+        .workspace {
+            background: var(--card-dark);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            width: 100%; max-width: 550px; padding: 40px;
+            border-radius: 20px; 
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+
+        h2 { margin: 0; font-weight: 800; font-size: 2rem; letter-spacing: 1px; }
+        h2 span { color: var(--primary-orange); }
+
+        .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+
+        .file-upload-wrapper { position: relative; margin-bottom: 20px; }
+
+        .file-upload-box {
+            display: flex; align-items: center; justify-content: center; width: 100%; padding: 16px;
+            background: rgba(0, 0, 0, 0.4); border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 12px; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; box-sizing: border-box;
+        }
+
+        .file-upload-box:hover {
+            border-color: var(--primary-orange);
+            background: rgba(255, 106, 0, 0.05);
+            color: white;
+        }
+
+        #tpl { display: none; }
+
+        /* Sleek Neon Inputs */
+        textarea.main-input, input.main-input, select.main-input { 
+            background: rgba(0, 0, 0, 0.4); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            padding: 14px; border-radius: 12px; color: white; margin-bottom: 20px; width: 100%; 
+            font-size: 0.9rem; transition: 0.3s;
+        }
+        textarea.main-input { height: 160px; resize: none; }
+        
+        textarea.main-input:focus, input.main-input:focus, select.main-input:focus {
+            outline: none; border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+        }
+        select.main-input option { background-color: var(--bg-deep); color: white; }
+
+        /* Neon Buttons */
+        button.primary-btn { 
+            background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
+            padding: 16px; border-radius: 12px; border: none; font-weight: 800; color: white; 
+            cursor: pointer; width: 100%; 
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3);
+            text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); }
+
+        #status { text-align: center; font-size: 0.85rem; font-weight: 600; margin-top: 15px; min-height: 20px; }
+
+        /* --- EMAIL SNIPPETS STYLES --- */
+        .email-section {
+            display: none; margin-top: 25px; padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05); animation: slideUp 0.5s ease;
+        }
+        .copy-group { margin-bottom: 15px; }
+        .copy-group label { color: var(--primary-orange); }
+        .copy-box {
+            display: flex; align-items: center; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
+        }
+        .copy-box input, .copy-box textarea {
+            background: transparent; border: none; width: 100%; font-size: 0.85rem;
+            color: white; margin: 0; padding: 0; resize: none;
+        }
+        .copy-box input:focus, .copy-box textarea:focus { outline: none; }
+        
+        .copy-btn {
+            background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 6px;
+            padding: 6px 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+            margin-left: 10px; transition: all 0.2s; white-space: nowrap; text-transform: uppercase;
+        }
+        .copy-btn:hover { background: var(--primary-orange); box-shadow: 0 0 10px rgba(255,106,0,0.4); }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+        /* --- SIDE PANEL STYLES --- */
+        .toggle-panel-btn {
+            position: fixed; top: 40px; right: 0; background: var(--card-dark);
+            backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-right: none;
+            padding: 12px 16px; border-radius: 12px 0 0 12px; box-shadow: -4px 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            font-weight: 600; color: var(--primary-orange);
+            transition: all 0.3s ease; z-index: 100; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .toggle-panel-btn:hover { background: rgba(255,106,0,0.1); padding-right: 24px; }
+
+        .side-panel {
+            position: fixed; top: 0; right: -400px; width: 360px; height: 100%;
+            background: var(--bg-deep); border-left: 1px solid rgba(255,255,255,0.05);
+            box-shadow: -10px 0 40px rgba(0,0,0,0.8);
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000;
+            display: flex; flex-direction: column; overflow-y: auto;
+        }
+        .side-panel.active { right: 0; }
+        
+        .panel-header { padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .panel-header h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; letter-spacing: 1px; }
+        
+        .close-panel-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.2s; padding: 0; line-height: 1; }
+        .close-panel-btn:hover { color: var(--red-alert); }
+        
+        .panel-content { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        
+        .note-alert { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 12px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
+        
+        .template-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 0.75rem; color: #cbd5e1; white-space: pre-wrap; flex: 1; overflow-y: auto; margin: 0; }
+
+        /* --- CONTACT MODAL & FLOATING BUTTON STYLES --- */
+        .contact-fab {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange));
+            color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 8px 25px rgba(255,106,0,0.5);
+            transition: all 0.3s ease; z-index: 100;
+        }
+        .contact-fab:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(255,106,0,0.6); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 10, 15, 0.8); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+
+        .modal-box {
+            background: var(--card-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+            width: 100%; max-width: 400px; border-radius: 20px; padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; text-align: center;
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+
+        .modal-close {
+            position: absolute; top: 20px; right: 20px;
+            background: none; border: none; font-size: 1.5rem; color: var(--text-muted);
+            cursor: pointer; transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--red-alert); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-        <h2>⚡ CHEETAH PRO APP</h2>
+<button class="toggle-panel-btn" onclick="togglePanel()">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+    </svg>
+    App Form
+</button>
+
+<div class="side-panel" id="sidePanel">
+    <div class="panel-header">
+        <h3>
+            <svg width="20" height="20" fill="none" stroke="var(--primary-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            TEMPLATES
+        </h3>
+        <button class="close-panel-btn" onclick="togglePanel()">&times;</button>
+    </div>
+    <div class="panel-content">
+        <div class="note-alert">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink: 0; margin-top: 2px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span><strong>Double check details:</strong> Ensure all values are correctly formatted before generating.</span>
+        </div>
+        <pre class="template-box" id="templateRaw">
+📌APPLICATION FORM 
+
+LAST NAME:
+FIRST NAME:
+MIDDLE NAME:
+HOUSE PHONE:
+OFFICE PHONE:
+MOBILE PHONE:
+EMAIL ADDRESS:
+ID TYPE/NO.:
+PROOF OF BILL ADDRESS:
+BIRTHDATE:
+AGE:
+SEX:
+CIVIL STATUS:
+SPOUSE NAME:
+            
+📌HOME ADDRESS:
+HOUSE/BLOCK/UNIT NO.:
+STREET:
+BUILDING:
+DISTRICT/SUBDIVISION:
+BARANGAY:
+MUNICIPALITY:
+            
+📌WORK INFORMATION:
+OCCUPATION/POSITION:
+EMPLOYER:
+ADDRESS:
+SPOUSE OCCUPATION:
+SPOUSE EMPLOYER:
+SPOUSE EMPLOYER ADDRESS:
+            
+📌House:
+( ) owned
+( ) rent
+( ) living with relatives
+            
+📌Home type:
+( ) Single detached
+( ) condominium
+( ) Apartment
+( ) townhouse
+( ) others
+ 
+PLAN:
+PLAN VALUE:</pre>
+
+        <button class="primary-btn" onclick="copyTemplateBox(this)" style="padding: 12px; font-size: 0.85rem;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy Template
+        </button>
         
-        <label>Agent Name</label>
-        <input type="text" id="agentInput" class="main-input" placeholder="Juan Dela Cruz">
-
-        <label>1. Select Area Template</label>
-        <select id="areaSelect" class="main-input" style="cursor: pointer;">
-            <option value="bctv.docx">BCTV</option>
-            <option value="skyline.docx">Skyline</option>
-            <option value="kabayan.docx">Kabayan</option>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin: 15px 0;">
+        
+        <h3 style="font-size: 0.9rem; color: white; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px; text-transform: uppercase;">
+            <svg width="18" height="18" fill="none" stroke="var(--primary-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            Plan Terms
+        </h3>
+        
+        <select id="planSelect" class="main-input" style="padding: 10px; margin-bottom: 10px; cursor: pointer;" onchange="updatePlanTerms()">
+            <option value="699">📌PLAN 699📌</option>
+            <option value="999">📌PLAN 999📌</option>
+            <option value="1250">📌PLAN 1250📌</option>
+            <option value="1500">📌PLAN 1500📌</option>
+            <option value="2500">📌PLAN 2500📌</option>
+            <option value="4000">📌PLAN 4000📌</option>
         </select>
+        
+        <pre class="template-box" id="planTermsBox" style="height: 150px; margin-bottom: 10px;"></pre>
+        
+        <button class="primary-btn" onclick="copyPlanTerms(this)" style="padding: 12px; font-size: 0.85rem; margin-bottom: 20px;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copy Plan Terms
+        </button>
+    </div>
+</div>
 
-        <label>2. Client Data</label>
-        <textarea id="rawInput" placeholder="LAST NAME:&#10;FIRST NAME:&#10;MUNICIPALITY:&#10;..."></textarea>
+<div class="workspace">
+    <div class="header">
+        <h2>CHEETAH<span style="color:var(--primary-orange)">//</span>PRO</h2>
+        <div class="subtitle">Document Generator</div>
+    </div>
 
-        <div class="grid" style="margin-top: 20px;">
-            <button class="btn btn-gray" onclick="processDocxOnly()">
-                📄 Download DOCX
-            </button>
-            <button class="btn btn-orange" onclick="togglePdfMode()">
-                🎨 Proceed to PDF
-            </button>
+    <label>1. Application Form</label>
+    <div class="file-upload-wrapper">
+        <input type="file" id="tpl" accept=".docx">
+        <label for="tpl" class="file-upload-box" id="upload-label">
+            📄 Upload .docx Template
+        </label>
+    </div>
+
+    <label>2. Client Information Block</label>
+    <textarea id="raw" class="main-input" placeholder="Paste full client format here..."></textarea>
+
+    <button class="primary-btn" onclick="handleGenerate()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        Generate Application
+    </button>
+    <div id="status"></div>
+
+    <div class="email-section" id="emailSection">
+        <div class="header" style="margin-bottom: 15px;">
+            <h2 style="font-size: 1.2rem;">EMAIL <span>SNIPPETS</span></h2>
         </div>
-        <div id="mainStatus" class="status"></div>
-
-        <div id="pdfSection">
-            <h3 style="font-size: 1rem; color: var(--primary-orange); margin-top: 0; text-align: center;">PDF STAMPER MODE</h3>
-            <div class="grid">
-                <div>
-                    <label>Upload Sketch</label>
-                    <input type="file" id="sketchFile" accept="image/*" class="main-input">
-                </div>
-                <div>
-                    <label>Upload Signature</label>
-                    <input type="file" id="sigFile" accept="image/*" class="main-input">
-                </div>
+        <div class="copy-group">
+            <label>Subject Line</label>
+            <div class="copy-box">
+                <input type="text" id="snip-subject" readonly>
+                <button class="copy-btn" onclick="copyText('snip-subject', this)">Copy</button>
             </div>
-
-            <label>Admin Passcode (Required)</label>
-            <input type="password" id="passcode" class="main-input" placeholder="Enter 4-digit code">
-
-            <button class="btn btn-orange" id="generatePdfBtn" onclick="processPdfFull()">
-                ✨ VERIFY & GENERATE PDF
-            </button>
-            <div id="pdfStatus" class="status"></div>
         </div>
+        <div class="copy-group">
+            <label>Short Format</label>
+            <div class="copy-box">
+                <input type="text" id="snip-short" readonly>
+                <button class="copy-btn" onclick="copyText('snip-short', this)">Copy</button>
+            </div>
+        </div>
+        <div class="copy-group">
+            <label>Body Options</label>
+            <div class="options-grid">
+                <div class="copy-box"><textarea id="snip-body1" rows="2" readonly></textarea><button class="copy-btn" onclick="copyText('snip-body1', this)">Copy</button></div>
+                <div class="copy-box"><textarea id="snip-body2" rows="2" readonly></textarea><button class="copy-btn" onclick="copyText('snip-body2', this)">Copy</button></div>
+                <div class="copy-box"><textarea id="snip-body3" rows="2" readonly></textarea><button class="copy-btn" onclick="copyText('snip-body3', this)">Copy</button></div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="contact-fab" onclick="toggleContactModal()">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+    </svg>
+</div>
+
+<div class="modal-overlay" id="contactModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="toggleContactModal()">&times;</button>
+        <h3 style="margin-top: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">SEND <span style="color:var(--primary-orange)">FEEDBACK</span></h3>
+        <p class="subtitle" style="margin-bottom: 25px;">Issues or requests? Send them here.</p>
+
+        <label style="text-align:left;">Your Email:</label>
+        <input type="email" id="tg-email" class="main-input" placeholder="agent@cheetah.com" style="margin-bottom: 15px; padding: 12px;">
+
+        <label style="text-align:left;">Concern:</label>
+        <textarea id="tg-concern" class="main-input" placeholder="Type your message..." style="height: 100px; margin-bottom: 20px; padding: 12px;"></textarea>
+
+        <button class="primary-btn" id="tg-submit" onclick="sendToTelegram()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Send Transmit
+        </button>
+        <div id="tg-status" style="text-align: center; margin-top: 15px; font-size: 0.85rem; font-weight: 600;"></div>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // LOCAL STORAGE (Auto-Save)
-    // ==========================================
-    const agent = document.getElementById('agentInput');
-    const area = document.getElementById('areaSelect');
-    const raw = document.getElementById('rawInput');
+    // --- UI TOGGLES ---
+    function togglePanel() { document.getElementById('sidePanel').classList.toggle('active'); }
+    
+    function toggleContactModal() {
+        const modal = document.getElementById('contactModal');
+        if(modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        } else {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if(localStorage.getItem('cp_agent')) agent.value = localStorage.getItem('cp_agent');
-        if(localStorage.getItem('cp_area')) area.value = localStorage.getItem('cp_area');
-        if(localStorage.getItem('cp_raw')) raw.value = localStorage.getItem('cp_raw');
+    // --- TELEGRAM LOGIC ---
+    async function sendToTelegram() {
+        const email = document.getElementById('tg-email').value.trim();
+        const concern = document.getElementById('tg-concern').value.trim();
+        const statusEl = document.getElementById('tg-status');
+        const btnEl = document.getElementById('tg-submit');
+
+        if (!email || !concern) {
+            statusEl.innerText = "⚠️ Please fill in all fields.";
+            statusEl.style.color = "var(--red-alert)"; return;
+        }
+
+        btnEl.innerText = "Transmitting..."; btnEl.style.opacity = "0.7";
+
+        const BOT_TOKEN = "8736863504:AAEchjzxnsh83Nrpad3GDZAOEBza6_piIPA"; 
+        const CHAT_ID = "6551261245";
+        const messageText = `📬 *Cheetah Pro Feedback*\n\n*From:* ${email}\n*Concern:*\n${concern}`;
+
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: messageText, parse_mode: "Markdown" })
+            });
+            if (response.ok) {
+                statusEl.innerText = "✨ Transmit successful!"; statusEl.style.color = "var(--green-installed)";
+                document.getElementById('tg-email').value = ""; document.getElementById('tg-concern').value = "";
+                setTimeout(() => { toggleContactModal(); statusEl.innerText = ""; }, 2000);
+            } else throw new Error("API Error");
+        } catch (error) {
+            statusEl.innerText = "❌ Transmit failed."; statusEl.style.color = "var(--red-alert)";
+        } finally {
+            btnEl.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Send Transmit`;
+            btnEl.style.opacity = "1";
+        }
+    }
+
+    // --- TEMPLATE LOGIC ---
+    function copyTemplateBox(btnElement) {
+        const templateText = document.getElementById('templateRaw').innerText;
+        navigator.clipboard.writeText(templateText).then(() => {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.innerHTML = `✓ Copied`; btnElement.style.background = "var(--green-installed)"; btnElement.style.boxShadow = "none";
+            setTimeout(() => { btnElement.innerHTML = originalHTML; btnElement.style.background = ""; btnElement.style.boxShadow = ""; }, 2000);
+        });
+    }
+
+    function updatePlanTerms() {
+        const plan = document.getElementById('planSelect').value;
+        const termsText = `📌PLAN ${plan} 
+
+📌Payment & Installation
+• ₱${plan} lamang ang babayaran upon installation
+• Ito ay deposit na magagamit kapag ipapatanggal ang service
+• May 24-month lock-in period (2 years)
+
+📌Disconnection & Contract
+• Para sa voluntary disconnection, kailangan mag-submit ng written request sa branch at least 30 days before
+• Priority disconnection kapag fully paid at walang outstanding balance
+• Kung walang written request, magtutuloy ang contract
+• Kailangang ibalik ang modem/router o cable box kapag terminated ang service
+
+📌Changes & Transfers
+• May ₱500 fee para sa upgrade/downgrade habang nasa lock-in period
+• Pwede ilipat ang modem/router, pero kailangan iprocess sa branch
+
+📌Excess Materials
+(Applicable lang kung may excess na sasabihin ang installer)
+Outdoor Fiber:
+• Free hanggang 120 meters
+• 200 meters – ₱700
+• 300 meters – ₱1,000
+Indoor Fiber:
+• Free hanggang 15 meters
+• ₱10 per meter kapag sumobra
+• Ang excess materials ay idadagdag sa bill at payable within 2 months
+• Kailangang maibalik ang materials in good condition kapag nag-terminate para maiwasan ang extra charges
+
+📌Billing
+• Installation (1–15): lalabas ang bill sa 17th ng same month
+• Installation (16–31): lalabas sa 17th ng next month (or upon request)
+• First bill: Pro-rated (₱${plan} ÷ 30 × days used)
+• Next bills: ₱${plan}/month
+• Due date: 30/31 ng buwan
+• May extension hanggang 10 ng next month`;
+        document.getElementById('planTermsBox').innerText = termsText;
+    }
+
+    function copyPlanTerms(btnElement) {
+        const termsText = document.getElementById('planTermsBox').innerText;
+        navigator.clipboard.writeText(termsText).then(() => {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.innerHTML = `✓ Copied`; btnElement.style.background = "var(--green-installed)"; btnElement.style.boxShadow = "none";
+            setTimeout(() => { btnElement.innerHTML = originalHTML; btnElement.style.background = ""; btnElement.style.boxShadow = ""; }, 2000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', updatePlanTerms);
+
+    // --- DOCUMENT GENERATION LOGIC ---
+    document.getElementById('tpl').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : "📄 Upload .docx Template";
+        document.getElementById('upload-label').innerText = fileName;
+        if (e.target.files[0]) {
+            document.getElementById('upload-label').style.borderColor = "var(--primary-orange)";
+            document.getElementById('upload-label').style.color = "white";
+            document.getElementById('upload-label').style.background = "rgba(255, 106, 0, 0.1)";
+        }
     });
 
-    agent.addEventListener('input', () => localStorage.setItem('cp_agent', agent.value));
-    area.addEventListener('change', () => localStorage.setItem('cp_area', area.value));
-    raw.addEventListener('input', () => localStorage.setItem('cp_raw', raw.value));
+    const getBuf = (f) => new Promise((res) => {
+        if (!f) return res(null);
+        const r = new FileReader(); r.onload = (e) => res(e.target.result); r.readAsArrayBuffer(f);
+    });
 
-    // ==========================================
-    // HELPER FUNCTIONS
-    // ==========================================
     function getFormattedDate() {
         return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    function parseData(text) {
-        const lines = text.split('\n'); const data = {}; let key = "";
-        lines.forEach(line => {
-            line = line.trim(); if(!line || line.startsWith('(')) return;
-            const idx = line.indexOf(':');
-            if(idx !== -1) {
-                key = line.substring(0, idx).trim().toUpperCase();
-                data[key] = line.substring(idx + 1).trim();
-            } else if(key) {
-                data[key] += " " + line;
+    function parseData(rawText) {
+        const lines = rawText.split('\n'); const data = {}; let currentKey = "";
+        for (let line of lines) {
+            line = line.trim(); if (!line || line.startsWith('(')) continue;
+            const colonIndex = line.indexOf(':');
+            if (colonIndex !== -1) {
+                currentKey = line.substring(0, colonIndex).trim().toUpperCase();
+                data[currentKey] = line.substring(colonIndex + 1).trim();
+            } else if (currentKey) {
+                data[currentKey] = data[currentKey] ? data[currentKey] + " " + line : line;
             }
-        });
+        }
         return data;
     }
 
-    // ==========================================
-    // LOGIC 1: DOCX ONLY
-    // ==========================================
-    async function processDocxOnly() {
-        const status = document.getElementById('mainStatus');
-        if (!raw.value) { status.innerText = "⚠️ Please paste client data first."; status.style.color = "var(--red-alert)"; return; }
-        
-        status.innerText = "Processing DOCX..."; status.style.color = "white";
+    function copyText(elementId, btnElement) {
+        const copyEl = document.getElementById(elementId);
+        copyEl.select(); copyEl.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(copyEl.value);
+        const originalText = btnElement.innerText;
+        btnElement.innerText = "COPIED!"; btnElement.style.background = "var(--primary-orange)"; btnElement.style.color = "white";
+        setTimeout(() => { btnElement.innerText = originalText; btnElement.style.background = ""; btnElement.style.color = ""; }, 1500);
+    }
 
-        try {
-            const res = await fetch(`./${area.value}`);
-            if (!res.ok) throw new Error("Template not found on server.");
-            
-            const arrayBuffer = await res.arrayBuffer();
-            const zip = new PizZip(arrayBuffer);
-            const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-            
-            const clientData = parseData(raw.value);
-            
-            // Helper function specific for mapping
-            function get(key, isEmail = false) {
-                let val = clientData[key.toUpperCase()] || "";
-                return isEmail ? val : val.toUpperCase();
-            }
+    function handleGenerate() {
+        const status = document.getElementById('status');
+        const tFile = document.getElementById('tpl').files[0];
+        const rawText = document.getElementById('raw').value;
 
-            // FULL TAG MAPPING AS REQUESTED
-            doc.render({
-                agent_name: (agent.value || "AGENT").toUpperCase(),
-                date: getFormattedDate().toUpperCase(), 
-                last_name: get("LAST NAME"), 
-                first_name: get("FIRST NAME"), 
-                middle_name: get("MIDDLE NAME"),
-                hp: get("HOUSE PHONE"), 
-                op: get("OFFICE PHONE"), 
-                mobile: get("MOBILE PHONE"), 
-                email: get("EMAIL ADDRESS", true), 
-                id_no: get("ID TYPE/NO."), 
-                birthdate: get("BIRTHDATE"), 
-                age: get("AGE"), 
-                sex: get("SEX"), 
-                civil_status: get("CIVIL STATUS"), 
-                spouse_name: get("SPOUSE NAME"),
-                house_no: get("HOUSE/BLOCK/UNIT NO."), 
-                street: get("STREET"), 
-                building: get("BUILDING"), 
-                subd: get("DISTRICT/SUBDIVISION"), 
-                barangay: get("BARANGAY"), 
-                municipality: get("MUNICIPALITY"),
-                occupation: get("OCCUPATION/POSITION"), 
-                employer: get("EMPLOYER"), 
-                occ_address: get("ADDRESS"), 
-                spouse_occ: get("SPOUSE OCCUPATION"), 
-                spouse_emp: get("SPOUSE EMPLOYER"), 
-                spouse_add_occ: get("SPOUSE EMPLOYER ADDRESS"),
-                plan_name: get("PLAN"), 
-                plan_value: get("PLAN VALUE")
-            });
-
-            const out = doc.getZip().generate({ type: "blob" });
-            const providerName = area.value.split('.')[0].toUpperCase();
-            
-            saveAs(out, `${providerName}_${get("LAST NAME") || "FORM"}.docx`);
-            status.innerText = "✨ DOCX Downloaded successfully!"; status.style.color = "var(--green-installed)";
-            
-            document.getElementById('pdfSection').style.display = "none";
-        } catch (e) {
-            console.error(e);
-            status.innerText = "❌ Error: " + e.message; status.style.color = "var(--red-alert)";
+        if (!tFile || !rawText) {
+            status.innerHTML = "⚠️ Awaiting template & data."; status.style.color = "var(--red-alert)"; return;
         }
+        status.innerHTML = "Processing data..."; status.style.color = "var(--blue-biz)";
+        document.getElementById('emailSection').style.display = "none";
+        setTimeout(() => processDocument(tFile, rawText, status), 50);
     }
 
-    // ==========================================
-    // UI: TOGGLE PDF MODE
-    // ==========================================
-    function togglePdfMode() {
-        const pdfSec = document.getElementById('pdfSection');
-        const status = document.getElementById('mainStatus');
-        if (!raw.value) { status.innerText = "⚠️ Please paste client data first."; status.style.color = "var(--red-alert)"; return; }
-        status.innerText = "";
-        pdfSec.style.display = pdfSec.style.display === "block" ? "none" : "block";
-    }
-
-    // ==========================================
-    // LOGIC 2: PDF FULL PROCESS (Calls Phase 2 Backend)
-    // ==========================================
-    async function processPdfFull() {
-        const status = document.getElementById('pdfStatus');
-        const pass = document.getElementById('passcode').value;
-        const btn = document.getElementById('generatePdfBtn');
-
-        if (pass !== "2026") { status.innerText = "❌ Invalid Passcode!"; status.style.color = "var(--red-alert)"; return; }
-        
-        btn.disabled = true;
-        status.innerText = "⏳ Step 1: Generating Document..."; status.style.color = "white";
-
+    async function processDocument(tFile, rawText, status) {
         try {
-            // 1. GENERATE DOCX IN MEMORY
-            const res = await fetch(`./${area.value}`);
-            const arrayBuffer = await res.arrayBuffer();
-            const zip = new PizZip(arrayBuffer);
+            const tBuf = await getBuf(tFile); const zip = new PizZip(tBuf);
             const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-            
-            const clientData = parseData(raw.value);
-            
+            const clientData = parseData(rawText);
+
             function get(key, isEmail = false) {
                 let val = clientData[key.toUpperCase()] || "";
                 return isEmail ? val : val.toUpperCase();
             }
 
-            // FULL TAG MAPPING AS REQUESTED
             doc.render({
-                agent_name: (agent.value || "AGENT").toUpperCase(),
-                date: getFormattedDate().toUpperCase(), 
-                last_name: get("LAST NAME"), 
-                first_name: get("FIRST NAME"), 
-                middle_name: get("MIDDLE NAME"),
-                hp: get("HOUSE PHONE"), 
-                op: get("OFFICE PHONE"), 
-                mobile: get("MOBILE PHONE"), 
-                email: get("EMAIL ADDRESS", true), 
-                id_no: get("ID TYPE/NO."), 
-                birthdate: get("BIRTHDATE"), 
-                age: get("AGE"), 
-                sex: get("SEX"), 
-                civil_status: get("CIVIL STATUS"), 
-                spouse_name: get("SPOUSE NAME"),
-                house_no: get("HOUSE/BLOCK/UNIT NO."), 
-                street: get("STREET"), 
-                building: get("BUILDING"), 
-                subd: get("DISTRICT/SUBDIVISION"), 
-                barangay: get("BARANGAY"), 
-                municipality: get("MUNICIPALITY"),
-                occupation: get("OCCUPATION/POSITION"), 
-                employer: get("EMPLOYER"), 
-                occ_address: get("ADDRESS"), 
-                spouse_occ: get("SPOUSE OCCUPATION"), 
-                spouse_emp: get("SPOUSE EMPLOYER"), 
-                spouse_add_occ: get("SPOUSE EMPLOYER ADDRESS"),
-                plan_name: get("PLAN"), 
-                plan_value: get("PLAN VALUE")
+                date: getFormattedDate().toUpperCase(), last_name: get("LAST NAME"), first_name: get("FIRST NAME"), middle_name: get("MIDDLE NAME"),
+                hp: get("HOUSE PHONE"), op: get("OFFICE PHONE"), mobile: get("MOBILE PHONE"), email: get("EMAIL ADDRESS", true), id_no: get("ID TYPE/NO."), 
+                birthdate: get("BIRTHDATE"), age: get("AGE"), sex: get("SEX"), civil_status: get("CIVIL STATUS"), spouse_name: get("SPOUSE NAME"),
+                house_no: get("HOUSE/BLOCK/UNIT NO."), street: get("STREET"), building: get("BUILDING"), subd: get("DISTRICT/SUBDIVISION"), barangay: get("BARANGAY"), municipality: get("MUNICIPALITY"),
+                occupation: get("OCCUPATION/POSITION"), employer: get("EMPLOYER"), occ_address: get("ADDRESS"), spouse_occ: get("SPOUSE OCCUPATION"), spouse_emp: get("SPOUSE EMPLOYER"), spouse_add_occ: get("SPOUSE EMPLOYER ADDRESS"),
+                plan_name: get("PLAN"), plan_value: get("PLAN VALUE")
             });
 
-            // Convert raw docx binary to base64 so we can send it securely to our Vercel API
-            const docxBinary = doc.getZip().generate({ type: "string" });
-            const docxBase64 = window.btoa(docxBinary);
+            const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+            const lName = get("LAST NAME") || "UNKNOWN"; const fName = get("FIRST NAME") || "CLIENT"; const muni = get("MUNICIPALITY") || "NO_CITY"; const plan = get("PLAN") || "NO_PLAN";
+            saveAs(out, `${lName}, ${fName} - ${muni}.docx`);
 
-            // 2. SEND TO OUR VERCEL BACKEND API (Phase 2)
-            status.innerText = "☁️ Step 2: Requesting Conversion from Server..."; status.style.color = "var(--blue-biz)";
+            document.getElementById('snip-subject').value = `${lName}, ${fName} - ${muni} - ${plan}`;
+            document.getElementById('snip-short').value = `${lName}, ${fName} / ${muni}`;
+            document.getElementById('snip-body1').value = `Magandang araw po!\n\nAttached is the completed form for ${fName} ${lName}. Let me know if you need anything else.\n\nSalamat!`;
+            document.getElementById('snip-body2').value = `Good day,\n\nPlease find attached the details for ${fName} ${lName} (${plan}) for your perusal.\n\nBest regards,`;
+            document.getElementById('snip-body3').value = `Good day!\n\nSending over the generated application document for ${lName}, ${fName} from ${muni}.\n\nThank you.`;
+
+            document.getElementById('emailSection').style.display = "block";
+            status.innerHTML = "✨ Application Generated!"; status.style.color = "var(--green-installed)";
+            document.getElementById('raw').value = "";
             
-            // NOTE: This fetch will fail until we create the 'api/convert.js' file!
-            const apiResponse = await fetch('/api/convert', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fileBase64: docxBase64 })
-            });
-
-            if (!apiResponse.ok) throw new Error("Server API Failed. Check Vercel logs.");
-            
-            const apiResult = await apiResponse.json();
-            const pdfBase64 = apiResult.pdfBase64;
-            
-            // Decode Base64 PDF back to binary for pdf-lib
-            const binaryString = window.atob(pdfBase64);
-            const pdfBytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) pdfBytes[i] = binaryString.charCodeAt(i);
-
-            // 3. STAMP IMAGES
-            status.innerText = "🎨 Step 3: Stamping Images..."; status.style.color = "var(--accent-orange)";
-            
-            const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-            const page = pdfDoc.getPages()[0];
-            const { height } = page.getSize();
-
-            const sketchFile = document.getElementById('sketchFile').files[0];
-            if(sketchFile) {
-                const imgBytes = await sketchFile.arrayBuffer();
-                const img = sketchFile.type.includes('png') ? await pdfDoc.embedPng(imgBytes) : await pdfDoc.embedJpg(imgBytes);
-                page.drawImage(img, { x: 320, y: height - 480, width: 250, height: 180 }); // Adjust X/Y
-            }
-
-            const sigFile = document.getElementById('sigFile').files[0];
-            if(sigFile) {
-                const sigBytes = await sigFile.arrayBuffer();
-                const sig = sigFile.type.includes('png') ? await pdfDoc.embedPng(sigBytes) : await pdfDoc.embedJpg(sigBytes);
-                page.drawImage(sig, { x: 180, y: 50, width: 120, height: 50 }); // Adjust X/Y
-            }
-
-            // 4. DOWNLOAD
-            const finalPdf = await pdfDoc.save();
-            const providerName = area.value.split('.')[0].toUpperCase();
-            saveAs(new Blob([finalPdf]), `${providerName}_${get("LAST NAME") || "SIGNED"}.pdf`);
-            
-            status.innerText = "✨ PDF Secured & Downloaded!"; status.style.color = "var(--green-installed)";
-            document.getElementById('passcode').value = ""; 
-
-        } catch (error) {
-            console.error(error);
-            status.innerText = "❌ Error: " + error.message; status.style.color = "var(--red-alert)";
-        } finally {
-            btn.disabled = false;
+        } catch (err) {
+            console.error(err); status.innerHTML = "❌ System Error. Check logs."; status.style.color = "var(--red-alert)";
         }
     }
 </script>
