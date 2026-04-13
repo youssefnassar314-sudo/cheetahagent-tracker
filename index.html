@@ -309,6 +309,9 @@
             </div>
             <div style="display:flex; justify-content:center; gap:15px; align-items:center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
                 <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: transparent; color: var(--primary-orange); font-weight: 600; border: none; box-shadow: none;" onchange="render()"></select>
+                <button onclick="toggleProfileModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='var(--primary-orange)'" onmouseout="this.style.color='var(--text-muted)'" title="My Profile">
+    <i class="fa-solid fa-user-astronaut"></i>
+</button>
                 <button onclick="toggleTheme()" id="themeBtn" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem; margin-right: 5px; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'" title="Toggle Sketch Theme">
                     <i class="fa-solid fa-palette"></i>
                 </button>
@@ -429,6 +432,31 @@
             <small style="color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Net Balance:</small>
             <div id="extraTotal" style="font-weight:800; color:var(--primary-orange); font-size:1.5rem; text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱0</div>
         </div>
+        <div class="modal-overlay" id="profileModal">
+    <div class="about-box" style="text-align: center;">
+        <button class="modal-close" onclick="toggleProfileModal()">&times;</button>
+        
+        <div class="creator-avatar" style="background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 10px 20px rgba(59,130,246,0.3);">
+            <div style="width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-deep); background: #1e2330; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white;">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+        
+        <h3 style="color: white; margin-top: 0; font-weight: 800; letter-spacing: 1px;">AGENT PROFILE</h3>
+        
+        <div style="text-align: left; margin-top: 20px;">
+            <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Agent Email (Read-only)</label>
+            <input type="email" id="profileEmail" disabled style="background: rgba(255,255,255,0.05); color: #cbd5e1; cursor: not-allowed; border-color: rgba(255,255,255,0.05);">
+            
+            <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">Agent Name / Callsign</label>
+            <input type="text" id="profileName" placeholder="Enter your display name...">
+        </div>
+        
+        <button class="primary-btn" style="margin-top: 15px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 6px 20px rgba(59,130,246,0.3);" onclick="saveProfile()">
+            <i class="fa-solid fa-floppy-disk" style="margin-right: 5px;"></i> Save Profile
+        </button>
+    </div>
+</div>
         <div class="modal-overlay" id="aboutModal">
             <div class="about-box">
                 <button class="modal-close" onclick="toggleAboutModal()">&times;</button>
@@ -470,9 +498,10 @@
         </div>
     </div>
     </div>
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         const firebaseConfig = {
             apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
@@ -736,6 +765,42 @@ window.addLedgerEntry = async () => {
         };
         const vm = document.getElementById('viewMonth');
         months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
+        // --- MY PROFILE LOGIC ---
+window.toggleProfileModal = () => {
+    const modal = document.getElementById('profileModal');
+    
+    if(!modal.classList.contains('active')) {
+        // Populate the data kapag binuksan yung modal
+        if (currentUser) {
+            document.getElementById('profileEmail').value = currentUser.email;
+            document.getElementById('profileName').value = currentUser.displayName || ""; // Blank if wala pa
+        }
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    } else {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+};
+
+window.saveProfile = async () => {
+    const newName = document.getElementById('profileName').value;
+    
+    if (!currentUser) return;
+    
+    try {
+        // Firebase Auth built-in function to update name
+        await updateProfile(currentUser, {
+            displayName: newName
+        });
+        
+        alert("Success! Na-update na ang profile mo, Agent " + (newName || currentUser.email) + ".");
+        toggleProfileModal(); // Close modal after saving
+    } catch (error) {
+        alert("Error updating profile: " + error.message);
+    }
+};
     </script>
     <script>
         // SERVICE WORKER REGISTRATION
@@ -795,6 +860,7 @@ window.addLedgerEntry = async () => {
             }
         };
         window.toggleGuideModal = () => document.getElementById('guideModal').classList.toggle('active');
+        
     </script>
 </body>
 </html>
