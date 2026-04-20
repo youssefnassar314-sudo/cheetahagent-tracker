@@ -656,11 +656,10 @@
 };
         window.logout = () => signOut(auth);
 onAuthStateChanged(auth, user => {
-            // BAGO: Itago ang Loading Screen nang smooth kapag nag-respond na ang Firebase
             const loader = document.getElementById('initLoader');
             if (loader) {
                 loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500); // Hintayin matapos ang fade out
+                setTimeout(() => loader.style.display = 'none', 500); 
             }
 
             if(user) {
@@ -678,11 +677,33 @@ onAuthStateChanged(auth, user => {
                 }
                 syncData();
             } else {
+                // KAPAG NAKA-LOGOUT O WALANG USER
                 document.getElementById('authSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
                 
                 const forcedAd = document.getElementById('forcedAdOverlay');
                 if(forcedAd) forcedAd.style.display = 'none';
+
+                // --- BUG FIX: I-FORCE CLOSE LAHAT NG NAIWANG BUKAS NA MENU ---
+                
+                // 1. Isara ang FAB Menu (Floating Button)
+                const fabMenu = document.getElementById('fabMenu');
+                if(fabMenu) fabMenu.classList.remove('active');
+
+                // 2. Isara ang Ledger Sidebar
+                const ledger = document.getElementById('ledgerSidebar');
+                if(ledger) ledger.classList.remove('active');
+
+                // 3. Isara ang Settings Modal (kasi nandito yung Log Out button)
+                const settingsModal = document.getElementById('settingsModal');
+                if(settingsModal) {
+                    settingsModal.classList.remove('active');
+                    settingsModal.style.display = 'none';
+                }
+
+                // 4. Reset form fields para malinis pag-login ulit
+                document.getElementById('authEmail').value = '';
+                document.getElementById('authPass').value = '';
             }
         });
         
