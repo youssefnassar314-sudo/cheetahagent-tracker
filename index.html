@@ -407,6 +407,16 @@
                 <option value="Biz Professional" data-commi="1200">Biz Professional 3.0 - 1200 Commi</option>
                 <option value="Biz Enterprise" data-commi="2400">Biz Enterprise 6.0 - 2400 Commi</option>
             </select>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <select id="borrowStatus" onchange="toggleBorrowInput()" style="flex: 1; margin-bottom: 0;">
+                    <option value="own" selected>👤 My Own Client</option>
+                    <option value="borrowed">🤝 Borrowed from...</option>
+                    <option value="lent">📤 Lent to...</option>
+                </select>
+                <input type="text" id="borrowName" placeholder="Agent Name?" style="display: none; flex: 1; margin-bottom: 0;">
+            </div>
+
             <button class="primary-btn" onclick="addClient()"><i class="fa-solid fa-plus" style="margin-right:5px;"></i> Add Target</button>
         </div>
         <input type="text" id="searchInput" placeholder="Search Database..." onkeyup="render()">
@@ -686,16 +696,36 @@ onAuthStateChanged(auth, user => {
                 render();
             });
         }
+        // NEW: Toggles the name input box based on dropdown selection
+        window.toggleBorrowInput = () => {
+            const status = document.getElementById('borrowStatus').value;
+            document.getElementById('borrowName').style.display = status === 'own' ? 'none' : 'block';
+        };
+
         window.addClient = async () => {
             const fn = document.getElementById('fn').value, ln = document.getElementById('ln').value, area = document.getElementById('areaSelect').value;
             const ps = currentType === 'residential' ? document.getElementById('resPlans') : document.getElementById('bizPlans');
-            if(!fn || !ln || !area || !ps.value) return alert("Punan lahat ng impormasyon!");
+            const bStatus = document.getElementById('borrowStatus').value;
+            const bName = document.getElementById('borrowName').value;
+
+            if(!fn || !ln || !area || !ps.value) return alert("Please fill in all details!");
+            if(bStatus !== 'own' && !bName) return alert("Please enter the agent's name!");
+
+            // Set commission to 0 if borrowed or lent
+            const finalCommi = bStatus === 'own' ? parseInt(ps.options[ps.selectedIndex].dataset.commi) : 0;
+
             await addDoc(collection(db, "clients"), {
                 uid: currentUser.uid, name: `${fn} ${ln}`, area, type: currentType,
-                plan: ps.options[ps.selectedIndex].text, commi: parseInt(ps.options[ps.selectedIndex].dataset.commi),
-                installed: false, cancelled: false, commiReceived: false, billingExplained: false, installDate: "", remarks: ""
+                plan: ps.options[ps.selectedIndex].text, commi: finalCommi,
+                installed: false, cancelled: false, commiReceived: false, billingExplained: false, installDate: "", remarks: "",
+                borrowStatus: bStatus, borrowName: bName // Saves whether it's 'own', 'borrowed', or 'lent'
             });
+            
+            // Clear the form after saving
             document.getElementById('fn').value = ''; document.getElementById('ln').value = '';
+            document.getElementById('borrowStatus').value = 'own'; 
+            document.getElementById('borrowName').value = ''; 
+            document.getElementById('borrowName').style.display = 'none';
         };
         window.toggleStatus = async (id, field) => {
             const c = clients.find(x => x.id === id);
@@ -792,7 +822,14 @@ window.addLedgerEntry = async () => {
                     const iDate = new Date(c.installDate);
                     if(iDate.getMonth() === sm) {
                         show = true;
-                        if(c.type === 'business') { bT += c.commi; bC++; } else { rT += c.commi; rC++; }
+                        
+                        // DO NOT add to target count (bC, rC) if the client was 'lent' to someone else
+                        if (c.borrowStatus !== 'lent') {
+                            if(c.type === 'business') { bC++; } else { rC++; }
+                        }
+                        
+                        // Always add commi (It will just add ₱0 automatically if borrowed/lent)
+                        if(c.type === 'business') { bT += c.commi; } else { rT += c.commi; }
                     }
                 } else if(c.cancelled) show = true;
                 if(show) {
@@ -801,7 +838,10 @@ window.addLedgerEntry = async () => {
                     card.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items: flex-start;">
                             <div>
-                                <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span><br>
+                                <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>
+                                ${c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); margin-left: 5px;">🤝 Borrowed from ${c.borrowName}</span>` : ''}
+                                ${c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); margin-left: 5px;">📤 Lent to ${c.borrowName}</span>` : ''}
+                                <br>
                                 <strong style="font-size: 1.05rem; font-weight: 700; color: white;">${c.name}</strong><br>
                                 <small style="color:var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange)"></i> ${c.area}</small>
                             </div>
