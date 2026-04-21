@@ -773,10 +773,9 @@ window.addLedgerEntry = async () => {
         };
         // --- SIMULA NG KOKOPYAHIN MO ---
         // --- SIMULA NG KOKOPYAHIN MO ---
-       window.copyBilling = (installDate, planString, area) => {
-    alert("Na-detect na area: " + area); // Idagdag mo 'to pang-test
-    // ... the rest of the code
+window.copyBilling = (installDate, planString, area) => {
             if (!installDate) return alert("Paki-set muna ang Install Date para ma-compute ang billing!");
+            
             const date = new Date(installDate);
             const day = date.getDate();
             const month = date.toLocaleString('default', { month: 'long' });
@@ -787,28 +786,42 @@ window.addLedgerEntry = async () => {
             const daysInNextMonth = new Date(year, date.getMonth() + 2, 0).getDate();
             const nextNextMonthDate = new Date(year, date.getMonth() + 2, 1);
             const nextNextMonth = nextNextMonthDate.toLocaleString('default', { month: 'long' });
-            // Hanapin yung presyo sa plan name
-            const priceMatch = planString.match(/₱(\d+,?\d*)/);
+
+            // --- BIZ PLAN PRICE DETECTOR ---
             let price = 0;
+            const isBiz = planString.toLowerCase().includes("biz");
+            
+            if (isBiz) {
+                // Manual pricing for Biz Plans
+                if (planString.includes("Lite")) price = 1500;
+                else if (planString.includes("Professional")) price = 3000;
+                else if (planString.includes("Enterprise")) price = 6000;
+            } else {
+                // Standard price extraction for Residential
+                const priceMatch = planString.match(/₱(\d+,?\d*)/);
+                if (priceMatch) price = parseFloat(priceMatch[1].replace(',', ''));
+            }
+
             let proratedAmtText = "";
             let totalAmtText = "";
-            if (priceMatch) {
-                price = parseFloat(priceMatch[1].replace(',', ''));
+            if (price > 0) {
                 const proratedDays = daysInMonth - day + 1;
                 const computedProrated = Math.round((price / 30) * proratedDays);
-                proratedAmtText = `na ₱${computedProrated} `;
-                totalAmtText = ` (Estimated Total: ₱${price + computedProrated})`;
+                proratedAmtText = `na ₱${computedProrated.toLocaleString()} `;
+                totalAmtText = ` (Estimated Total: ₱${(price + computedProrated).toLocaleString()})`;
             }
+
             // --- DYNAMIC BILLER LOGIC ---
-           // --- DYNAMIC BILLER LOGIC ---
-            let billerName = "SKYLINE CATV"; // Default para sa "The rest"
-            // Lilinisin natin 'yung text para sure na mag-match kahit anong casing
+            let billerName = isBiz ? "CHEETAH BROADBAND (BIZ)" : "SKYLINE CATV"; 
             const cleanArea = area ? area.toLowerCase().trim() : "";
-            if (cleanArea === "binangonan") {
-                billerName = "BINANGONAN CABLE";
-            } else if (cleanArea === "taytay" || cleanArea === "antipolo") {
-                billerName = "KABAYAN CABLE (RIZAL)";
+            
+            if (!isBiz) {
+                if (cleanArea === "binangonan") billerName = "BINANGONAN CABLE";
+                else if (cleanArea === "taytay" || cleanArea === "antipolo") billerName = "KABAYAN CABLE (RIZAL)";
             }
+            
+            // --- INTRO GUIDE TEMPLATE ---
+            const introText = `🌐 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS PLAN' : 'RESIDENTIAL'}) 🌐\n\nHi po! Here’s a quick guide para sa payment schedule at options natin:\n\n💳 Payment Instructions:\nKung magbabayad po kayo online, hanapin lang sa biller list ang: ${billerName}\n\n🏢 List of Offices:\nPara sa payments/concerns, pwede po kayo bumisita sa nearest office (Searchable sa Google Maps):\n- LEXAR ANGONO/BINANGONAN/MORONG/TANAY/TERESA/TAYTAY\n\n-------------------------\n\n`;
             // --- INTRO GUIDE TEMPLATE ---
             const introText = `🌐 WIFI PAYMENT INFO 🌐\n\nHi po! Here’s a quick guide para sa payment schedule at options natin:\n\n💳 Payment Instructions:\nKung magbabayad po kayo online, hanapin lang sa biller list ang: ${billerName}\n\n🏢 List of Offices:\nHere are the nearest offices po (Pwede niyo i-search sa maps):\n- LEXAR ANGONO\n- LEXAR BINANGONAN\n- LEXAR MORONG\n- LEXAR TANAY\n- LEXAR TERESA\n- LEXAR TAYTAY\n\nChoose na lang po kayo kung ano pinaka-applicable at malapit na location ng office sa inyo.\n\n-------------------------\n\n`;
             let msg = "";
