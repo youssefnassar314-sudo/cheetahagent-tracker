@@ -107,6 +107,33 @@
             border-color: rgba(244, 63, 94, 0.3);
         }
 
+        /* --- MBPS ESTIMATOR STYLES --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .est-input-group { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        .est-input-group h4 { margin: 0 0 10px 0; color: var(--primary-orange); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px dashed rgba(255,106,0,0.3); padding-bottom: 5px; }
+        .small-input { padding: 10px; font-size: 0.85rem; margin-bottom: 0; text-align: center; width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; }
+        .small-input:focus { outline: none; border-color: var(--primary-orange); }
+        .input-wrapper { display: flex; flex-direction: column; gap: 5px; text-align: center; }
+        .input-wrapper label { margin: 0; font-size: 0.65rem; color: #cbd5e1; }
+        
+        .est-result-box {
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.2)); 
+            border-radius: 16px; padding: 25px; text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.3); margin-top: 15px;
+            display: none;
+        }
+        .est-result-box h2 { margin: 0; color: #10b981; font-size: 1.8rem; font-weight: 800; text-shadow: 0 0 15px rgba(16,185,129,0.4); }
+        .est-result-box p { margin: 5px 0 15px 0; font-size: 0.85rem; color: #a7f3d0; }
+        .est-tip { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; font-size: 0.75rem; color: #cbd5e1; text-align: left; border-left: 3px solid var(--primary-orange); line-height: 1.5; }
+        
+        .primary-btn { 
+            background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
+            padding: 15px; border-radius: 12px; border: none; font-weight: 800; color: white; 
+            cursor: pointer; width: 100%; box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3);
+            text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; margin-top: 10px;
+        }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); }
+
     </style>
 </head>
 <body>
@@ -151,12 +178,57 @@
                     <span class="breakdown-label">Prorated Charge</span>
                     <span class="breakdown-value" id="displayProrated" style="color: var(--primary-orange);">₱0</span>
                 </div>
-                <div class="breakdown-row" id="advanceMonthRow" style="display: none;">
+               <div class="breakdown-row" id="advanceMonthRow" style="display: none;">
                     <span class="breakdown-label">Advance 1 Month</span>
                     <span class="breakdown-value" id="displayAdvance">₱0</span>
                 </div>
             </div>
         </div>
+
+        <div class="header" style="margin-top: 40px; margin-bottom: 20px;">
+            <h1 style="font-size: 1.5rem;"><i class="fa-solid fa-gauge-high" style="color:var(--primary-orange); margin-right: 8px;"></i>MBPS<span style="color:var(--primary-orange)">//</span>ESTIMATOR</h1>
+            <p style="font-size: 0.75rem;">Network Capacity & Device Calculator</p>
+        </div>
+
+        <div class="glass-panel">
+            <div class="est-input-group">
+                <h4><i class="fa-solid fa-users"></i> Users & Basic Devices</h4>
+                <div class="grid-2">
+                    <div class="input-wrapper"><label>Tao sa bahay</label><input type="number" id="e_people" class="small-input" placeholder="0"></div>
+                    <div class="input-wrapper"><label>Phones / Tablets</label><input type="number" id="e_phones" class="small-input" placeholder="0"></div>
+                </div>
+            </div>
+
+            <div class="est-input-group">
+                <h4><i class="fa-solid fa-desktop"></i> Heavy Devices</h4>
+                <div class="grid-2" style="margin-bottom: 10px;">
+                    <div class="input-wrapper"><label>Laptops / PCs</label><input type="number" id="e_pcs" class="small-input" placeholder="0"></div>
+                    <div class="input-wrapper"><label>Smart TVs</label><input type="number" id="e_tvs" class="small-input" placeholder="0"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="input-wrapper"><label>CCTV Cameras</label><input type="number" id="e_cctv" class="small-input" placeholder="0"></div>
+                    <div class="input-wrapper"><label>Gaming Consoles</label><input type="number" id="e_console" class="small-input" placeholder="0"></div>
+                </div>
+            </div>
+
+            <label>Usage Type / Lifestyle</label>
+            <select id="e_usage" style="margin-bottom: 10px;">
+                <option value="basic">Normal (FB, Tiktok, Basic Browsing)</option>
+                <option value="wfh_res">Work From Home (Residential Plan)</option>
+                <option value="wfh_biz">Work From Home (Business Plan / SME)</option>
+                <option value="heavy">Heavy (4K Streaming, Hardcore Gaming)</option>
+            </select>
+
+            <button class="primary-btn" onclick="calculateEstimator()">Estimate Required Plan</button>
+
+            <div class="est-result-box" id="estResultCard">
+                <p style="text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Recommended Plan</p>
+                <h2 id="estPlanName">Plan 999</h2>
+                <p id="estMbpsText">150 Mbps</p>
+                <div class="est-tip" id="estTipBox"></div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -222,7 +294,86 @@
         }
 
         // Run calculation on load
+// Run calculation on load
         calculateProrated();
+
+        // --- REALISTIC MBPS ESTIMATOR LOGIC ---
+        function calculateEstimator() {
+            const people = parseInt(document.getElementById('e_people').value) || 0;
+            const phones = parseInt(document.getElementById('e_phones').value) || 0;
+            const pcs = parseInt(document.getElementById('e_pcs').value) || 0;
+            const tvs = parseInt(document.getElementById('e_tvs').value) || 0;
+            const cctvs = parseInt(document.getElementById('e_cctv').value) || 0;
+            const consoles = parseInt(document.getElementById('e_console').value) || 0;
+            const usage = document.getElementById('e_usage').value;
+
+            if (people === 0 && phones === 0 && pcs === 0 && tvs === 0 && cctvs === 0 && consoles === 0) {
+                alert("Boss, lagyan mo muna ng kahit isang device o bilang ng tao para ma-compute natin.");
+                return;
+            }
+
+            // REALISTIC HEURISTICS: Mas mabigat na ang Mbps allowance per device
+            // People(5) | Phones(5) | PCs(15) | TVs(25) | CCTV(5) | Consoles(20)
+            let totalLoad = (people * 5) + (phones * 5) + (pcs * 15) + (tvs * 25) + (cctvs * 5) + (consoles * 20);
+
+            // Apply Multipliers based on lifestyle
+            if (usage === 'wfh_res') {
+                totalLoad *= 1.3; // 30% buffer para hindi maputol sa Zoom
+                if (totalLoad < 100) totalLoad = 100; // Minimum floor para sa WFH
+            } else if (usage === 'wfh_biz') {
+                totalLoad *= 1.5; 
+            } else if (usage === 'heavy') {
+                totalLoad *= 1.5; // 50% buffer para sa heavy downloads at 4K
+            }
+
+            let recPlan = "";
+            let recMbps = "";
+            let tip = "";
+
+            if (usage === 'wfh_biz') {
+                if (totalLoad <= 150) { recPlan = "Biz Lite 1.5"; recMbps = "Up to 150 Mbps"; }
+                else if (totalLoad <= 300) { recPlan = "Biz Professional 3.0"; recMbps = "Up to 300 Mbps"; }
+                else { recPlan = "Biz Enterprise 6.0"; recMbps = "Up to 600 Mbps"; }
+                
+                tip = `💼 <b>Why Biz Plan?</b> Pag naka-WFH at business critical, mas may priority ang connection sa network (less downtime) at mas mabilis ang tech support natin.`;
+            } else {
+                // TINAAS NA NATIN YUNG THRESHOLD PARA REALISTIC
+                if (totalLoad <= 60) { 
+                    recPlan = "Plan 699"; recMbps = "80 Mbps"; 
+                    tip = `📱 <b>Device Capacity:</b> Ang 80 Mbps ay swak sa 2-3 tao na may ~4 na cellphone at 1 Smart TV. Basic household browsing at panonood.`;
+                }
+                else if (totalLoad <= 130) { 
+                    recPlan = "Plan 999"; recMbps = "150 Mbps"; 
+                    tip = `⚡ <b>Device Capacity:</b> Kaya ang ~8-10 mixed devices. Perfect kung may nag-o-online class at WFH habang may nanonood sa sala.`;
+                }
+                else if (totalLoad <= 260) { 
+                    recPlan = "Plan 1250"; recMbps = "300 Mbps"; 
+                    tip = `🚀 <b>Device Capacity:</b> Pamilyang maraming gadgets (~15+ devices). Walang lag kahit sabay-sabay kayong mag-Netflix HD at mag-download!`;
+                }
+                else if (totalLoad <= 450) { 
+                    recPlan = "Plan 1500"; recMbps = "500 Mbps"; 
+                    tip = `🔥 <b>Device Capacity:</b> Ultra-fast! Recommended kung may hardcore gamers (PS5/PC), 4K streamers, o maraming heavy users sa bahay.`;
+                }
+                else if (totalLoad <= 750) { 
+                    recPlan = "Plan 2500"; recMbps = "800 Mbps"; 
+                    tip = `🏢 <b>Device Capacity:</b> Pang-malaking compound, maraming CCTV, o nagpaparenta ng kwarto. Kayang kargahin ang sobrang daming devices.`;
+                }
+                else { 
+                    recPlan = "Plan 4000"; recMbps = "1000 Mbps (1 Gbps)"; 
+                    tip = `👑 <b>Device Capacity:</b> Piso-wifi setups or ultimate smart homes. Walang bottlenecks kahit buong araw kayong naka-konekta.`;
+                }
+            }
+
+            if (cctvs > 0 && usage !== 'wfh_biz') {
+                tip += `<br><br>📷 <b>Note sa CCTV:</b> Kumakain ng upload speed ang CCTV 24/7. Sakto ang Fiber natin dahil symmetrical ito (pareho ang download at upload speed).`;
+            }
+
+            document.getElementById('estPlanName').innerText = recPlan;
+            document.getElementById('estMbpsText').innerText = recMbps;
+            document.getElementById('estTipBox').innerHTML = tip;
+            
+            document.getElementById('estResultCard').style.display = 'block';
+        }
     </script>
 </body>
 </html>
