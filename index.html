@@ -325,7 +325,15 @@
                 <h1 style="margin: 0; font-weight: 800; letter-spacing: 1px; font-size: clamp(1.5rem, 6vw, 2rem);">CHEETAH<span style="color:var(--primary-orange)">//</span>SPACE</h1>
             </div>
             <div style="display:flex; justify-content:center; gap:15px; align-items:center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
-    <select id="viewMonth" class="month-select" style="width:auto; margin:0; padding: 5px; background: transparent; color: var(--primary-orange); font-weight: 600; border: none; box-shadow: none;" onchange="render()"></select>
+    <div style="display:flex; align-items:center; gap:8px;">
+        <button onclick="changeMonth(-1)" style="background:transparent; border:none; color:var(--primary-orange); cursor:pointer; font-size:1rem; padding: 4px 6px; border-radius:6px; transition:0.2s;" onmouseover="this.style.background='rgba(255,106,0,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span id="viewMonthLabel" style="color:var(--primary-orange); font-weight:800; font-size:0.9rem; letter-spacing:1px; min-width:40px; text-align:center;"></span>
+        <button onclick="changeMonth(1)" style="background:transparent; border:none; color:var(--primary-orange); cursor:pointer; font-size:1rem; padding: 4px 6px; border-radius:6px; transition:0.2s;" onmouseover="this.style.background='rgba(255,106,0,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
     
     <button onclick="toggleProfileModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size: 1rem;" title="My Profile">
         <i class="fa-solid fa-user-astronaut"></i>
@@ -1006,7 +1014,7 @@ window.copyBilling = (installDate, planString, area) => {
         window.render = () => {
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
             const st = document.getElementById('searchInput').value.toLowerCase();
-            const sm = parseInt(document.getElementById('viewMonth').value);
+            const sm = currentMonth;
             list.innerHTML = ""; lList.innerHTML = "";
             let rT = 0, bT = 0, rC = 0, bC = 0;
             let pendingCount = 0, installedCount = 0, cancelledCount = 0;
@@ -1136,8 +1144,16 @@ window.copyBilling = (installDate, planString, area) => {
             document.getElementById('resPlans').classList.toggle('hidden', t==='business');
             document.getElementById('bizPlans').classList.toggle('hidden', t==='residential');
         };
-        const vm = document.getElementById('viewMonth');
-        months.forEach((m,i) => vm.innerHTML += `<option value="${i}" ${i===new Date().getMonth()?'selected':''}>${m}</option>`);
+        let currentMonth = new Date().getMonth();
+        const updateMonthLabel = () => {
+            document.getElementById('viewMonthLabel').innerText = months[currentMonth];
+        };
+        window.changeMonth = (dir) => {
+            currentMonth = (currentMonth + dir + 12) % 12;
+            updateMonthLabel();
+            render();
+        };
+        updateMonthLabel();
         // --- MY PROFILE LOGIC ---
 window.toggleProfileModal = () => {
     const modal = document.getElementById('profileModal');
