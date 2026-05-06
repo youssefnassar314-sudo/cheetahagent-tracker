@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheetah Space | Workspace</title>
+    <title>Cheetah Space</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#090a0f">
@@ -329,7 +329,7 @@
         <button onclick="changeMonth(-1)" style="background:transparent; border:none; color:var(--primary-orange); cursor:pointer; font-size:1rem; padding: 4px 6px; border-radius:6px; transition:0.2s;" onmouseover="this.style.background='rgba(255,106,0,0.1)'" onmouseout="this.style.background='transparent'">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
-        <span id="viewMonthLabel" style="color:var(--primary-orange); font-weight:800; font-size:0.9rem; letter-spacing:1px; min-width:40px; text-align:center;"></span>
+        <span id="viewMonthLabel" style="color:var(--primary-orange); font-weight:800; font-size:0.9rem; letter-spacing:1px; min-width:80px; text-align:center;"></span>
         <button onclick="changeMonth(1)" style="background:transparent; border:none; color:var(--primary-orange); cursor:pointer; font-size:1rem; padding: 4px 6px; border-radius:6px; transition:0.2s;" onmouseover="this.style.background='rgba(255,106,0,0.1)'" onmouseout="this.style.background='transparent'">
             <i class="fa-solid fa-chevron-right"></i>
         </button>
@@ -595,9 +595,9 @@
             
             <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                 <select id="borrowStatus" onchange="toggleBorrowInput()" style="flex: 1; margin-bottom: 0;">
-                    <option value="own" selected>👤 My Own Client</option>
-                    <option value="borrowed">🤝 Borrowed from...</option>
-                    <option value="lent">📤 Lent to...</option>
+                    <option value="own" selected>My Own Client</option>
+                    <option value="borrowed">Borrowed from...</option>
+                    <option value="lent">Lent to...</option>
                 </select>
                 <input type="text" id="borrowName" placeholder="Agent Name?" style="display: none; flex: 1; margin-bottom: 0;">
             </div>
@@ -742,7 +742,7 @@
         </style>
 
 <details class="help-item">
-    <summary>🎯 Target Management <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
+    <summary><i class="fa-solid fa-crosshairs" style="color:var(--primary-orange); margin-right:8px;"></i>Target Management <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
     <div class="help-content">
         <div><i class="fa-solid fa-circle help-dot"></i><b>Add Target:</b> I-save ang prospect details at napiling plan.</div>
         <div style="margin-top: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Install:</b> I-trigger ang billing computation at confetti kapag successful ang kabit.</div>
@@ -750,7 +750,7 @@
 </details>
 
 <details class="help-item">
-    <summary>🚀 Agent Power Tools (FAB) <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
+    <summary><i class="fa-solid fa-bolt" style="color:var(--primary-orange); margin-right:8px;"></i>Agent Power Tools (FAB) <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
     <div class="help-content">
         <div><i class="fa-solid fa-circle help-dot"></i><b>Area Locator:</b> Interactive database map para i-verify kung covered ng fiber ang area ng client.</div>
         <div style="margin-top: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>ID Generator:</b> Gagawa ng digital agent ID para sa legitimacy mo sa harap ng client.</div>
@@ -760,7 +760,7 @@
 </details>
 
 <details class="help-item">
-    <summary>💰 Ledger System <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
+    <summary><i class="fa-solid fa-wallet" style="color:var(--primary-orange); margin-right:8px;"></i>Ledger System <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
     <div class="help-content">
         <i class="fa-solid fa-circle help-dot"></i>Personal recorder ng iyong commissions at field expenses (gas, food, flyers). Dito mo makikita ang totoong <b>Net Balance</b> o malinis na kita mo.
     </div>
@@ -971,35 +971,90 @@ window.copyBilling = (installDate, planString, area) => {
                 if (priceMatch) price = parseFloat(priceMatch[1].replace(',', ''));
             }
 
-            let proratedAmtText = "";
-            let totalAmtText = "";
+            let proratedLow = "", proratedHigh = "", totalLow = "", totalHigh = "";
             if (price > 0) {
                 const proratedDays = daysInMonth - day + 1;
                 const computedProrated = Math.round((price / 30) * proratedDays);
-                proratedAmtText = `na ₱${computedProrated.toLocaleString()} `;
-                totalAmtText = ` (Estimated Total: ₱${(price + computedProrated).toLocaleString()})`;
+                const roundDown50 = Math.floor(computedProrated / 50) * 50;
+                proratedLow = `₱${roundDown50.toLocaleString()}`;
+                proratedHigh = `₱${(roundDown50 + 50).toLocaleString()}`;
+                const totalExact = price + computedProrated;
+                const totalDown50 = Math.floor(totalExact / 50) * 50;
+                totalLow = `₱${totalDown50.toLocaleString()}`;
+                totalHigh = `₱${(totalDown50 + 50).toLocaleString()}`;
             }
 
-            // --- DYNAMIC BILLER LOGIC ---// --- DYNAMIC BILLER LOGIC ---
-            let billerName = "SKYLINE CATV"; // Default para sa lahat
+            // --- DYNAMIC BILLER LOGIC ---
+            let billerName = "SKYLINE CATV";
             const cleanArea = area ? area.toLowerCase().trim() : "";
-            
             if (cleanArea === "binangonan") {
                 billerName = "BINANGONAN CABLE";
             } else if (cleanArea === "taytay" || cleanArea === "antipolo") {
                 billerName = "KABAYAN CABLE (RIZAL)";
             }
-            
-            // --- INTRO GUIDE TEMPLATE ---
-            const introText = `🌐 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS PLAN' : 'RESIDENTIAL'}) 🌐\n\nHi po! Here’s a quick guide para sa payment schedule at options natin:\n\n💳 Payment Instructions:\nKung magbabayad po kayo online, hanapin lang sa biller list ang: ${billerName}\n\n🏢 List of Offices:\nHere are the nearest offices po (Pwede niyo i-search sa maps):\n- LEXAR ANGONO\n- LEXAR BINANGONAN\n- LEXAR MORONG\n- LEXAR TANAY\n- LEXAR TERESA\n- LEXAR TAYTAY\n\nChoose na lang po kayo kung ano pinaka-applicable at malapit na location ng office sa inyo.\n\n-------------------------\n\n`;
+
+            // --- STRUCTURED MESSAGE FORMAT ---
             let msg = "";
             if (day <= 15) {
-                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo estimated na ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Dadating po ito sa email sa ${month} 17 to 18. Ito po ay pwedeng bayaran sa ${month} ${daysInMonth}, extended po hanggang ${nextMonth} 10 if online babayaran tas if sa office ay ${nextMonth} 14 po.`;
+                msg = [
+                    `📶 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS PLAN' : 'RESIDENTIAL'})`,
+                    ``,
+                    `📋 Plan: ${planString}`,
+                    `📅 Installation Date: ${month} ${day}`,
+                    ``,
+                    `💰 Billing Breakdown:`,
+                    `• Estimated Bill: ${proratedLow} – ${proratedHigh}`,
+                    `  (Prorated for ${month} ${day}–${daysInMonth})`,
+                    `• Billing Email Arrival: ${month} 17–18`,
+                    `• Payment Due Date: ${month} ${daysInMonth}`,
+                    `• Grace Period:`,
+                    `  - ${nextMonth} 10 (Online Payment)`,
+                    `  - ${nextMonth} 14 (Office Payment)`,
+                    ``,
+                    `💳 Online Payment:`,
+                    `Search biller: ${billerName}`,
+                    ``,
+                    `🏢 Nearest Offices:`,
+                    `• LEXAR ANGONO`,
+                    `• LEXAR BINANGONAN`,
+                    `• LEXAR MORONG`,
+                    `• LEXAR TANAY`,
+                    `• LEXAR TERESA`,
+                    `• LEXAR TAYTAY`,
+                ].join('\n');
             } else {
-                msg = `Since nakabitan po kayo ng ${month} ${day}, may magiging bill po kayo estimated na ${proratedAmtText}(Prorated for ${month} ${day}-${daysInMonth}). Since delay po bigayan ng billing kapag 16 to end of month, dadating po ang billing sa email sa ${nextMonth} 17 to 18, bale consist of first and second billing na po ito${totalAmtText}. First and second billing po ay pwedeng bayaran sa ${nextMonth} ${daysInNextMonth}, extended po hanggang ${nextNextMonth} 10 if online babayaran tas if sa office ay ${nextNextMonth} 14 po.`;
+                msg = [
+                    `📶 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS PLAN' : 'RESIDENTIAL'})`,
+                    ``,
+                    `📋 Plan: ${planString}`,
+                    `📅 Installation Date: ${month} ${day}`,
+                    ``,
+                    `💰 Billing Breakdown:`,
+                    `• 1st Bill – Prorated (${month} ${day}–${daysInMonth}): ${proratedLow} – ${proratedHigh}`,
+                    `• 2nd Bill – Full Month (${nextMonth}): ₱${price.toLocaleString()}`,
+                    `• Combined Estimated Total: ${totalLow} – ${totalHigh}`,
+                    ``,
+                    `📨 Note: Since installed after the 15th, ang billing email`,
+                    `ay darating sa ${nextMonth} 17–18, kasama na ang 1st at 2nd bill.`,
+                    ``,
+                    `• Payment Due Date: ${nextMonth} ${daysInNextMonth}`,
+                    `• Grace Period:`,
+                    `  - ${nextNextMonth} 10 (Online Payment)`,
+                    `  - ${nextNextMonth} 14 (Office Payment)`,
+                    ``,
+                    `💳 Online Payment:`,
+                    `Search biller: ${billerName}`,
+                    ``,
+                    `🏢 Nearest Offices:`,
+                    `• LEXAR ANGONO`,
+                    `• LEXAR BINANGONAN`,
+                    `• LEXAR MORONG`,
+                    `• LEXAR TANAY`,
+                    `• LEXAR TERESA`,
+                    `• LEXAR TAYTAY`,
+                ].join('\n');
             }
-            // Pagsasamahin ang intro at ang computation
-            const finalMessage = introText + msg;
+            const finalMessage = msg;
             navigator.clipboard.writeText(finalMessage).then(() => {
                 alert(`Copied! (Biller used: ${billerName}) Pwede mo na i-paste sa client.`);
             }).catch(err => {
@@ -1014,7 +1069,6 @@ window.copyBilling = (installDate, planString, area) => {
         window.render = () => {
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
             const st = document.getElementById('searchInput').value.toLowerCase();
-            const sm = currentMonth;
             list.innerHTML = ""; lList.innerHTML = "";
             let rT = 0, bT = 0, rC = 0, bC = 0;
             let pendingCount = 0, installedCount = 0, cancelledCount = 0;
@@ -1033,7 +1087,7 @@ window.copyBilling = (installDate, planString, area) => {
                 if(!c.installed && !c.cancelled) show = true;
                 else if(c.installed && c.installDate) {
                     const iDate = new Date(c.installDate);
-                    if(iDate.getMonth() === sm) {
+                    if(iDate.getMonth() === currentMonth && iDate.getFullYear() === currentYear) {
                         show = true;
                         if (c.borrowStatus !== 'lent') {
                             if(c.type === 'business') { bC++; } else { rC++; }
@@ -1059,8 +1113,8 @@ window.copyBilling = (installDate, planString, area) => {
                                 <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
                                     <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>
                                     ${statusBadge}
-                                    ${c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);">🤝 ${c.borrowName}</span>` : ''}
-                                    ${c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);">📤 ${c.borrowName}</span>` : ''}
+                                    ${c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);"><i class="fa-solid fa-handshake" style="margin-right:4px;"></i>${c.borrowName}</span>` : ''}
+                                    ${c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);"><i class="fa-solid fa-share-from-square" style="margin-right:4px;"></i>${c.borrowName}</span>` : ''}
                                 </div>
                                 <strong style="font-size: 1rem; font-weight: 700; color: white; display:block;">${c.name}</strong>
                                 <div style="display:flex; gap:12px; margin-top:3px; flex-wrap:wrap;">
@@ -1145,11 +1199,14 @@ window.copyBilling = (installDate, planString, area) => {
             document.getElementById('bizPlans').classList.toggle('hidden', t==='residential');
         };
         let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
         const updateMonthLabel = () => {
-            document.getElementById('viewMonthLabel').innerText = months[currentMonth];
+            document.getElementById('viewMonthLabel').innerText = `${months[currentMonth]} ${currentYear}`;
         };
         window.changeMonth = (dir) => {
-            currentMonth = (currentMonth + dir + 12) % 12;
+            currentMonth += dir;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
             updateMonthLabel();
             render();
         };
