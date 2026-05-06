@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheetah Space</title>
+    <title>Cheetah Space | Workspace</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#090a0f">
@@ -579,18 +579,18 @@
             </select>
             <select id="resPlans">
                 <option value="" disabled selected>Select Plan</option>
-                <option value="80" data-commi="300">80 Mbps (₱699) - 300 Commi</option>
-                <option value="150" data-commi="400">150 Mbps (₱999) - 400 Commi</option>
-                <option value="300" data-commi="500">300 Mbps (₱1250) - 500 Commi</option>
-                <option value="500" data-commi="600">500 Mbps (₱1500) - 600 Commi</option>
-                <option value="800" data-commi="600">800 Mbps (₱2500) - 800 Commi</option>
-                <option value="1000" data-commi="1000">1000 Mbps (₱4000) - 1000 Commi</option>
+                <option value="699" data-commi="300">CV-699</option>
+                <option value="999" data-commi="400">CV-999</option>
+                <option value="1250" data-commi="500">C-HOME 1.25F</option>
+                <option value="1500" data-commi="600">C-HOME 1.5F</option>
+                <option value="2500" data-commi="800">C-HOME 2.5F</option>
+                <option value="4000" data-commi="1000">C-HOME 4F</option>
             </select>
             <select id="bizPlans" class="hidden">
                 <option value="" disabled selected>Select Biz Plan</option>
-                <option value="Biz Lite" data-commi="600">Biz Lite 1.5 - 600 Commi</option>
-                <option value="Biz Professional" data-commi="1200">Biz Professional 3.0 - 1200 Commi</option>
-                <option value="Biz Enterprise" data-commi="2400">Biz Enterprise 6.0 - 2400 Commi</option>
+                <option value="1500" data-commi="600">BIZ LITE</option>
+                <option value="3000" data-commi="1200">BIZ 3</option>
+                <option value="6000" data-commi="2400">BIZ 6</option>
             </select>
             
             <div style="display: flex; gap: 10px; margin-bottom: 12px;">
@@ -956,20 +956,18 @@ window.copyBilling = (installDate, planString, area) => {
             const nextNextMonthDate = new Date(year, date.getMonth() + 2, 1);
             const nextNextMonth = nextNextMonthDate.toLocaleString('default', { month: 'long' });
 
-            // --- BIZ PLAN PRICE DETECTOR ---
+            // --- PLAN PRICE MAP ---
+            const planPriceMap = {
+                'CV-699': 699, 'CV-999': 999,
+                'C-HOME 1.25F': 1250, 'C-HOME 1.5F': 1500,
+                'C-HOME 2.5F': 2500, 'C-HOME 4F': 4000,
+                'BIZ LITE': 1500, 'BIZ 3': 3000, 'BIZ 6': 6000
+            };
             let price = 0;
-            const isBiz = planString.toLowerCase().includes("biz");
-            
-            if (isBiz) {
-                // Manual pricing for Biz Plans
-                if (planString.includes("Lite")) price = 1500;
-                else if (planString.includes("Professional")) price = 3000;
-                else if (planString.includes("Enterprise")) price = 6000;
-            } else {
-                // Standard price extraction for Residential
-                const priceMatch = planString.match(/₱(\d+,?\d*)/);
-                if (priceMatch) price = parseFloat(priceMatch[1].replace(',', ''));
-            }
+            const isBiz = planString.startsWith('BIZ');
+            // Match plan name from map (planString may have extra text, find key that matches)
+            const matchedPlan = Object.keys(planPriceMap).find(k => planString.toUpperCase().includes(k));
+            if (matchedPlan) price = planPriceMap[matchedPlan];
 
             let proratedLow = "", proratedHigh = "", totalLow = "", totalHigh = "";
             if (price > 0) {
@@ -997,7 +995,7 @@ window.copyBilling = (installDate, planString, area) => {
             let msg = "";
             if (day <= 15) {
                 msg = [
-                    `📶 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS PLAN' : 'RESIDENTIAL'})`,
+                    `📶 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS' : 'RESIDENTIAL'})`,
                     ``,
                     `📋 Plan: ${planString}`,
                     `📅 Installation Date: ${month} ${day}`,
@@ -1021,12 +1019,10 @@ window.copyBilling = (installDate, planString, area) => {
                     `• LEXAR TANAY`,
                     `• LEXAR TERESA`,
                     `• LEXAR TAYTAY`,
-                    ``,
-                    `Note: Ang prorated amount is estimated lang po, mahalaga pa rin na i-check pa rin po ang email na may billing na ibibigay ng office`,
                 ].join('\n');
             } else {
                 msg = [
-                    `📶 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS PLAN' : 'RESIDENTIAL'})`,
+                    `📶 WIFI PAYMENT INFO (${isBiz ? 'BUSINESS' : 'RESIDENTIAL'})`,
                     ``,
                     `📋 Plan: ${planString}`,
                     `📅 Installation Date: ${month} ${day}`,
@@ -1054,8 +1050,6 @@ window.copyBilling = (installDate, planString, area) => {
                     `• LEXAR TANAY`,
                     `• LEXAR TERESA`,
                     `• LEXAR TAYTAY`,
-                    ``,
-                    `Note: Ang prorated amount is estimated lang po, mahalaga pa rin na i-check pa rin po ang email na may billing na ibibigay ng office`,
                 ].join('\n');
             }
             const finalMessage = msg;
