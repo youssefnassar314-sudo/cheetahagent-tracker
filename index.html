@@ -93,19 +93,55 @@
             transform: translateY(-2px); 
             box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); 
         }
-        /* Client Cards */
+        /* Client Cards - Collapsible */
         .client-card { 
             background: var(--card-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 16px; padding: 20px; margin-bottom: 15px; 
+            border-radius: 16px; margin-bottom: 12px; 
             border: 1px solid rgba(255,255,255,0.05); 
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .client-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(255, 106, 0, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 106, 0, 0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
         }
-        .client-installed { border-left: 4px solid var(--green-installed); }
-        .client-cancelled { opacity: 0.6; border-left: 4px solid var(--red-alert); }
+        .card-header {
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .card-header-info { flex: 1; min-width: 0; }
+        .card-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .card-chevron {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .client-card.expanded .card-chevron { transform: rotate(180deg); }
+        .card-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 0px solid rgba(255,255,255,0.05);
+        }
+        .client-card.expanded .card-body {
+            max-height: 600px;
+            border-top-width: 1px;
+        }
+        .card-body-inner { padding: 14px 18px 18px; }
+        .client-installed { border-left: 3px solid var(--green-installed); }
+        .client-cancelled { opacity: 0.6; border-left: 3px solid var(--red-alert); }
+        .client-pending { border-left: 3px solid rgba(234,179,8,0.6); }
         /* Tags for Res/Biz */
         .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .tag-res { background: rgba(255, 106, 0, 0.15); color: var(--primary-orange); border: 1px solid rgba(255,106,0,0.3); }
@@ -360,15 +396,214 @@
                 <i class="fa-brands fa-facebook-messenger"></i> Message Us
             </a>
         </div>
-        <div class="dashboard">
-            <div class="stat-card">
-                <div><p style="color:var(--text-muted); margin:0; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Residential</p><h2 id="resCommi" style="color:var(--primary-orange); margin:5px 0 0 0; text-shadow: 0 0 10px rgba(255,106,0,0.4);">₱0</h2></div>
-                <div style="text-align:right"><p style="color:var(--text-muted); margin:0; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Business</p><h2 id="bizCommi" style="color:var(--blue-biz); margin:5px 0 0 0; text-shadow: 0 0 10px rgba(59,130,246,0.4);">₱0</h2></div>
+        <!-- BONGGANG SUMMARY BOARD -->
+        <style>
+            .summary-board {
+                margin-bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            /* Total Commi - Hero Card */
+            .hero-commi-card {
+                background: linear-gradient(135deg, rgba(255,106,0,0.15) 0%, rgba(59,130,246,0.08) 100%);
+                border: 1px solid rgba(255,106,0,0.25);
+                border-radius: 20px;
+                padding: 20px 22px 16px;
+                position: relative;
+                overflow: hidden;
+            }
+            .hero-commi-card::before {
+                content: '';
+                position: absolute;
+                top: -40px; right: -40px;
+                width: 120px; height: 120px;
+                background: radial-gradient(circle, rgba(255,106,0,0.15), transparent 70%);
+                border-radius: 50%;
+            }
+            .hero-label {
+                font-size: 0.7rem;
+                font-weight: 800;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                margin: 0 0 4px 0;
+            }
+            .hero-amount {
+                font-size: 2.2rem;
+                font-weight: 800;
+                color: white;
+                margin: 0;
+                line-height: 1;
+                text-shadow: 0 0 20px rgba(255,106,0,0.3);
+                letter-spacing: -1px;
+            }
+            .hero-sub-row {
+                display: flex;
+                gap: 16px;
+                margin-top: 12px;
+                padding-top: 12px;
+                border-top: 1px solid rgba(255,255,255,0.06);
+            }
+            .hero-sub-item {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .hero-sub-label {
+                font-size: 0.65rem;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+            }
+            .hero-sub-value {
+                font-size: 1rem;
+                font-weight: 800;
+            }
+            /* Mini stat pills row */
+            .mini-stats-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 10px;
+            }
+            .mini-stat {
+                background: rgba(20, 24, 36, 0.8);
+                border: 1px solid rgba(255,255,255,0.06);
+                border-radius: 14px;
+                padding: 12px 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                position: relative;
+                overflow: hidden;
+            }
+            .mini-stat-icon {
+                font-size: 0.75rem;
+                margin-bottom: 2px;
+            }
+            .mini-stat-value {
+                font-size: 1.25rem;
+                font-weight: 800;
+                line-height: 1;
+            }
+            .mini-stat-label {
+                font-size: 0.65rem;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+            }
+            .mini-stat.pending { border-color: rgba(234,179,8,0.2); }
+            .mini-stat.pending .mini-stat-value { color: #eab308; }
+            .mini-stat.installed { border-color: rgba(16,185,129,0.2); }
+            .mini-stat.installed .mini-stat-value { color: var(--green-installed); }
+            .mini-stat.cancelled { border-color: rgba(244,63,94,0.2); }
+            .mini-stat.cancelled .mini-stat-value { color: var(--red-alert); }
+            /* Target progress card */
+            .target-card {
+                background: linear-gradient(145deg, rgba(30, 35, 48, 0.8), rgba(20, 24, 36, 0.9));
+                border: 1px solid rgba(255,255,255,0.05);
+                border-radius: 16px;
+                padding: 16px 18px;
+            }
+            .target-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+                margin-bottom: 10px;
+            }
+            .target-label {
+                font-size: 0.7rem;
+                font-weight: 800;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+            }
+            .target-count-display {
+                display: flex;
+                align-items: baseline;
+                gap: 4px;
+            }
+            .target-num {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: white;
+            }
+            .target-denom {
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                font-weight: 600;
+            }
+            .target-breakdown-pill {
+                font-size: 0.7rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                background: rgba(255,255,255,0.04);
+                padding: 3px 10px;
+                border-radius: 20px;
+                border: 1px solid rgba(255,255,255,0.06);
+            }
+            /* Sketch theme overrides for new board */
+            body[data-theme="sketch"] .hero-commi-card,
+            body[data-theme="sketch"] .mini-stat,
+            body[data-theme="sketch"] .target-card {
+                background: white !important;
+                border: 2px solid black !important;
+                box-shadow: 4px 4px 0px black !important;
+                border-radius: 8px !important;
+            }
+            body[data-theme="sketch"] .hero-amount,
+            body[data-theme="sketch"] .mini-stat-value,
+            body[data-theme="sketch"] .target-num { color: black !important; text-shadow: none !important; }
+            body[data-theme="sketch"] .hero-sub-row { border-color: black !important; }
+        </style>
+
+        <div class="summary-board">
+            <!-- Hero: Total Commission -->
+            <div class="hero-commi-card">
+                <p class="hero-label">💰 Total Commission</p>
+                <h2 class="hero-amount" id="totalCommi">₱0</h2>
+                <div class="hero-sub-row">
+                    <div class="hero-sub-item">
+                        <span class="hero-sub-label" style="color: var(--primary-orange);">Residential</span>
+                        <span class="hero-sub-value" id="resCommi" style="color: var(--primary-orange);">₱0</span>
+                    </div>
+                    <div style="width:1px; background: rgba(255,255,255,0.08);"></div>
+                    <div class="hero-sub-item">
+                        <span class="hero-sub-label" style="color: var(--blue-biz);">Business</span>
+                        <span class="hero-sub-value" id="bizCommi" style="color: var(--blue-biz);">₱0</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card" style="flex-direction:column; align-items: flex-start; padding-bottom: 25px;">
-                <div style="display:flex; justify-content:space-between; width:100%">
-                    <h3 id="targetCount" style="margin:0;">0 / 20</h3>
-                    <small id="targetBreakdown" style="color:var(--text-muted); font-weight: 600;">0 Res | 0 Biz</small>
+
+            <!-- Mini stats: Pending / Installed / Cancelled -->
+            <div class="mini-stats-row">
+                <div class="mini-stat pending">
+                    <span class="mini-stat-icon">⏳</span>
+                    <span class="mini-stat-value" id="pendingCount">0</span>
+                    <span class="mini-stat-label">Pending</span>
+                </div>
+                <div class="mini-stat installed">
+                    <span class="mini-stat-icon">✅</span>
+                    <span class="mini-stat-value" id="installedCount">0</span>
+                    <span class="mini-stat-label">Installed</span>
+                </div>
+                <div class="mini-stat cancelled">
+                    <span class="mini-stat-icon">❌</span>
+                    <span class="mini-stat-value" id="cancelledCount">0</span>
+                    <span class="mini-stat-label">Cancelled</span>
+                </div>
+            </div>
+
+            <!-- Target progress -->
+            <div class="target-card">
+                <div class="target-header">
+                    <span class="target-label">🎯 Monthly Target</span>
+                    <span class="target-breakdown-pill" id="targetBreakdown">0 Res | 0 Biz</span>
+                </div>
+                <div class="target-count-display" style="margin-bottom: 10px;">
+                    <span class="target-num" id="targetCount">0</span>
+                    <span class="target-denom">/ 20 installs</span>
                 </div>
                 <div class="progress-bar"><div id="progressFill"></div></div>
             </div>
@@ -838,14 +1073,24 @@ window.copyBilling = (installDate, planString, area) => {
             });
         };
         // --- HANGGANG DITO LANG ---
+        window.toggleCard = (id) => {
+            const card = document.querySelector(`.client-card[data-id="${id}"]`);
+            if (card) card.classList.toggle('expanded');
+        };
         window.render = () => {
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
             const st = document.getElementById('searchInput').value.toLowerCase();
             const sm = parseInt(document.getElementById('viewMonth').value);
             list.innerHTML = ""; lList.innerHTML = "";
             let rT = 0, bT = 0, rC = 0, bC = 0;
+            let pendingCount = 0, installedCount = 0, cancelledCount = 0;
             const sorted = [...clients].sort((a,b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
             sorted.forEach(c => {
+                // Count all for mini stats (no month/search filter)
+                if (!c.installed && !c.cancelled) pendingCount++;
+                else if (c.installed) installedCount++;
+                else if (c.cancelled) cancelledCount++;
+
                 if(st && !c.name.toLowerCase().includes(st) && !c.area.toLowerCase().includes(st)) return;
                 if(currentStatusFilter === 'pending' && (c.installed || c.cancelled)) return;
                 if(currentStatusFilter === 'installed' && !c.installed) return;
@@ -856,63 +1101,77 @@ window.copyBilling = (installDate, planString, area) => {
                     const iDate = new Date(c.installDate);
                     if(iDate.getMonth() === sm) {
                         show = true;
-                        
-                        // DO NOT add to target count (bC, rC) if the client was 'lent' to someone else
                         if (c.borrowStatus !== 'lent') {
                             if(c.type === 'business') { bC++; } else { rC++; }
                         }
-                        
-                        // Always add commi (It will just add ₱0 automatically if borrowed/lent)
                         if(c.type === 'business') { bT += c.commi; } else { rT += c.commi; }
                     }
                 } else if(c.cancelled) show = true;
                 if(show) {
+                    const statusClass = c.installed ? 'client-installed' : c.cancelled ? 'client-cancelled' : 'client-pending';
                     const card = document.createElement('div');
-                    card.className = `client-card ${c.installed?'client-installed':''} ${c.cancelled?'client-cancelled':''}`;
+                    card.className = `client-card ${statusClass}`;
+                    card.dataset.id = c.id;
+
+                    const statusBadge = c.installed
+                        ? `<span style="font-size:0.65rem; font-weight:800; letter-spacing:1px; color: var(--green-installed); background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); padding: 2px 8px; border-radius: 6px;">INSTALLED</span>`
+                        : c.cancelled
+                        ? `<span style="font-size:0.65rem; font-weight:800; letter-spacing:1px; color: var(--red-alert); background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.25); padding: 2px 8px; border-radius: 6px;">CANCELLED</span>`
+                        : `<span style="font-size:0.65rem; font-weight:800; letter-spacing:1px; color: #eab308; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.25); padding: 2px 8px; border-radius: 6px;">PENDING</span>`;
+
                     card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items: flex-start;">
-                            <div>
-                                <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>
-                                ${c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); margin-left: 5px;">🤝 Borrowed from ${c.borrowName}</span>` : ''}
-                                ${c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); margin-left: 5px;">📤 Lent to ${c.borrowName}</span>` : ''}
-                                <br>
-                                <strong style="font-size: 1.05rem; font-weight: 700; color: white;">${c.name}</strong><br>
-                                <small style="color:var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange)"></i> ${c.area}</small><br>
-                                <small style="color:var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-wifi" style="color:var(--primary-orange)"></i> ${c.plan}</small>
+                        <div class="card-header" onclick="toggleCard('${c.id}')">
+                            <div class="card-header-info">
+                                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                                    <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>
+                                    ${statusBadge}
+                                    ${c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);">🤝 ${c.borrowName}</span>` : ''}
+                                    ${c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);">📤 ${c.borrowName}</span>` : ''}
+                                </div>
+                                <strong style="font-size: 1rem; font-weight: 700; color: white; display:block;">${c.name}</strong>
+                                <div style="display:flex; gap:12px; margin-top:3px; flex-wrap:wrap;">
+                                    <small style="color:var(--text-muted); font-size: 0.72rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange); margin-right:3px;"></i>${c.area}</small>
+                                    <small style="color:var(--text-muted); font-size: 0.72rem;"><i class="fa-solid fa-wifi" style="color:var(--primary-orange); margin-right:3px;"></i>${c.plan}</small>
+                                </div>
                             </div>
-                            <div style="text-align:right">
-                                <i class="fa-solid fa-trash" onclick="deleteItem('${c.id}', 'client')" style="cursor:pointer; color:var(--text-muted); transition: 0.3s;" onmouseover="this.style.color='var(--red-alert)'" onmouseout="this.style.color='var(--text-muted)'"></i><br>
-                                <span style="font-weight: 800; font-size: 1.1rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi}</span>
+                            <div class="card-header-right">
+                                <span style="font-weight: 800; font-size: 1.05rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi.toLocaleString()}</span>
+                                <i class="fa-solid fa-chevron-down card-chevron"></i>
                             </div>
                         </div>
-                        ${c.installed ? `
-                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem;">
-                            <label style="color: var(--text-muted); font-weight: 600;"><i class="fa-regular fa-calendar-check"></i> Install Date:</label>
-                            <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5);">
-                        </div>
-                        <div style="margin-top: 10px; display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
-                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main); font-weight: 600;">
-                                <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--primary-orange);">
-                                Billing Explained
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'}; font-weight: 600; text-decoration: ${c.commiReceived ? 'line-through' : 'none'};">
-                                <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--green-installed);">
-                                Commi Received
-                            </label>
-                        </div>
-                        <div style="margin-top: 8px;">
-                            <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}', '${c.area}')">
-    <i class="fa-solid fa-copy"></i> Copy Billing Message
-</button>
-                        </div>
-                        ` : ''}
-                        ${c.cancelled ? `
-                        <div style="margin-top: 10px;">
-                            <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 10px; width: 100%; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.05); color: white;">
-                        </div>` : ''}
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-                            <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.installed?'linear-gradient(135deg, #10b981, #059669)':'rgba(255,255,255,0.05)'}; color:white; box-shadow:${c.installed?'0 4px 15px rgba(16,185,129,0.3)':'none'}; border: 1px solid ${c.installed?'transparent':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">${c.installed ? '<i class="fa-solid fa-check"></i> Installed' : 'Install'}</button>
-                            <button class="primary-btn" style="padding:8px; font-size: 0.8rem; background:${c.cancelled?'rgba(244,63,94,0.1)':'rgba(255,255,255,0.05)'}; color:${c.cancelled?'#f43f5e':'white'}; box-shadow:none; border: 1px solid ${c.cancelled?'rgba(244,63,94,0.3)':'rgba(255,255,255,0.1)'};" onclick="toggleStatus('${c.id}', 'cancelled')">${c.cancelled ? 'Cancelled' : 'Cancel'}</button>
+                        <div class="card-body">
+                            <div class="card-body-inner">
+                                ${c.installed ? `
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 10px;">
+                                    <label style="color: var(--text-muted); font-weight: 600; white-space:nowrap;"><i class="fa-regular fa-calendar-check"></i> Install Date:</label>
+                                    <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5);">
+                                </div>
+                                <div style="display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                                        <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--primary-orange);">
+                                        Billing Explained
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'}; font-weight: 600; text-decoration: ${c.commiReceived ? 'line-through' : 'none'};">
+                                        <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--green-installed);">
+                                        Commi Received
+                                    </label>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}', '${c.area}')">
+                                        <i class="fa-solid fa-copy"></i> Copy Billing Message
+                                    </button>
+                                </div>
+                                ` : ''}
+                                ${c.cancelled ? `
+                                <div style="margin-bottom: 10px;">
+                                    <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 10px; width: 100%; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.05); color: white;">
+                                </div>` : ''}
+                                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+                                    <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background:${c.installed?'linear-gradient(135deg, #10b981, #059669)':'rgba(255,255,255,0.05)'}; color:white; box-shadow:${c.installed?'0 4px 15px rgba(16,185,129,0.3)':'none'}; border: 1px solid ${c.installed?'transparent':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">${c.installed ? '<i class="fa-solid fa-check"></i> Installed' : 'Install'}</button>
+                                    <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background:${c.cancelled?'rgba(244,63,94,0.1)':'rgba(255,255,255,0.05)'}; color:${c.cancelled?'#f43f5e':'white'}; box-shadow:none; border: 1px solid ${c.cancelled?'rgba(244,63,94,0.3)':'rgba(255,255,255,0.1)'};" onclick="toggleStatus('${c.id}', 'cancelled')">${c.cancelled ? 'Cancelled' : 'Cancel'}</button>
+                                    <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background: rgba(244,63,94,0.08); color: var(--red-alert); box-shadow:none; border: 1px solid rgba(244,63,94,0.2);" onclick="deleteItem('${c.id}', 'client')"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
                         </div>
                     `;
                     list.appendChild(card);
@@ -920,7 +1179,11 @@ window.copyBilling = (installDate, planString, area) => {
             });
             document.getElementById('resCommi').innerText = `₱${rT.toLocaleString()}`;
             document.getElementById('bizCommi').innerText = `₱${bT.toLocaleString()}`;
-            document.getElementById('targetCount').innerText = `${rC+bC} / 20`;
+            document.getElementById('totalCommi').innerText = `₱${(rT+bT).toLocaleString()}`;
+            document.getElementById('pendingCount').innerText = pendingCount;
+            document.getElementById('installedCount').innerText = installedCount;
+            document.getElementById('cancelledCount').innerText = cancelledCount;
+            document.getElementById('targetCount').innerText = `${rC+bC}`;
             document.getElementById('targetBreakdown').innerText = `${rC} Res | ${bC} Biz`;
             document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/20)*100, 100)}%`;
             let exT = 0;
