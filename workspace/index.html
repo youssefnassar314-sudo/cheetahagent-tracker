@@ -1219,13 +1219,11 @@ function addStamp(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) { 
-                // COMPRESSION MAGIC: Papapayatin natin ang picture para iwas lag!
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // I-limit lang natin sa 800px ang laki para super gaan
                     const MAX_WIDTH = 800;
                     const MAX_HEIGHT = 800;
                     let width = img.width;
@@ -1240,8 +1238,8 @@ function addStamp(input) {
                     canvas.width = width; canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Ipasa yung compressed at magaan na version
-                    createDraggableImage(canvas.toDataURL('image/jpeg', 0.8));
+                    // FIXED: Ginamit ang 'image/png' para hindi mag-black ang transparent background!
+                    createDraggableImage(canvas.toDataURL('image/png'));
                 };
                 img.src = e.target.result;
             }
@@ -1272,16 +1270,17 @@ function addStamp(input) {
 
     // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE
 // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE (OPTIMIZED)
+    // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE (OPTIMIZED)
     interact('.draggable-stamp')
         .draggable({
-            inertia: false, // Pinatay natin ito para mas snappy at hindi madulas
+            inertia: false, 
             modifiers: [
                 interact.modifiers.restrictRect({
                     restriction: 'parent',
                     endOnly: true
                 })
             ],
-            autoScroll: true,
+            autoScroll: false, // <-- ITO YUNG SALARIN SA LAG SA PHONE! Pinatay na natin.
             listeners: { move: dragMoveListener }
         })
         .resizable({
@@ -1298,7 +1297,7 @@ function addStamp(input) {
                     x += event.deltaRect.left;
                     y += event.deltaRect.top;
 
-                    // Pabilisin natin ang rendering gamit ang 3d transform hardware acceleration
+                    // GPU Acceleration para smooth sa phone
                     target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
                     target.setAttribute('data-x', x);
                     target.setAttribute('data-y', y);
@@ -1308,7 +1307,7 @@ function addStamp(input) {
                 interact.modifiers.restrictEdges({ outer: 'parent' }),
                 interact.modifiers.restrictSize({ min: { width: 50, height: 50 } })
             ],
-            inertia: false // Pinatay din dito para instant stop pag-bitaw
+            inertia: false 
         });
 
     function dragMoveListener(event) {
