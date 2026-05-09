@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheetah Pro | Workspace</title>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -591,6 +593,34 @@ PLAN VALUE:</pre>
         <button class="primary-btn" onclick="toggleHelpModal()" style="background: linear-gradient(135deg, var(--blue-biz), #2563eb); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);">READY!</button>
     </div>
 </div>
+
+    <div class="modal-overlay" id="pdfEditorModal">
+    <div class="modal-box" style="max-width: 900px; width: 95%; height: 90vh; display: flex; flex-direction: column; padding: 20px;">
+        <button class="modal-close" onclick="closeVaultModal('pdfEditorModal')" style="z-index: 1000;">&times;</button>
+        <h3 style="margin-top: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">
+            <svg width="24" height="24" fill="none" stroke="var(--primary-orange)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            PDF <span style="color:var(--primary-orange)">STAMPER</span>
+        </h3>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <input type="file" id="stampUpload" accept="image/*" style="display:none;" onchange="addStamp(this)">
+            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--blue-biz); flex: 1;" onclick="document.getElementById('stampUpload').click()">
+                + Add Signature / Sketch / ID
+            </button>
+            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--green-installed); flex: 1;" onclick="burnAndDownload()">
+                ✨ Burn to PDF & Download
+            </button>
+        </div>
+        
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; text-align: left;">
+            💡 <strong>Tip:</strong> I-drag ang image para i-position. Mag-scroll up/down sa ibabaw ng image para ma-resize.
+        </div>
+
+        <div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; user-select: none;">
+            <canvas id="pdfViewerCanvas" style="display: block; margin: 0 auto;"></canvas>
+        </div>
+    </div>
+</div>
     
     
 <script>
@@ -915,14 +945,17 @@ doc.render({
                             return new Blob([new Uint8Array(byteNumbers)], {type: mime});
                         };
 
-                        // 3. I-download pareho ang PDF at DOCX
-                        const pdfBlob = base64ToBlob(data.pdfBase64, 'application/pdf');
-                        saveAs(pdfBlob, `${fileBaseName}.pdf`);
+                        // 3. I-download ang DOCX bilang backup
                         saveAs(outDocx, `${fileBaseName}.docx`);
 
-                        status.innerHTML = "✨ DOCX & PDF Generated successfully!"; 
+                        status.innerHTML = "✨ DOCX Generated! Opening PDF Editor..."; 
                         status.style.color = "var(--green-installed)";
                         document.getElementById('raw').value = "";
+                        
+                        // Bubuksan natin yung Editor modal at ipapasa ang Base64 ng PDF
+                        setTimeout(() => {
+                            openPdfEditor(data.pdfBase64, fileBaseName);
+                        }, 500);
                     } else {
                         throw new Error(data.error || "GAS Conversion failed");
                     }
@@ -1115,6 +1148,149 @@ doc.render({
     canvas.addEventListener('touchstart', startErase, { passive: false });
     canvas.addEventListener('touchmove', erase, { passive: false });
     canvas.addEventListener('touchend', stopErase);
+
+    // --- PDF STAMPER / DRAG & DROP LOGIC ---
+    let currentPdfBytes = null;
+    let currentPdfName = "";
+    let pdfScale = 1.5; 
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    async function openPdfEditor(base64Data, fileName) {
+        currentPdfName = fileName;
+        
+        const binary_string = window.atob(base64Data);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        currentPdfBytes = bytes;
+
+        openVaultModal('pdfEditorModal'); 
+
+        const loadingTask = pdfjsLib.getDocument({data: bytes});
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1); 
+        
+        const viewport = page.getViewport({scale: pdfScale});
+        const canvas = document.getElementById('pdfViewerCanvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = { canvasContext: context, viewport: viewport };
+        await page.render(renderContext).promise;
+
+        document.querySelectorAll('.draggable-stamp').forEach(el => el.remove());
+    }
+
+    function addStamp(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) { createDraggableImage(e.target.result); }
+            reader.readAsDataURL(input.files[0]);
+        }
+        input.value = ""; 
+    }
+
+    function createDraggableImage(src) {
+        const container = document.getElementById('pdfContainer');
+        const canvas = document.getElementById('pdfViewerCanvas');
+        
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'draggable-stamp';
+        img.style.position = 'absolute';
+        
+        img.style.left = (canvas.offsetLeft + 50) + 'px'; 
+        img.style.top = (canvas.offsetTop + 50) + 'px';
+        img.style.width = '150px'; 
+        img.style.cursor = 'grab';
+        img.style.zIndex = '100';
+        img.style.border = '2px dashed var(--primary-orange)';
+        img.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
+        
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        img.onmousedown = function(e) {
+            isDragging = true; img.style.cursor = 'grabbing';
+            startX = e.clientX; startY = e.clientY;
+            initialLeft = parseInt(img.style.left || 0); initialTop = parseInt(img.style.top || 0);
+            e.preventDefault();
+        };
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            img.style.left = (initialLeft + (e.clientX - startX)) + 'px';
+            img.style.top = (initialTop + (e.clientY - startY)) + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (isDragging) { isDragging = false; img.style.cursor = 'grab'; }
+        });
+
+        img.onwheel = function(e) {
+            e.preventDefault();
+            let currentWidth = img.clientWidth;
+            if (e.deltaY < 0) img.style.width = (currentWidth + 15) + 'px'; 
+            else img.style.width = Math.max(30, currentWidth - 15) + 'px'; 
+        };
+
+        container.appendChild(img);
+    }
+
+    async function burnAndDownload() {
+        if (!currentPdfBytes) return;
+
+        const btn = event.currentTarget;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Burning... Please wait";
+
+        try {
+            const { PDFDocument } = window.PDFLib;
+            const pdfDoc = await PDFDocument.load(currentPdfBytes);
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0]; 
+
+            const canvas = document.getElementById('pdfViewerCanvas');
+            const pdfPageWidth = firstPage.getWidth();
+            const pdfPageHeight = firstPage.getHeight();
+            const stamps = document.querySelectorAll('.draggable-stamp');
+            
+            for (let stamp of stamps) {
+                const imgBytes = await fetch(stamp.src).then(res => res.arrayBuffer());
+                let pdfImage;
+                if (stamp.src.includes('image/png')) pdfImage = await pdfDoc.embedPng(imgBytes);
+                else pdfImage = await pdfDoc.embedJpg(imgBytes);
+
+                const imgLeftOnCanvas = parseInt(stamp.style.left) - canvas.offsetLeft;
+                const imgTopOnCanvas = parseInt(stamp.style.top) - canvas.offsetTop;
+                const scaleX = pdfPageWidth / canvas.width;
+                const scaleY = pdfPageHeight / canvas.height;
+                const finalWidth = stamp.clientWidth * scaleX;
+                const finalHeight = stamp.clientHeight * scaleY;
+                
+                const finalX = imgLeftOnCanvas * scaleX;
+                const finalY = pdfPageHeight - (imgTopOnCanvas * scaleY) - finalHeight;
+
+                firstPage.drawImage(pdfImage, { x: finalX, y: finalY, width: finalWidth, height: finalHeight });
+            }
+
+            const modifiedPdfBytes = await pdfDoc.save();
+            const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+            saveAs(blob, currentPdfName + ".pdf");
+
+            closeVaultModal('pdfEditorModal');
+            document.getElementById('status').innerHTML = "✅ PDF Patched & Downloaded!";
+        } catch (e) {
+            console.error(e);
+            alert("Error burning PDF. Check console.");
+        } finally {
+            btn.innerHTML = originalText;
+        }
+    }
 
 </script>
 </body>
