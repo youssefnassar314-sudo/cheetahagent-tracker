@@ -6,22 +6,6 @@
 <title>Skyline Application Form</title>
 <script src="https://unpkg.com/pdfmake@0.2.7/build/pdfmake.min.js"></script>
 <script src="https://unpkg.com/pdfmake@0.2.7/build/vfs_fonts.js"></script>
-<script>
-pdfMake.fonts = {
-  Times: {
-    normal:      "Times-Roman",
-    bold:        "Times-Bold",
-    italics:     "Times-Italic",
-    bolditalics: "Times-BoldItalic"
-  },
-  Roboto: {
-    normal:      "Roboto-Regular.ttf",
-    bold:        "Roboto-Medium.ttf",
-    italics:     "Roboto-Italic.ttf",
-    bolditalics: "Roboto-MediumItalic.ttf"
-  }
-};
-</script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -169,7 +153,7 @@ textarea{resize:vertical;min-height:60px;}
 /* ── PDF PAGE STYLES (inside preview) ── */
 .pdf-page{
   width:100%;
-  font-family:'Times New Roman',Times,serif;
+  font-family:Arial,Helvetica,sans-serif;
   font-size:7.5px;
   padding:24px 28px 20px;
   color:#000;
@@ -282,6 +266,7 @@ textarea{resize:vertical;min-height:60px;}
     Skyline <span>Application Form</span>
   </h1>
   <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="openPasteModal()" style="background:#f0fdf4;color:#059669;border-color:#059669;">⚡ Paste & Parse</button>
     <button class="btn btn-ghost btn-sm" onclick="clearAll()">Clear All</button>
     <button class="btn btn-success btn-sm" onclick="exportPDF()">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -565,6 +550,20 @@ textarea{resize:vertical;min-height:60px;}
     </div>
   </div>
 
+
+<!-- PASTE MODAL -->
+<div id="pasteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:14px;padding:28px;max-width:560px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
+    <button onclick="closePasteModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.4rem;color:#6b7280;cursor:pointer;">×</button>
+    <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px;color:#111827;">⚡ Paste & Parse</div>
+    <div style="font-size:0.78rem;color:#6b7280;margin-bottom:14px;font-family:'DM Mono',monospace;">I-paste ang raw application format — auto-fill ang lahat ng fields</div>
+    <textarea id="pasteInput" placeholder="I-paste dito yung APPLICATION FORM text..." style="width:100%;height:220px;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:0.8rem;font-family:'DM Mono',monospace;resize:vertical;color:#111827;line-height:1.5;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
+      <button onclick="closePasteModal()" style="padding:9px 18px;border-radius:7px;font-size:0.8rem;font-weight:600;cursor:pointer;background:white;border:1px solid #d1d5db;color:#374151;">Cancel</button>
+      <button onclick="parseAndFill()" style="padding:9px 18px;border-radius:7px;font-size:0.8rem;font-weight:600;cursor:pointer;background:#059669;border:none;color:white;">Parse & Fill →</button>
+    </div>
+  </div>
+</div>
 </div><!-- end layout -->
 
 <div class="toast-wrap" id="toastWrap"></div>
@@ -574,6 +573,170 @@ textarea{resize:vertical;min-height:60px;}
 // LOGO (embedded base64)
 // ═══════════════════════════════════
 const SKYLINE_LOGO = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAuAMkDASIAAhEBAxEB/8QAHQAAAgIDAQEBAAAAAAAAAAAABgcFCAECBAMJAP/EAFUQAAEDAwIDBAQFCw8MAwAAAAECAwQFBhEABxIhMQgTQWEUMlFxFSKRodEWIzc4QlJ1gZSysxcYJTM0NkNXWGJzdJKT0iQoNUVHU1ZkcoKFsZXD8f/EABsBAAIDAQEBAAAAAAAAAAAAAAMEAgUGBwAB/8QAMhEAAgEDAQUGBQQDAQAAAAAAAQIDAAQRIQUSMUHRExRhocHhIjJRcYFCcpHxFVKx8P/aAAwDAQACEQMRAD8ABVPPcSvrznU/dnWO+e/3zv8AbOtVeur3nWNdUxXLKMdqbPqN9XUiltSnmIbSe9mSAo5bbzjA/nE8h8vhq41uUWnW9R2KVSo6Y8VkYSkcyT4knqSfEnSp7JNPjs2JOqSQO/lz1IWfHhQkBI+cn8enK8tLbK3F+qhJUr3DWD21dvPcGP8ASumK3OxLRIbcS/qbXNLzeLdGnWHFTEaaTOrT6OJmNxYShP37hHQeXU/Pqsly7hXncMlbtQuCalCjkMR3Sy0kewJTj584';
+
+
+// ═══════════════════════════════════
+// PASTE & PARSE
+// ═══════════════════════════════════
+function openPasteModal(){
+  document.getElementById('pasteModal').style.display='flex';
+  setTimeout(()=>document.getElementById('pasteInput').focus(), 100);
+}
+function closePasteModal(){
+  document.getElementById('pasteModal').style.display='none';
+}
+
+function parseAndFill(){
+  const raw = document.getElementById('pasteInput').value;
+  if(!raw.trim()){ toast('Walang laman!','error'); return; }
+
+  const data = parseRawText(raw);
+
+  // Fill all fields
+  const set = (id, val) => { const el=document.getElementById(id); if(el&&val) el.value=val.trim(); };
+
+  set('f_agent',   data['AGENT NAME']);
+  set('f_last',    data['LAST NAME']);
+  set('f_first',   data['FIRST NAME']);
+  set('f_mid',     data['MIDDLE NAME']);
+  set('f_hp',      data['HOUSE PHONE']);
+  set('f_op',      data['OFFICE PHONE']);
+  set('f_mobile',  data['MOBILE PHONE']);
+  set('f_email',   data['EMAIL ADDRESS']);
+  set('f_id',      data['ID TYPE/NO.']);
+  set('f_proof',   data['PROOF OF BILL ADDRESS']);
+  set('f_bday',    data['BIRTHDATE']);
+  set('f_age',     data['AGE']);
+  set('f_houseno', data['HOUSE/BLOCK/UNIT NO.']);
+  set('f_street',  data['STREET']);
+  set('f_bldg',    data['BUILDING']);
+  set('f_subd',    data['DISTRICT/SUBDIVISION']);
+  set('f_brgy',    data['BARANGAY']);
+  set('f_muni',    data['MUNICIPALITY']);
+  set('f_occ',     data['OCCUPATION/POSITION']);
+  set('f_emp',     data['EMPLOYER']);
+  set('f_workadd', data['ADDRESS']);
+  set('f_spocc',   data['SPOUSE OCCUPATION']);
+  set('f_spemp',   data['SPOUSE EMPLOYER']);
+  set('f_spadd',   data['SPOUSE EMPLOYER ADDRESS']);
+  set('f_spouse',  data['SPOUSE NAME']);
+
+  // Sex
+  const sexEl = document.getElementById('f_sex');
+  if(sexEl && data['SEX']){
+    const s = data['SEX'].trim().toUpperCase();
+    if(s==='M'||s==='MALE') sexEl.value='M';
+    else if(s==='F'||s==='FEMALE') sexEl.value='F';
+  }
+
+  // Civil Status
+  const civilEl = document.getElementById('f_civil');
+  if(civilEl && data['CIVIL STATUS']){
+    const cs = data['CIVIL STATUS'].trim().toUpperCase();
+    ['SINGLE','MARRIED','WIDOWED','SEPARATED'].forEach(v => {
+      if(cs.includes(v)) civilEl.value=v;
+    });
+  }
+
+  // Plan
+  const planEl = document.getElementById('f_plan');
+  const planvalEl = document.getElementById('f_planval');
+  if(data['PLAN']){
+    const p = data['PLAN'].trim().toUpperCase();
+    // Try to match option value
+    Array.from(planEl.options).forEach(o => { if(o.value.toUpperCase()===p) planEl.value=o.value; });
+    // If not matched, just store plan value raw
+  }
+  if(data['PLAN VALUE']) {
+    planvalEl.value = data['PLAN VALUE'].trim();
+  } else if(data['PLAN']) {
+    // Auto-extract number from plan
+    const match = data['PLAN'].match(/\d+/);
+    if(match) planvalEl.value = match[0];
+  }
+
+  // House checkboxes — detect (.) or (x) or (✓) pattern
+  parseCheckboxes(raw);
+
+  updatePreview();
+  closePasteModal();
+  document.getElementById('pasteInput').value='';
+  toast('Filled! Check fields for accuracy.','success');
+  gotoSection(0);
+}
+
+function parseRawText(raw){
+  const data = {};
+  // Normalize — remove emoji, 📌, extra whitespace
+  const cleaned = raw.replace(/📌/g,'').replace(/\r/g,'');
+  const lines = cleaned.split('\n');
+
+  let currentKey = '';
+  for(let line of lines){
+    line = line.trim();
+    if(!line) continue;
+
+    // Skip section headers (all caps, no colon, or known headers)
+    if(/^(APPLICATION FORM|HOME ADDRESS|WORK INFORMATION|House:|Home type:)/i.test(line)) continue;
+
+    const colonIdx = line.indexOf(':');
+    if(colonIdx !== -1){
+      const key = line.substring(0, colonIdx).trim().toUpperCase();
+      const val = line.substring(colonIdx+1).trim();
+      // Skip checkbox lines like "( ) owned"
+      if(/^\(/.test(key)) continue;
+      data[key] = val;
+      currentKey = key;
+    } else if(currentKey && line && !/^\(/.test(line)){
+      // Continuation of previous value
+      if(data[currentKey]) data[currentKey] += ' ' + line;
+    }
+  }
+  return data;
+}
+
+function parseCheckboxes(raw){
+  // House ownership
+  const houseMap = {
+    owned: ['owned'],
+    rent: ['rent'],
+    relatives: ['living with relatives','living w/relatives','living w/ relatives']
+  };
+  // Home type
+  const homeMap = {
+    single: ['single detached','single'],
+    condo: ['condominium','condo'],
+    apt: ['apartment'],
+    town: ['townhouse'],
+    others: ['others']
+  };
+
+  // Look for checked pattern: (.) or (x) or (✓) or (X) before option
+  const checkPattern = /\(([^)]+)\)\s+(.+)/gi;
+  let match;
+  while((match = checkPattern.exec(raw)) !== null){
+    const marker = match[1].trim();
+    const label  = match[2].trim().toLowerCase();
+    const isChecked = marker !== '' && marker !== ' ';
+
+    if(!isChecked) continue;
+
+    // House
+    for(const [key, aliases] of Object.entries(houseMap)){
+      if(aliases.some(a => label.includes(a))){
+        const el = document.getElementById('cb-'+key);
+        if(el){ singleCheck('house', el, key); }
+      }
+    }
+    // Home type
+    for(const [key, aliases] of Object.entries(homeMap)){
+      if(aliases.some(a => label.includes(a))){
+        const el = document.getElementById('cb-'+key);
+        if(el){ singleCheck('home', el, key); }
+      }
+    }
+  }
+}
 
 // ═══════════════════════════════════
 // STATE
@@ -1118,7 +1281,7 @@ async function exportPDF(){
       tcbody:{fontSize:5.5,lineHeight:1.4},
       tchead:{fontSize:6.5,bold:true,margin:[0,4,0,1]},
     },
-    defaultStyle:{font:'Times'}
+    defaultStyle:{font:'Roboto'}
   };
 
   // ── PAGE 1 ──
