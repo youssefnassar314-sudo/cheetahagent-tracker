@@ -5,12 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheetah Pro | Workspace</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
+    
+    <style>
+        /* CSS para sa draggable stamps */
+        .draggable-stamp {
+            position: absolute;
+            z-index: 1000;
+            touch-action: none;
+            user-select: none;
+            border: 2px dashed rgba(255, 106, 0, 0.5);
+            box-sizing: border-box;
+        }
+        .draggable-stamp:hover, .draggable-stamp:focus {
+            border: 2px solid var(--primary-orange);
+            background-color: rgba(255, 106, 0, 0.1);
+        }
+    </style>
 
     <style>
         :root {
@@ -616,9 +634,8 @@ PLAN VALUE:</pre>
             💡 <strong>Tip:</strong> I-drag ang image para i-position. Mag-scroll up/down sa ibabaw ng image para ma-resize.
         </div>
 
-        <div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; user-select: none;">
-            <canvas id="pdfViewerCanvas" style="display: block; margin: 0 auto;"></canvas>
-        </div>
+<div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 20px 0;">
+            </div>
     </div>
 </div>
     
@@ -1150,14 +1167,17 @@ doc.render({
     canvas.addEventListener('touchend', stopErase);
 
     // --- PDF STAMPER / DRAG & DROP LOGIC ---
+// --- MULTI-PAGE PDF STAMPER & INTERACT.JS LOGIC ---
     let currentPdfBytes = null;
     let currentPdfName = "";
-    let pdfScale = 1.5; 
+    let pdfScale = 1.3; // Medyo niliitan para mas fit sa screen
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     async function openPdfEditor(base64Data, fileName) {
         currentPdfName = fileName;
+        const container = document.getElementById('pdfContainer');
+        container.innerHTML = ''; // Linisin ang mga lumang pages/stamps
         
         const binary_string = window.atob(base64Data);
         const len = binary_string.length;
@@ -1171,18 +1191,28 @@ doc.render({
 
         const loadingTask = pdfjsLib.getDocument({data: bytes});
         const pdf = await loadingTask.promise;
-        const page = await pdf.getPage(1); 
         
-        const viewport = page.getViewport({scale: pdfScale});
-        const canvas = document.getElementById('pdfViewerCanvas');
-        const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+        // LOOP PARA SA LAHAT NG PAGES
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({scale: pdfScale});
+            
+            // Gumawa ng hiwalay na canvas per page
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-page-canvas';
+            canvas.dataset.pageNum = pageNum;
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto 20px auto';
+            canvas.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
+            canvas.style.backgroundColor = 'white';
+            
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            container.appendChild(canvas);
 
-        const renderContext = { canvasContext: context, viewport: viewport };
-        await page.render(renderContext).promise;
-
-        document.querySelectorAll('.draggable-stamp').forEach(el => el.remove());
+            const renderContext = { canvasContext: canvas.getContext('2d'), viewport: viewport };
+            await page.render(renderContext).promise;
+        }
     }
 
     function addStamp(input) {
@@ -1196,54 +1226,80 @@ doc.render({
 
     function createDraggableImage(src) {
         const container = document.getElementById('pdfContainer');
-        const canvas = document.getElementById('pdfViewerCanvas');
+        const firstCanvas = document.querySelector('.pdf-page-canvas');
         
         const img = document.createElement('img');
         img.src = src;
         img.className = 'draggable-stamp';
-        img.style.position = 'absolute';
         
-        img.style.left = (canvas.offsetLeft + 50) + 'px'; 
-        img.style.top = (canvas.offsetTop + 50) + 'px';
+        // I-set ang initial size at position sa gitna ng unang pahina
         img.style.width = '150px'; 
-        img.style.cursor = 'grab';
-        img.style.zIndex = '100';
-        img.style.border = '2px dashed var(--primary-orange)';
-        img.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
+        const startX = firstCanvas ? firstCanvas.offsetLeft + 50 : 50;
+        const startY = firstCanvas ? firstCanvas.offsetTop + 50 : 50;
         
-        let isDragging = false;
-        let startX, startY, initialLeft, initialTop;
-
-        img.onmousedown = function(e) {
-            isDragging = true; img.style.cursor = 'grabbing';
-            startX = e.clientX; startY = e.clientY;
-            initialLeft = parseInt(img.style.left || 0); initialTop = parseInt(img.style.top || 0);
-            e.preventDefault();
-        };
-
-        document.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
-            img.style.left = (initialLeft + (e.clientX - startX)) + 'px';
-            img.style.top = (initialTop + (e.clientY - startY)) + 'px';
-        });
-
-        document.addEventListener('mouseup', function() {
-            if (isDragging) { isDragging = false; img.style.cursor = 'grab'; }
-        });
-
-        img.onwheel = function(e) {
-            e.preventDefault();
-            let currentWidth = img.clientWidth;
-            if (e.deltaY < 0) img.style.width = (currentWidth + 15) + 'px'; 
-            else img.style.width = Math.max(30, currentWidth - 15) + 'px'; 
-        };
-
+        img.setAttribute('data-x', startX);
+        img.setAttribute('data-y', startY);
+        img.style.transform = `translate(${startX}px, ${startY}px)`;
+        
         container.appendChild(img);
+    }
+
+    // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE
+    interact('.draggable-stamp')
+        .draggable({
+            inertia: true,
+            modifiers: [
+                interact.modifiers.restrictRect({
+                    restriction: 'parent',
+                    endOnly: true
+                })
+            ],
+            autoScroll: true,
+            listeners: {
+                move: dragMoveListener
+            }
+        })
+        .resizable({
+            // Pwedeng hilahin sa kahit anong gilid
+            edges: { left: true, right: true, bottom: true, top: true },
+            listeners: {
+                move: function (event) {
+                    let target = event.target;
+                    let x = (parseFloat(target.getAttribute('data-x')) || 0);
+                    let y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+                    // Update size
+                    target.style.width = event.rect.width + 'px';
+                    target.style.height = event.rect.height + 'px';
+
+                    // Translate when resizing from top/left edges
+                    x += event.deltaRect.left;
+                    y += event.deltaRect.top;
+
+                    target.style.transform = `translate(${x}px, ${y}px)`;
+                    target.setAttribute('data-x', x);
+                    target.setAttribute('data-y', y);
+                }
+            },
+            modifiers: [
+                interact.modifiers.restrictEdges({ outer: 'parent' }),
+                interact.modifiers.restrictSize({ min: { width: 50, height: 50 } })
+            ],
+            inertia: true
+        });
+
+    function dragMoveListener(event) {
+        var target = event.target;
+        var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+        var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+        target.style.transform = `translate(${x}px, ${y}px)`;
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
     }
 
     async function burnAndDownload() {
         if (!currentPdfBytes) return;
-
         const btn = event.currentTarget;
         const originalText = btn.innerHTML;
         btn.innerHTML = "Burning... Please wait";
@@ -1252,32 +1308,68 @@ doc.render({
             const { PDFDocument } = window.PDFLib;
             const pdfDoc = await PDFDocument.load(currentPdfBytes);
             const pages = pdfDoc.getPages();
-            const firstPage = pages[0]; 
-
-            const canvas = document.getElementById('pdfViewerCanvas');
-            const pdfPageWidth = firstPage.getWidth();
-            const pdfPageHeight = firstPage.getHeight();
             const stamps = document.querySelectorAll('.draggable-stamp');
+            const canvases = document.querySelectorAll('.pdf-page-canvas');
+            const container = document.getElementById('pdfContainer');
             
             for (let stamp of stamps) {
+                // Kukunin ang absolute position ng image
+                const imgRect = stamp.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                // Absolute Y coordinate ng image relative sa scroller container
+                const imgAbsoluteY = imgRect.top - containerRect.top + container.scrollTop;
+                const imgAbsoluteX = imgRect.left - containerRect.left + container.scrollLeft;
+
+                // HANAPIN KUNG NASAANG PAHINA NAKAPATONG ANG PICTURE
+                let targetPageNum = 1;
+                let targetCanvas = canvases[0];
+
+                for (let canvas of canvases) {
+                    const cRect = canvas.getBoundingClientRect();
+                    const cAbsoluteTop = cRect.top - containerRect.top + container.scrollTop;
+                    const cAbsoluteBottom = cAbsoluteTop + cRect.height;
+                    
+                    // Kapag ang center ng picture ay nasa loob ng pahinang ito
+                    const imgCenterY = imgAbsoluteY + (imgRect.height / 2);
+                    if (imgCenterY >= cAbsoluteTop && imgCenterY <= cAbsoluteBottom) {
+                        targetPageNum = parseInt(canvas.dataset.pageNum);
+                        targetCanvas = canvas;
+                        break;
+                    }
+                }
+
+                // Kalkulahin ang coordinates na babasahin ng PDF-lib
+                const pdfPage = pages[targetPageNum - 1];
+                const pdfPageWidth = pdfPage.getWidth();
+                const pdfPageHeight = pdfPage.getHeight();
+
+                const cRect = targetCanvas.getBoundingClientRect();
+                const cAbsoluteTop = cRect.top - containerRect.top + container.scrollTop;
+                const cAbsoluteLeft = cRect.left - containerRect.left + container.scrollLeft;
+
+                const relativeX = imgAbsoluteX - cAbsoluteLeft;
+                const relativeY = imgAbsoluteY - cAbsoluteTop;
+
+                const scaleX = pdfPageWidth / cRect.width;
+                const scaleY = pdfPageHeight / cRect.height;
+
+                const finalWidth = imgRect.width * scaleX;
+                const finalHeight = imgRect.height * scaleY;
+                const finalX = relativeX * scaleX;
+                // PDF coordinates: Y = 0 is at the bottom
+                const finalY = pdfPageHeight - (relativeY * scaleY) - finalHeight;
+
+                // I-burn ang image
                 const imgBytes = await fetch(stamp.src).then(res => res.arrayBuffer());
                 let pdfImage;
                 if (stamp.src.includes('image/png')) pdfImage = await pdfDoc.embedPng(imgBytes);
                 else pdfImage = await pdfDoc.embedJpg(imgBytes);
 
-                const imgLeftOnCanvas = parseInt(stamp.style.left) - canvas.offsetLeft;
-                const imgTopOnCanvas = parseInt(stamp.style.top) - canvas.offsetTop;
-                const scaleX = pdfPageWidth / canvas.width;
-                const scaleY = pdfPageHeight / canvas.height;
-                const finalWidth = stamp.clientWidth * scaleX;
-                const finalHeight = stamp.clientHeight * scaleY;
-                
-                const finalX = imgLeftOnCanvas * scaleX;
-                const finalY = pdfPageHeight - (imgTopOnCanvas * scaleY) - finalHeight;
-
-                firstPage.drawImage(pdfImage, { x: finalX, y: finalY, width: finalWidth, height: finalHeight });
+                pdfPage.drawImage(pdfImage, { x: finalX, y: finalY, width: finalWidth, height: finalHeight });
             }
 
+            // Download
             const modifiedPdfBytes = await pdfDoc.save();
             const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
             saveAs(blob, currentPdfName + ".pdf");
