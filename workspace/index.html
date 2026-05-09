@@ -6,6 +6,22 @@
 <title>Skyline Application Form</title>
 <script src="https://unpkg.com/pdfmake@0.2.7/build/pdfmake.min.js"></script>
 <script src="https://unpkg.com/pdfmake@0.2.7/build/vfs_fonts.js"></script>
+<script>
+pdfMake.fonts = {
+  Times: {
+    normal:      "Times-Roman",
+    bold:        "Times-Bold",
+    italics:     "Times-Italic",
+    bolditalics: "Times-BoldItalic"
+  },
+  Roboto: {
+    normal:      "Roboto-Regular.ttf",
+    bold:        "Roboto-Medium.ttf",
+    italics:     "Roboto-Italic.ttf",
+    bolditalics: "Roboto-MediumItalic.ttf"
+  }
+};
+</script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
