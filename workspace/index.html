@@ -1197,10 +1197,10 @@ function parseData(rawText) {
         setTimeout(() => processDocument(selectedFile, rawText, status), 50);
     }
 
-    async function processDocument(fileName, rawText, status) {
+    async function processDocument(templateFile, rawText, status) {
         try {
-            const response = await fetch(fileName);
-            if (!response.ok) throw new Error(`Hindi ma-load ang template: ${fileName}`);
+            const response = await fetch(templateFile);
+            if (!response.ok) throw new Error(`Hindi ma-load ang template: ${templateFile}`);
             
             const tBuf = await response.arrayBuffer(); 
             const zip = new PizZip(tBuf);
