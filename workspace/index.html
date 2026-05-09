@@ -864,19 +864,77 @@ doc.render({
                 plan_name: get("PLAN"), plan_value: get("PLAN VALUE")
             });
             
-            const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-            const lName = get("LAST NAME") || "UNKNOWN"; const fName = get("FIRST NAME") || "CLIENT"; const muni = get("MUNICIPALITY") || "NO_CITY"; const plan = get("PLAN") || "NO_PLAN";
-            saveAs(out, `${lName}, ${fName} - ${muni}.docx`);
+            // 1. Generate ang DOCX as Blob
+            const outDocx = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+            const lName = get("LAST NAME") || "UNKNOWN"; 
+            const fName = get("FIRST NAME") || "CLIENT"; 
+            const muni = get("MUNICIPALITY") || "NO_CITY"; 
+            const plan = get("PLAN") || "NO_PLAN";
+            const fileBaseName = `${lName}, ${fName} - ${muni}`;
 
-            document.getElementById('snip-subject').value = `${lName}, ${fName} - ${muni} - ${plan}`;
+            // I-set yung email snippets
+            document.getElementById('snip-subject').value = `${fileBaseName} - ${plan}`;
             document.getElementById('snip-short').value = `${lName}, ${fName} / ${muni}`;
             document.getElementById('snip-body1').value = `Magandang araw po!\n\nAttached is the completed form for ${fName} ${lName}. Let me know if you need anything else.\n\nSalamat!`;
             document.getElementById('snip-body2').value = `Good day,\n\nPlease find attached the details for ${fName} ${lName} (${plan}) for your perusal.\n\nBest regards,`;
             document.getElementById('snip-body3').value = `Good day!\n\nSending over the generated application document for ${lName}, ${fName} from ${muni}.\n\nThank you.`;
-
             document.getElementById('emailSection').style.display = "block";
-            status.innerHTML = "✨ Application Generated!"; status.style.color = "var(--green-installed)";
-            document.getElementById('raw').value = "";
+
+            // --- 2. DOCX TO PDF VIA GOOGLE APPS SCRIPT ---
+            status.innerHTML = "Converting to PDF... Please wait."; 
+            status.style.color = "var(--accent-orange)";
+
+            const reader = new FileReader();
+            reader.readAsDataURL(outDocx);
+            reader.onloadend = async function() {
+                const base64data = reader.result.split(',')[1];
+
+                try {
+                    // PALITAN ITO NG IYONG GOOGLE WEB APP URL
+                    const gasURL = 'https://script.google.com/macros/s/AKfycbzSGw7QZp8gj14lA02FK2t9DKpXIXMMFOwqGUclDkIhIRjNpq71vMQsf0aQeV4D1B6jeA/exec';
+
+                    const response = await fetch(gasURL, {
+                        method: 'POST',
+                        body: JSON.stringify({ fileBase64: base64data }),
+                        headers: {
+                            // Importante: Gamitin ang text/plain para maiwasan ang CORS Preflight error sa Google Apps Script
+                            'Content-Type': 'text/plain;charset=utf-8' 
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.pdfBase64) {
+                        // Inline helper function para sa Base64 to Blob
+                        const base64ToBlob = (base64, mime) => {
+                            const byteCharacters = atob(base64);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                                byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            return new Blob([new Uint8Array(byteNumbers)], {type: mime});
+                        };
+
+                        // 3. I-download pareho ang PDF at DOCX
+                        const pdfBlob = base64ToBlob(data.pdfBase64, 'application/pdf');
+                        saveAs(pdfBlob, `${fileBaseName}.pdf`);
+                        saveAs(outDocx, `${fileBaseName}.docx`);
+
+                        status.innerHTML = "✨ DOCX & PDF Generated successfully!"; 
+                        status.style.color = "var(--green-installed)";
+                        document.getElementById('raw').value = "";
+                    } else {
+                        throw new Error(data.error || "GAS Conversion failed");
+                    }
+                } catch (err) {
+                    console.error(err); 
+                    status.innerHTML = "❌ PDF Error. Downloaded DOCX only."; 
+                    status.style.color = "var(--red-alert)";
+                    
+                    // Fallback kung pumalya ang server: Ido-download pa rin ang DOCX
+                    saveAs(outDocx, `${fileBaseName}.docx`);
+                }
+            };
             
         } catch (err) {
             console.error(err); status.innerHTML = "❌ System Error. Check logs."; status.style.color = "var(--red-alert)";
