@@ -291,6 +291,109 @@
         .flow-step h4 { margin: 0 0 5px 0; color: white; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
         .flow-step p { margin: 0; color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; }
         .flow-highlight { color: var(--accent-orange); font-family: monospace; background: rgba(255,106,0,0.1); padding: 2px 6px; border-radius: 4px; }
+
+        /* --- PREVIEW MODAL STYLES --- */
+        .preview-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 10, 15, 0.92); backdrop-filter: blur(8px);
+            display: none; align-items: flex-start; justify-content: center;
+            z-index: 3000; opacity: 0; transition: opacity 0.3s ease;
+            overflow-y: auto; padding: 30px 20px;
+        }
+        .preview-overlay.active { display: flex; opacity: 1; }
+
+        .preview-box {
+            background: #1a1d2e; border: 1px solid rgba(255,106,0,0.2);
+            width: 100%; max-width: 680px; border-radius: 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden; margin: auto;
+        }
+        .preview-overlay.active .preview-box { transform: translateY(0); }
+
+        .preview-header {
+            background: linear-gradient(135deg, rgba(255,106,0,0.15), rgba(255,145,0,0.05));
+            border-bottom: 1px solid rgba(255,106,0,0.2);
+            padding: 24px 30px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .preview-header h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: white; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .preview-header h3 span { color: var(--primary-orange); }
+        .close-preview-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1; }
+        .close-preview-btn:hover { color: var(--red-alert); }
+
+        .preview-body { padding: 30px; }
+
+        /* Info sections */
+        .preview-section { margin-bottom: 24px; }
+        .preview-section-title {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--primary-orange); margin-bottom: 12px; padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,106,0,0.2); display: flex; align-items: center; gap: 8px;
+        }
+        .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .preview-field { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 14px; }
+        .preview-field .field-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; font-weight: 600; }
+        .preview-field .field-value { font-size: 0.85rem; color: white; font-weight: 600; word-break: break-word; }
+        .preview-field.full-width { grid-column: 1 / -1; }
+
+        /* Image upload slots */
+        .img-upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .img-slot { background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; overflow: hidden; transition: border-color 0.3s; }
+        .img-slot:hover { border-color: var(--primary-orange); }
+        .img-slot-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 10px 12px 6px; }
+        .img-slot-preview {
+            width: 100%; height: 130px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.2); cursor: pointer; position: relative; overflow: hidden;
+        }
+        .img-slot-preview img { width: 100%; height: 100%; object-fit: contain; display: none; }
+        .img-slot-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-align: center; padding: 10px; }
+        .img-slot-placeholder svg { opacity: 0.4; }
+        .img-slot input[type="file"] { display: none; }
+        .img-slot-actions { padding: 8px 10px; display: flex; gap: 6px; }
+        .img-slot-btn { flex: 1; background: rgba(255,255,255,0.07); color: var(--text-muted); border: none; border-radius: 6px; padding: 6px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+        .img-slot-btn:hover { background: var(--primary-orange); color: white; }
+        .img-slot-btn.clear-btn:hover { background: var(--red-alert); }
+
+        /* Action buttons */
+        .preview-actions { display: flex; gap: 12px; margin-top: 10px; }
+        .preview-actions button { flex: 1; }
+        .btn-secondary {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+            padding: 14px; border-radius: 12px; font-weight: 700; color: white;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); border-color: white; }
+
+        /* PRINT STYLES */
+        @media print {
+            body > *:not(#printArea) { display: none !important; }
+            #printArea {
+                display: block !important;
+                position: static !important;
+                width: 100% !important;
+                background: white !important;
+                color: black !important;
+                font-family: Arial, sans-serif !important;
+                padding: 20px !important;
+            }
+            #printArea * { color: black !important; background: white !important; border-color: #ccc !important; }
+            #printArea .print-header { text-align: center; border-bottom: 2px solid #ff6a00; padding-bottom: 15px; margin-bottom: 20px; }
+            #printArea .print-header h1 { font-size: 1.4rem; margin: 0 0 4px; color: #ff6a00 !important; }
+            #printArea .print-header p { font-size: 0.8rem; color: #666 !important; margin: 0; }
+            #printArea .print-section { margin-bottom: 18px; }
+            #printArea .print-section-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #ff6a00 !important; border-bottom: 1px solid #ff6a00 !important; padding-bottom: 5px; margin-bottom: 10px; }
+            #printArea .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            #printArea .print-field { padding: 6px 10px; border: 1px solid #eee !important; border-radius: 4px; }
+            #printArea .print-field .f-label { font-size: 0.6rem; color: #888 !important; text-transform: uppercase; letter-spacing: 0.5px; }
+            #printArea .print-field .f-value { font-size: 0.85rem; font-weight: 600; }
+            #printArea .print-field.full { grid-column: 1/-1; }
+            #printArea .print-imgs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+            #printArea .print-img-box { text-align: center; border: 1px solid #eee !important; border-radius: 6px; padding: 8px; }
+            #printArea .print-img-box img { width: 100%; height: 90px; object-fit: contain; display: block; margin-bottom: 5px; }
+            #printArea .print-img-box p { font-size: 0.65rem; color: #888 !important; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+            #printArea .print-img-placeholder { width: 100%; height: 90px; background: #f5f5f5 !important; border: 1px dashed #ccc !important; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #aaa !important; border-radius: 4px; margin-bottom: 5px; }
+        }
     </style>
 </head>
 <body>
@@ -591,8 +694,104 @@ PLAN VALUE:</pre>
         <button class="primary-btn" onclick="toggleHelpModal()" style="background: linear-gradient(135deg, var(--blue-biz), #2563eb); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);">READY!</button>
     </div>
 </div>
-    
-    
+
+<!-- PREVIEW MODAL -->
+<div class="preview-overlay" id="previewModal">
+    <div class="preview-box">
+        <div class="preview-header">
+            <h3>
+                <svg width="20" height="20" fill="none" stroke="var(--primary-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                APPLICATION <span>PREVIEW</span>
+            </h3>
+            <button class="close-preview-btn" onclick="closePreviewModal()">&times;</button>
+        </div>
+        <div class="preview-body">
+            <div id="previewInfoContent"></div>
+
+            <div class="preview-section-title" style="margin-bottom:12px;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Attachments
+            </div>
+            <div class="img-upload-grid">
+                <div class="img-slot">
+                    <div class="img-slot-label">🪪 ID Photo</div>
+                    <div class="img-slot-preview" onclick="triggerImgUpload('idUpload')">
+                        <img id="idPreview" alt="ID Photo">
+                        <div class="img-slot-placeholder" id="idPlaceholder">
+                            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2M15 12h2M3 17l4-4 3 3 3-4 4 5"/></svg>
+                            Tap to upload
+                        </div>
+                    </div>
+                    <input type="file" id="idUpload" accept="image/*" onchange="handleImgUpload(this,'idPreview','idPlaceholder')">
+                    <div class="img-slot-actions">
+                        <button class="img-slot-btn" onclick="triggerImgUpload('idUpload')">Upload</button>
+                        <button class="img-slot-btn clear-btn" onclick="clearImg('idUpload','idPreview','idPlaceholder')">Clear</button>
+                    </div>
+                </div>
+                <div class="img-slot">
+                    <div class="img-slot-label">✍️ Signature</div>
+                    <div class="img-slot-preview" onclick="triggerImgUpload('sigUpload2')">
+                        <img id="sigPreview2" alt="Signature">
+                        <div class="img-slot-placeholder" id="sigPlaceholder2">
+                            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 17c3-3 5-5 7-3s4 3 6 0"/><path d="M3 21h18"/></svg>
+                            Tap to upload
+                        </div>
+                    </div>
+                    <input type="file" id="sigUpload2" accept="image/*" onchange="handleImgUpload(this,'sigPreview2','sigPlaceholder2')">
+                    <div class="img-slot-actions">
+                        <button class="img-slot-btn" onclick="triggerImgUpload('sigUpload2')">Upload</button>
+                        <button class="img-slot-btn clear-btn" onclick="clearImg('sigUpload2','sigPreview2','sigPlaceholder2')">Clear</button>
+                    </div>
+                </div>
+                <div class="img-slot">
+                    <div class="img-slot-label">🧾 Proof of Billing</div>
+                    <div class="img-slot-preview" onclick="triggerImgUpload('billUpload')">
+                        <img id="billPreview" alt="Proof of Billing">
+                        <div class="img-slot-placeholder" id="billPlaceholder">
+                            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            Tap to upload
+                        </div>
+                    </div>
+                    <input type="file" id="billUpload" accept="image/*" onchange="handleImgUpload(this,'billPreview','billPlaceholder')">
+                    <div class="img-slot-actions">
+                        <button class="img-slot-btn" onclick="triggerImgUpload('billUpload')">Upload</button>
+                        <button class="img-slot-btn clear-btn" onclick="clearImg('billUpload','billPreview','billPlaceholder')">Clear</button>
+                    </div>
+                </div>
+                <div class="img-slot">
+                    <div class="img-slot-label">🗺️ Location Sketch</div>
+                    <div class="img-slot-preview" onclick="triggerImgUpload('sketchUpload')">
+                        <img id="sketchPreview" alt="Location Sketch">
+                        <div class="img-slot-placeholder" id="sketchPlaceholder">
+                            <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                            Tap to upload
+                        </div>
+                    </div>
+                    <input type="file" id="sketchUpload" accept="image/*" onchange="handleImgUpload(this,'sketchPreview','sketchPlaceholder')">
+                    <div class="img-slot-actions">
+                        <button class="img-slot-btn" onclick="triggerImgUpload('sketchUpload')">Upload</button>
+                        <button class="img-slot-btn clear-btn" onclick="clearImg('sketchUpload','sketchPreview','sketchPlaceholder')">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-actions">
+                <button class="btn-secondary" onclick="closePreviewModal()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <button class="primary-btn" onclick="printPreview()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Print / Save PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HIDDEN PRINT AREA -->
+<div id="printArea" style="display:none;"></div>
+
 <script>
 
     // --- SIG EXTRACTOR LOGIC ---
@@ -824,6 +1023,167 @@ function parseData(rawText) {
         setTimeout(() => { btnElement.innerText = originalText; btnElement.style.background = ""; btnElement.style.color = ""; }, 1500);
     }
 
+    // --- PREVIEW MODAL LOGIC ---
+    let _pendingDocBlob = null;
+    let _pendingFileName = null;
+
+    function openPreviewModal(clientData, docBlob, fileName) {
+        _pendingDocBlob = docBlob;
+        _pendingFileName = fileName;
+
+        // Build info HTML
+        function field(label, val, full) {
+            return `<div class="preview-field${full?' full-width':''}"><div class="field-label">${label}</div><div class="field-value">${val||'—'}</div></div>`;
+        }
+        function section(title, icon, fields) {
+            return `<div class="preview-section"><div class="preview-section-title">${icon} ${title}</div><div class="preview-grid">${fields}</div></div>`;
+        }
+
+        const g = k => clientData[k.toUpperCase()] || '';
+
+        const html = `
+            ${section('Personal Information','👤',
+                field('Last Name', g('LAST NAME')) +
+                field('First Name', g('FIRST NAME')) +
+                field('Middle Name', g('MIDDLE NAME')) +
+                field('Birthdate', g('BIRTHDATE')) +
+                field('Age', g('AGE')) +
+                field('Sex', g('SEX')) +
+                field('Civil Status', g('CIVIL STATUS')) +
+                field('Spouse Name', g('SPOUSE NAME'))
+            )}
+            ${section('Contact Details','📞',
+                field('Mobile', g('MOBILE PHONE')) +
+                field('House Phone', g('HOUSE PHONE')) +
+                field('Office Phone', g('OFFICE PHONE')) +
+                field('Email', g('EMAIL ADDRESS'), true) +
+                field('ID Type/No.', g('ID TYPE/NO.'), true)
+            )}
+            ${section('Home Address','🏠',
+                field('House/Block/Unit No.', g('HOUSE/BLOCK/UNIT NO.')) +
+                field('Street', g('STREET')) +
+                field('Building', g('BUILDING')) +
+                field('Subdivision/District', g('DISTRICT/SUBDIVISION')) +
+                field('Barangay', g('BARANGAY')) +
+                field('Municipality', g('MUNICIPALITY'))
+            )}
+            ${section('Work Information','💼',
+                field('Occupation/Position', g('OCCUPATION/POSITION')) +
+                field('Employer', g('EMPLOYER')) +
+                field('Work Address', g('ADDRESS'), true) +
+                field('Spouse Occupation', g('SPOUSE OCCUPATION')) +
+                field('Spouse Employer', g('SPOUSE EMPLOYER')) +
+                field('Spouse Employer Address', g('SPOUSE EMPLOYER ADDRESS'), true)
+            )}
+            ${section('Plan Details','📋',
+                field('Plan', g('PLAN')) +
+                field('Plan Value', g('PLAN VALUE'))
+            )}
+        `;
+
+        document.getElementById('previewInfoContent').innerHTML = html;
+
+        const modal = document.getElementById('previewModal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+
+    function closePreviewModal() {
+        const modal = document.getElementById('previewModal');
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    function triggerImgUpload(inputId) {
+        document.getElementById(inputId).click();
+    }
+
+    function handleImgUpload(input, previewId, placeholderId) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById(previewId);
+            img.src = e.target.result;
+            img.style.display = 'block';
+            document.getElementById(placeholderId).style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearImg(inputId, previewId, placeholderId) {
+        document.getElementById(inputId).value = '';
+        const img = document.getElementById(previewId);
+        img.src = ''; img.style.display = 'none';
+        document.getElementById(placeholderId).style.display = 'flex';
+    }
+
+    function getImgDataUrl(previewId) {
+        const img = document.getElementById(previewId);
+        return (img && img.src && img.src !== window.location.href) ? img.src : null;
+    }
+
+    function printPreview() {
+        // First trigger the .docx download
+        if (_pendingDocBlob && _pendingFileName) {
+            saveAs(_pendingDocBlob, _pendingFileName);
+        }
+
+        // Build print content
+        function printField(label, val, full) {
+            return `<div class="print-field${full?' full':''}"><div class="f-label">${label}</div><div class="f-value">${val||'—'}</div></div>`;
+        }
+        function printSection(title, fields) {
+            return `<div class="print-section"><div class="print-section-title">${title}</div><div class="print-grid">${fields}</div></div>`;
+        }
+
+        // Get current parsed data from the preview content labels
+        const fields = document.querySelectorAll('#previewInfoContent .preview-field');
+        let parsedFields = '';
+        fields.forEach(f => {
+            const label = f.querySelector('.field-label')?.innerText || '';
+            const val = f.querySelector('.field-value')?.innerText || '';
+            const isFull = f.classList.contains('full-width');
+            parsedFields += printField(label, val, isFull);
+        });
+
+        // Images
+        const imgs = [
+            { id: 'idPreview', label: 'ID Photo' },
+            { id: 'sigPreview2', label: 'Signature' },
+            { id: 'billPreview', label: 'Proof of Billing' },
+            { id: 'sketchPreview', label: 'Location Sketch' }
+        ];
+        let imgsHtml = '<div class="print-imgs">';
+        imgs.forEach(i => {
+            const src = getImgDataUrl(i.id);
+            if (src) {
+                imgsHtml += `<div class="print-img-box"><img src="${src}" alt="${i.label}"><p>${i.label}</p></div>`;
+            } else {
+                imgsHtml += `<div class="print-img-box"><div class="print-img-placeholder">No image</div><p>${i.label}</p></div>`;
+            }
+        });
+        imgsHtml += '</div>';
+
+        const agentName = document.getElementById('agentName').value.trim() || 'N/A';
+        const area = document.getElementById('areaSelect').value.replace('.docx','').toUpperCase();
+
+        const printContent = `
+            <div class="print-header">
+                <h1>CHEETAH // PRO — APPLICATION FORM</h1>
+                <p>Area: ${area} &nbsp;|&nbsp; Agent: ${agentName} &nbsp;|&nbsp; Date: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</p>
+            </div>
+            <div class="print-section"><div class="print-grid">${parsedFields}</div></div>
+            <div class="print-section"><div class="print-section-title">Attachments</div>${imgsHtml}</div>
+        `;
+
+        const printArea = document.getElementById('printArea');
+        printArea.innerHTML = printContent;
+        printArea.style.display = 'block';
+        window.print();
+        setTimeout(() => { printArea.style.display = 'none'; }, 1000);
+    }
+
     function handleGenerate() {
         const status = document.getElementById('status');
         const selectedFile = document.getElementById('areaSelect').value; 
@@ -866,7 +1226,10 @@ doc.render({
             
             const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             const lName = get("LAST NAME") || "UNKNOWN"; const fName = get("FIRST NAME") || "CLIENT"; const muni = get("MUNICIPALITY") || "NO_CITY"; const plan = get("PLAN") || "NO_PLAN";
-            saveAs(out, `${lName}, ${fName} - ${muni}.docx`);
+            const fileName = `${lName}, ${fName} - ${muni}.docx`;
+
+            // Open preview modal instead of direct download
+            openPreviewModal(clientData, out, fileName);
 
             document.getElementById('snip-subject').value = `${lName}, ${fName} - ${muni} - ${plan}`;
             document.getElementById('snip-short').value = `${lName}, ${fName} / ${muni}`;
