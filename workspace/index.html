@@ -1215,10 +1215,36 @@ doc.render({
         }
     }
 
-    function addStamp(input) {
+function addStamp(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) { createDraggableImage(e.target.result); }
+            reader.onload = function(e) { 
+                // COMPRESSION MAGIC: Papapayatin natin ang picture para iwas lag!
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // I-limit lang natin sa 800px ang laki para super gaan
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Ipasa yung compressed at magaan na version
+                    createDraggableImage(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.src = e.target.result;
+            }
             reader.readAsDataURL(input.files[0]);
         }
         input.value = ""; 
@@ -1245,9 +1271,10 @@ doc.render({
     }
 
     // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE
+// INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE (OPTIMIZED)
     interact('.draggable-stamp')
         .draggable({
-            inertia: true,
+            inertia: false, // Pinatay natin ito para mas snappy at hindi madulas
             modifiers: [
                 interact.modifiers.restrictRect({
                     restriction: 'parent',
@@ -1255,12 +1282,9 @@ doc.render({
                 })
             ],
             autoScroll: true,
-            listeners: {
-                move: dragMoveListener
-            }
+            listeners: { move: dragMoveListener }
         })
         .resizable({
-            // Pwedeng hilahin sa kahit anong gilid
             edges: { left: true, right: true, bottom: true, top: true },
             listeners: {
                 move: function (event) {
@@ -1268,15 +1292,14 @@ doc.render({
                     let x = (parseFloat(target.getAttribute('data-x')) || 0);
                     let y = (parseFloat(target.getAttribute('data-y')) || 0);
 
-                    // Update size
                     target.style.width = event.rect.width + 'px';
                     target.style.height = event.rect.height + 'px';
 
-                    // Translate when resizing from top/left edges
                     x += event.deltaRect.left;
                     y += event.deltaRect.top;
 
-                    target.style.transform = `translate(${x}px, ${y}px)`;
+                    // Pabilisin natin ang rendering gamit ang 3d transform hardware acceleration
+                    target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
                     target.setAttribute('data-x', x);
                     target.setAttribute('data-y', y);
                 }
@@ -1285,7 +1308,7 @@ doc.render({
                 interact.modifiers.restrictEdges({ outer: 'parent' }),
                 interact.modifiers.restrictSize({ min: { width: 50, height: 50 } })
             ],
-            inertia: true
+            inertia: false // Pinatay din dito para instant stop pag-bitaw
         });
 
     function dragMoveListener(event) {
@@ -1293,7 +1316,8 @@ doc.render({
         var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
         var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-        target.style.transform = `translate(${x}px, ${y}px)`;
+        // Hardware acceleration din dito!
+        target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         target.setAttribute('data-x', x);
         target.setAttribute('data-y', y);
     }
