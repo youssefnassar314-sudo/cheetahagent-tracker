@@ -16,6 +16,7 @@
     
     <style>
         /* CSS para sa draggable stamps */
+/* CSS para sa draggable stamps */
         .draggable-stamp {
             position: absolute;
             z-index: 1000;
@@ -23,6 +24,7 @@
             user-select: none;
             border: 2px dashed rgba(255, 106, 0, 0.5);
             box-sizing: border-box;
+            transition: none !important; /* ITO YUNG MAGIC FIX PARA HINDI NAHIHILA! */
         }
         .draggable-stamp:hover, .draggable-stamp:focus {
             border: 2px solid var(--primary-orange);
