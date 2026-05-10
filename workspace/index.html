@@ -1189,17 +1189,18 @@ Indoor Fiber:
         input.value = ""; 
     }
 
-    function createDraggableImage(src) {
+function createDraggableImage(src) {
         const container = document.getElementById('pdfContainer');
-        const firstCanvas = document.querySelector('.pdf-page-canvas');
         
         const img = document.createElement('img');
         img.src = src;
         img.className = 'draggable-stamp';
         
         img.style.width = '150px'; 
-        const startX = firstCanvas ? firstCanvas.offsetLeft + 50 : 50;
-        const startY = firstCanvas ? firstCanvas.offsetTop + 50 : 50;
+        
+        // Babasahin niya kung nasaan ka naka-scroll / naka-istambay!
+        const startX = container.scrollLeft + 50;
+        const startY = container.scrollTop + 50; 
         
         img.setAttribute('data-x', startX);
         img.setAttribute('data-y', startY);
