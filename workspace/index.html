@@ -1233,9 +1233,12 @@ function createDraggableImage(src) {
         img.src = src;
         img.className = 'draggable-stamp';
         
+        // ITO YUNG MAGIC FIX: Pilitin siyang mag-umpisa sa top-left bago gumalaw
+        img.style.top = '0px';
+        img.style.left = '0px';
         img.style.width = '150px'; 
         
-        // Babasahin niya kung nasaan ka naka-scroll / naka-istambay!
+        // Ngayon, babasahin na niya ng tama kung nasaan ka naka-scroll!
         const startX = container.scrollLeft + 50;
         const startY = container.scrollTop + 50; 
         
