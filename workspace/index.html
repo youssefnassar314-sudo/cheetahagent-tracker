@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheetah Pro | Workspace</title>
+    <title>Cheetah//Workspace</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
@@ -16,7 +16,6 @@
     
     <style>
         /* CSS para sa draggable stamps */
-/* CSS para sa draggable stamps */
         .draggable-stamp {
             position: absolute;
             z-index: 1000;
@@ -315,7 +314,8 @@
         .flow-highlight { color: var(--accent-orange); font-family: monospace; background: rgba(255,106,0,0.1); padding: 2px 6px; border-radius: 4px; }
     </style>
 </head>
-<body>
+
+    <body>
 
 <button class="toggle-panel-btn" onclick="togglePanel()">
     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -431,10 +431,14 @@ PLAN VALUE:</pre>
 </div>
 
 <div class="workspace">
-<div class="header" style="position: relative;">
-        <h2><span style="cursor:pointer;" onclick="checkSecretPassword()">CHEETAH</span><span style="color:var(--primary-orange)">//</span>PRO</h2>
+    <div class="header" style="position: relative;">
+        <h2>CHEETAH<span style="color:var(--primary-orange)">//</span>WORKSPACE</h2>
         <div class="subtitle">Document Generator</div>
         
+        <button class="primary-btn" onclick="toggleSigModal()" style="margin-top: 15px; padding: 10px; font-size: 0.8rem; background: rgba(255,106,0,0.1); color: var(--primary-orange); border: 1px dashed var(--primary-orange); box-shadow: none;">
+            🖌️ Signature BG Remover
+        </button>
+
         <button class="help-icon-btn" onclick="toggleHelpModal()" title="How to Use">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
         </button>
@@ -443,12 +447,23 @@ PLAN VALUE:</pre>
     <label>Agent Name / AE</label>
     <input type="text" id="agentName" class="main-input" placeholder="Type Agent Name here..." style="margin-bottom: 20px;">
 
-    <label>1. Select Area (Template)</label>
-    <select id="areaSelect" class="main-input">
-        <option value="bctv.docx">📺 BCTV</option>
-        <option value="skyline.docx">🏙️ Skyline</option>
-        <option value="kabayan.docx">🏘️ Kabayan</option>
-    </select>
+    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+        <div style="flex: 1;">
+            <label style="margin-bottom: 8px;">1. Select Area</label>
+            <select id="areaSelect" class="main-input" style="margin-bottom: 0;">
+                <option value="bctv">📺 BCTV</option>
+                <option value="skyline">🏙️ Skyline</option>
+                <option value="kabayan">🏘️ Kabayan</option>
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <label style="margin-bottom: 8px;">Output Format</label>
+            <select id="outputType" class="main-input" style="margin-bottom: 0;">
+                <option value="PDF">📄 Generate PDF</option>
+                <option value="DOCX">📝 Generate DOCX</option>
+            </select>
+        </div>
+    </div>
     
     <label>2. Client Information Block</label>
     <textarea id="raw" class="main-input" placeholder="Paste full client format here, add dot (.) for house and home type..."></textarea>
@@ -521,12 +536,12 @@ PLAN VALUE:</pre>
     </div>
 </div>
 
-<div class="modal-overlay" id="secretModal">
+<div class="modal-overlay" id="sigModal">
     <div class="modal-box" style="max-width: 500px;">
-        <button class="modal-close" onclick="closeSecretModal()">&times;</button>
+        <button class="modal-close" onclick="toggleSigModal()">&times;</button>
         <h3 style="margin-top: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">
-            <svg width="24" height="24" fill="none" stroke="var(--red-alert)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            VAULT: <span style="color:var(--primary-orange)">SIG EXTRACTOR</span>
+            <svg width="24" height="24" fill="none" stroke="var(--primary-orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            SIGNATURE <span style="color:var(--primary-orange)">BG REMOVER</span>
         </h3>
         <p class="subtitle" style="margin-bottom: 25px;">Removes notebook lines and extracts pen ink.</p>
 
@@ -556,23 +571,7 @@ PLAN VALUE:</pre>
         </button>
     </div>
 </div> 
-    <div class="modal-overlay" id="fakeModal">
-    <div class="modal-box" style="max-width: 400px; text-align: center; border-color: var(--red-alert);">
-        <button class="modal-close" onclick="closeFakeModal()">&times;</button>
-        <h3 style="margin-top: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">
-            <svg width="24" height="24" fill="none" stroke="var(--red-alert)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 5px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-            SYSTEM <span style="color:var(--red-alert)">ERROR</span>
-        </h3>
-        <p class="subtitle" style="margin-bottom: 25px; color: #fecdd3;">Restricted Access Detected.</p>
-        
-        <div style="font-size: 120px; margin: 20px 0; filter: drop-shadow(0 0 20px rgba(244,63,94,0.5));">🖕</div>
-        
-        <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.4;">
-            Attempt to access classified agent data has been logged.<br>
-            Please close this window immediately.
-        </p>
-    </div>
-</div>
+
 <div class="modal-overlay" id="helpModal">
     <div class="modal-box" style="max-width: 480px;">
         <button class="modal-close" onclick="toggleHelpModal()">&times;</button>
@@ -614,7 +613,7 @@ PLAN VALUE:</pre>
     </div>
 </div>
 
-    <div class="modal-overlay" id="pdfEditorModal">
+<div class="modal-overlay" id="pdfEditorModal">
     <div class="modal-box" style="max-width: 900px; width: 95%; height: 90vh; display: flex; flex-direction: column; padding: 20px;">
         <button class="modal-close" onclick="closeVaultModal('pdfEditorModal')" style="z-index: 1000;">&times;</button>
         <h3 style="margin-top: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">
@@ -636,50 +635,11 @@ PLAN VALUE:</pre>
             💡 <strong>Tip:</strong> I-drag ang image para i-position. Mag-scroll up/down sa ibabaw ng image para ma-resize.
         </div>
 
-<div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 20px 0;">
-            </div>
+        <div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 20px 0;">
+        </div>
     </div>
 </div>
-    
-    
 <script>
-
-    // --- SIG EXTRACTOR LOGIC ---
-    document.getElementById('sigUpload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        // ... (tuloy-tuloy yung code mo dito)
-        reader.readAsDataURL(file);
-    });
-    // BAGO: Pwede na mag-paste (CTRL+V) ng picture
-    window.addEventListener('paste', function(e) {
-        // Titingnan niya kung nakabukas yung Vault. Kung hindi, wag pansinin.
-        const secretModal = document.getElementById('secretModal');
-        if (!secretModal.classList.contains('active')) return;
-
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        for (let index in items) {
-            const item = items[index];
-            if (item.kind === 'file' && item.type.startsWith('image/')) {
-                const blob = item.getAsFile();
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        originalImage = img;
-                        document.getElementById('canvasPlaceholder').style.display = 'none';
-                        document.getElementById('sigCanvas').style.display = 'inline-block';
-                        processSignature();
-                    }
-                    img.src = event.target.result;
-                }
-                reader.readAsDataURL(blob);
-            }
-        }
-    });
-    
     // --- UI TOGGLES ---
     function togglePanel() { document.getElementById('sidePanel').classList.toggle('active'); }
     
@@ -693,7 +653,8 @@ PLAN VALUE:</pre>
             setTimeout(() => modal.classList.add('active'), 10);
         }
     }
-function toggleHelpModal() {
+
+    function toggleHelpModal() {
         const modal = document.getElementById('helpModal');
         if(modal.classList.contains('active')) {
             modal.classList.remove('active');
@@ -703,6 +664,16 @@ function toggleHelpModal() {
             setTimeout(() => modal.classList.add('active'), 10);
         }
     }
+
+    // Generic function para isara ang mga natitirang modals (tulad ng PDF Editor)
+    function closeVaultModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
+
     // --- TELEGRAM LOGIC ---
     async function sendToTelegram() {
         const email = document.getElementById('tg-email').value.trim();
@@ -799,38 +770,34 @@ Indoor Fiber:
         });
     }
 
-document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
         updatePlanTerms();
         
-        // I-load ang nai-save na Client Data
         const savedData = localStorage.getItem('cheetahRawData');
         if (savedData) {
             document.getElementById('raw').value = savedData;
         }
 
-        // I-load ang nai-save na AGENT NAME
         const savedAgent = localStorage.getItem('cheetahAgentName');
         if (savedAgent) {
             document.getElementById('agentName').value = savedAgent;
         }
     });
 
-    // I-save sa Local Storage ang Client Data
     document.getElementById('raw').addEventListener('input', function() {
         localStorage.setItem('cheetahRawData', this.value);
     });
 
-    // I-save sa Local Storage ang AGENT NAME
     document.getElementById('agentName').addEventListener('input', function() {
         localStorage.setItem('cheetahAgentName', this.value);
     });
+
     // --- DOCUMENT GENERATION LOGIC ---
-    
     function getFormattedDate() {
         return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-function parseData(rawText) {
+    function parseData(rawText) {
         const lines = rawText.split('\n'); 
         const data = {}; 
         let currentKey = "";
@@ -839,20 +806,16 @@ function parseData(rawText) {
             line = line.trim(); 
             if (!line) continue;
             
-            // BAGO: Taga-detect kung may () sa umpisa
             const checkMatch = line.match(/^\((.*?)\)\s+(.+)$/);
             if (checkMatch) {
-                const marker = checkMatch[1].trim(); // Kukunin ang laman ng (), halimbawa '.' o 'x'
-                const label = checkMatch[2].trim().toLowerCase().replace(/[^a-z0-9]/g, '_'); // e.g., "owned" o "single_detached"
+                const marker = checkMatch[1].trim(); 
+                const label = checkMatch[2].trim().toLowerCase().replace(/[^a-z0-9]/g, '_'); 
                 
-                const isChecked = marker !== ''; // Kung hindi blanko, TRUE siya
-                
-                // Gagawa ito ng {box_owned} na variable para sa Word
+                const isChecked = marker !== ''; 
                 data["box_" + label] = isChecked ? "☑" : "☐"; 
                 continue;
             }
 
-            // DATI MONG CODE: Para sa KEY: VALUE format
             const colonIndex = line.indexOf(':');
             if (colonIndex !== -1) {
                 currentKey = line.substring(0, colonIndex).trim().toUpperCase();
@@ -875,18 +838,24 @@ function parseData(rawText) {
 
     function handleGenerate() {
         const status = document.getElementById('status');
-        const selectedFile = document.getElementById('areaSelect').value; 
+        const selectedArea = document.getElementById('areaSelect').value; 
+        const outputType = document.getElementById('outputType').value;
         const rawText = document.getElementById('raw').value;
 
         if (!rawText) {
             status.innerHTML = "⚠️ Awaiting client data."; status.style.color = "var(--red-alert)"; return;
         }
-        status.innerHTML = `Fetching ${selectedFile} and processing data...`; status.style.color = "var(--blue-biz)";
+        
+        const fileNameToFetch = `${selectedArea}_${outputType.toLowerCase()}.docx`;
+
+        status.innerHTML = `Fetching template (${fileNameToFetch})...`; 
+        status.style.color = "var(--blue-biz)";
         document.getElementById('emailSection').style.display = "none";
-        setTimeout(() => processDocument(selectedFile, rawText, status), 50);
+        
+        setTimeout(() => processDocument(fileNameToFetch, rawText, status, outputType), 50);
     }
 
-    async function processDocument(fileName, rawText, status) {
+    async function processDocument(fileName, rawText, status, outputType) {
         try {
             const response = await fetch(fileName);
             if (!response.ok) throw new Error(`Hindi ma-load ang template: ${fileName}`);
@@ -901,9 +870,8 @@ function parseData(rawText) {
                 return isEmail ? val : val.toUpperCase();
             }
 
-doc.render({
-                ...clientData, // BAGO: Papasok dito yung mga check/uncheck na na-detect sa taas
-
+            doc.render({
+                ...clientData, 
                 agent_name: document.getElementById('agentName').value.trim().toUpperCase(),
                 date: getFormattedDate().toUpperCase(), last_name: get("LAST NAME"), first_name: get("FIRST NAME"), middle_name: get("MIDDLE NAME"),
                 hp: get("HOUSE PHONE"), op: get("OFFICE PHONE"), mobile: get("MOBILE PHONE"), email: get("EMAIL ADDRESS", true), id_no: get("ID TYPE/NO."), POB: get("PROOF OF BILL ADDRESS"),
@@ -913,7 +881,6 @@ doc.render({
                 plan_name: get("PLAN"), plan_value: get("PLAN VALUE")
             });
             
-            // 1. Generate ang DOCX as Blob
             const outDocx = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
             const lName = get("LAST NAME") || "UNKNOWN"; 
             const fName = get("FIRST NAME") || "CLIENT"; 
@@ -921,7 +888,6 @@ doc.render({
             const plan = get("PLAN") || "NO_PLAN";
             const fileBaseName = `${lName}, ${fName} - ${muni}`;
 
-            // I-set yung email snippets
             document.getElementById('snip-subject').value = `${fileBaseName} - ${plan}`;
             document.getElementById('snip-short').value = `${lName}, ${fName} / ${muni}`;
             document.getElementById('snip-body1').value = `Magandang araw po!\n\nAttached is the completed form for ${fName} ${lName}. Let me know if you need anything else.\n\nSalamat!`;
@@ -929,7 +895,14 @@ doc.render({
             document.getElementById('snip-body3').value = `Good day!\n\nSending over the generated application document for ${lName}, ${fName} from ${muni}.\n\nThank you.`;
             document.getElementById('emailSection').style.display = "block";
 
-            // --- 2. DOCX TO PDF VIA GOOGLE APPS SCRIPT ---
+            if (outputType === "DOCX") {
+                saveAs(outDocx, `${fileBaseName}.docx`);
+                status.innerHTML = "✨ DOCX Generated and Downloaded!"; 
+                status.style.color = "var(--green-installed)";
+                document.getElementById('raw').value = "";
+                return; 
+            }
+
             status.innerHTML = "Converting to PDF... Please wait."; 
             status.style.color = "var(--accent-orange)";
 
@@ -939,39 +912,21 @@ doc.render({
                 const base64data = reader.result.split(',')[1];
 
                 try {
-                    // PALITAN ITO NG IYONG GOOGLE WEB APP URL
                     const gasURL = 'https://script.google.com/macros/s/AKfycbxGl_p2sMaEUaEgnCnsVUQ5vBMsq6CgFT4zqkIWGtZR0gDdo8dZBcnR17GXAolFKM_z1g/exec';
 
                     const response = await fetch(gasURL, {
                         method: 'POST',
                         body: JSON.stringify({ fileBase64: base64data }),
-                        headers: {
-                            // Importante: Gamitin ang text/plain para maiwasan ang CORS Preflight error sa Google Apps Script
-                            'Content-Type': 'text/plain;charset=utf-8' 
-                        }
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                     });
 
                     const data = await response.json();
 
                     if (data.pdfBase64) {
-                        // Inline helper function para sa Base64 to Blob
-                        const base64ToBlob = (base64, mime) => {
-                            const byteCharacters = atob(base64);
-                            const byteNumbers = new Array(byteCharacters.length);
-                            for (let i = 0; i < byteCharacters.length; i++) {
-                                byteNumbers[i] = byteCharacters.charCodeAt(i);
-                            }
-                            return new Blob([new Uint8Array(byteNumbers)], {type: mime});
-                        };
-
-                        // 3. I-download ang DOCX bilang backup
-                        saveAs(outDocx, `${fileBaseName}.docx`);
-
-                        status.innerHTML = "✨ DOCX Generated! Opening PDF Editor..."; 
+                        status.innerHTML = "✨ PDF Generated! Opening Editor..."; 
                         status.style.color = "var(--green-installed)";
                         document.getElementById('raw').value = "";
                         
-                        // Bubuksan natin yung Editor modal at ipapasa ang Base64 ng PDF
                         setTimeout(() => {
                             openPdfEditor(data.pdfBase64, fileBaseName);
                         }, 500);
@@ -980,11 +935,8 @@ doc.render({
                     }
                 } catch (err) {
                     console.error(err); 
-                    status.innerHTML = "❌ PDF Error. Downloaded DOCX only."; 
+                    status.innerHTML = "❌ PDF Error. Check console logs."; 
                     status.style.color = "var(--red-alert)";
-                    
-                    // Fallback kung pumalya ang server: Ido-download pa rin ang DOCX
-                    saveAs(outDocx, `${fileBaseName}.docx`);
                 }
             };
             
@@ -993,56 +945,20 @@ doc.render({
         }
     }
 
-
-
-// --- VAULT LOGIC (Real & Fake) ---
+    // --- SIGNATURE BG REMOVER LOGIC ---
     let originalImage = null;
 
-    function checkSecretPassword() {
-        let pass = prompt("CLASSIFIED ACCESS. Enter passcode:");
-        
-        if (pass === null) return; // Pag nag-cancel si user
-
-        if (pass === "cheetahadmin") {
-            // TOTOONG VAULT (Sig Extractor)
-            openVaultModal('secretModal');
-        } else if (pass === "1234") {
-            // FAKE VAULT (Prank)
-            openVaultModal('fakeModal');
+    function toggleSigModal() {
+        const modal = document.getElementById('sigModal');
+        if(modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
         } else {
-            alert("Access Denied. Invalid Security Code.");
-        }
-    }
-
-    // Generic function para buksan ang kahit anong modal smoothly
-    function openVaultModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
         }
     }
 
-    // Pang-close ng Real Vault
-    function closeSecretModal() {
-        closeVaultModal('secretModal');
-    }
-
-    // Pang-close ng Fake Vault
-    function closeFakeModal() {
-        closeVaultModal('fakeModal');
-    }
-
-    // Generic function para isara ang kahit anong modal smoothly
-    function closeVaultModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.classList.remove('active');
-            setTimeout(() => modal.style.display = 'none', 300);
-        }
-    }
-
-    // --- SIG EXTRACTOR LOGIC ---
     document.getElementById('sigUpload').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -1059,6 +975,31 @@ doc.render({
             img.src = event.target.result;
         }
         reader.readAsDataURL(file);
+    });
+
+    window.addEventListener('paste', function(e) {
+        const sigModal = document.getElementById('sigModal');
+        if (!sigModal.classList.contains('active')) return;
+
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                const blob = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        originalImage = img;
+                        document.getElementById('canvasPlaceholder').style.display = 'none';
+                        document.getElementById('sigCanvas').style.display = 'inline-block';
+                        processSignature();
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(blob);
+            }
+        }
     });
 
     function processSignature() {
@@ -1168,18 +1109,17 @@ doc.render({
     canvas.addEventListener('touchmove', erase, { passive: false });
     canvas.addEventListener('touchend', stopErase);
 
-    // --- PDF STAMPER / DRAG & DROP LOGIC ---
-// --- MULTI-PAGE PDF STAMPER & INTERACT.JS LOGIC ---
+    // --- MULTI-PAGE PDF STAMPER & INTERACT.JS LOGIC ---
     let currentPdfBytes = null;
     let currentPdfName = "";
-    let pdfScale = 1.3; // Medyo niliitan para mas fit sa screen
+    let pdfScale = 1.3; 
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     async function openPdfEditor(base64Data, fileName) {
         currentPdfName = fileName;
         const container = document.getElementById('pdfContainer');
-        container.innerHTML = ''; // Linisin ang mga lumang pages/stamps
+        container.innerHTML = ''; 
         
         const binary_string = window.atob(base64Data);
         const len = binary_string.length;
@@ -1189,17 +1129,17 @@ doc.render({
         }
         currentPdfBytes = bytes;
 
-        openVaultModal('pdfEditorModal'); 
+        const modal = document.getElementById('pdfEditorModal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
 
         const loadingTask = pdfjsLib.getDocument({data: bytes});
         const pdf = await loadingTask.promise;
         
-        // LOOP PARA SA LAHAT NG PAGES
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
             const viewport = page.getViewport({scale: pdfScale});
             
-            // Gumawa ng hiwalay na canvas per page
             const canvas = document.createElement('canvas');
             canvas.className = 'pdf-page-canvas';
             canvas.dataset.pageNum = pageNum;
@@ -1217,7 +1157,7 @@ doc.render({
         }
     }
 
-function addStamp(input) {
+    function addStamp(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) { 
@@ -1240,7 +1180,6 @@ function addStamp(input) {
                     canvas.width = width; canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // FIXED: Ginamit ang 'image/png' para hindi mag-black ang transparent background!
                     createDraggableImage(canvas.toDataURL('image/png'));
                 };
                 img.src = e.target.result;
@@ -1258,7 +1197,6 @@ function addStamp(input) {
         img.src = src;
         img.className = 'draggable-stamp';
         
-        // I-set ang initial size at position sa gitna ng unang pahina
         img.style.width = '150px'; 
         const startX = firstCanvas ? firstCanvas.offsetLeft + 50 : 50;
         const startY = firstCanvas ? firstCanvas.offsetTop + 50 : 50;
@@ -1270,9 +1208,6 @@ function addStamp(input) {
         container.appendChild(img);
     }
 
-    // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE
-// INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE (OPTIMIZED)
-    // INTERACT.JS SETUP PANG-MOBILE / DRAG & RESIZE (OPTIMIZED)
     interact('.draggable-stamp')
         .draggable({
             inertia: false, 
@@ -1282,7 +1217,7 @@ function addStamp(input) {
                     endOnly: true
                 })
             ],
-            autoScroll: false, // <-- ITO YUNG SALARIN SA LAG SA PHONE! Pinatay na natin.
+            autoScroll: false,
             listeners: { move: dragMoveListener }
         })
         .resizable({
@@ -1299,7 +1234,6 @@ function addStamp(input) {
                     x += event.deltaRect.left;
                     y += event.deltaRect.top;
 
-                    // GPU Acceleration para smooth sa phone
                     target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
                     target.setAttribute('data-x', x);
                     target.setAttribute('data-y', y);
@@ -1317,7 +1251,6 @@ function addStamp(input) {
         var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
         var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-        // Hardware acceleration din dito!
         target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         target.setAttribute('data-x', x);
         target.setAttribute('data-y', y);
@@ -1338,15 +1271,12 @@ function addStamp(input) {
             const container = document.getElementById('pdfContainer');
             
             for (let stamp of stamps) {
-                // Kukunin ang absolute position ng image
                 const imgRect = stamp.getBoundingClientRect();
                 const containerRect = container.getBoundingClientRect();
                 
-                // Absolute Y coordinate ng image relative sa scroller container
                 const imgAbsoluteY = imgRect.top - containerRect.top + container.scrollTop;
                 const imgAbsoluteX = imgRect.left - containerRect.left + container.scrollLeft;
 
-                // HANAPIN KUNG NASAANG PAHINA NAKAPATONG ANG PICTURE
                 let targetPageNum = 1;
                 let targetCanvas = canvases[0];
 
@@ -1355,7 +1285,6 @@ function addStamp(input) {
                     const cAbsoluteTop = cRect.top - containerRect.top + container.scrollTop;
                     const cAbsoluteBottom = cAbsoluteTop + cRect.height;
                     
-                    // Kapag ang center ng picture ay nasa loob ng pahinang ito
                     const imgCenterY = imgAbsoluteY + (imgRect.height / 2);
                     if (imgCenterY >= cAbsoluteTop && imgCenterY <= cAbsoluteBottom) {
                         targetPageNum = parseInt(canvas.dataset.pageNum);
@@ -1364,7 +1293,6 @@ function addStamp(input) {
                     }
                 }
 
-                // Kalkulahin ang coordinates na babasahin ng PDF-lib
                 const pdfPage = pages[targetPageNum - 1];
                 const pdfPageWidth = pdfPage.getWidth();
                 const pdfPageHeight = pdfPage.getHeight();
@@ -1382,10 +1310,8 @@ function addStamp(input) {
                 const finalWidth = imgRect.width * scaleX;
                 const finalHeight = imgRect.height * scaleY;
                 const finalX = relativeX * scaleX;
-                // PDF coordinates: Y = 0 is at the bottom
                 const finalY = pdfPageHeight - (relativeY * scaleY) - finalHeight;
 
-                // I-burn ang image
                 const imgBytes = await fetch(stamp.src).then(res => res.arrayBuffer());
                 let pdfImage;
                 if (stamp.src.includes('image/png')) pdfImage = await pdfDoc.embedPng(imgBytes);
@@ -1394,7 +1320,6 @@ function addStamp(input) {
                 pdfPage.drawImage(pdfImage, { x: finalX, y: finalY, width: finalWidth, height: finalHeight });
             }
 
-            // Download
             const modifiedPdfBytes = await pdfDoc.save();
             const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
             saveAs(blob, currentPdfName + ".pdf");
@@ -1408,7 +1333,6 @@ function addStamp(input) {
             btn.innerHTML = originalText;
         }
     }
-
 </script>
 </body>
 </html>
