@@ -596,6 +596,8 @@
                 <button class="type-btn active" id="resBtn" onclick="setClientType('residential')">Residential</button>
                 <button class="type-btn" id="bizBtn" onclick="setClientType('business')">Business</button>
             </div>
+            
+            <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;"><i class="fa-solid fa-user-tag" style="margin-right:5px; color:var(--primary-orange);"></i> Client Information</div>
             <div style="display:flex; gap:10px">
                 <input type="text" id="fn" placeholder="First Name">
                 <input type="text" id="ln" placeholder="Last Name">
@@ -607,6 +609,8 @@
                 <option value="Antipolo">Antipolo</option><option value="Taytay">Taytay</option><option value="Teresa">Teresa</option>
                 <option value="Cardona">Cardona</option><option value="Jala-Jala">Jala-Jala</option>
             </select>
+
+            <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; margin-top:5px;"><i class="fa-solid fa-wifi" style="margin-right:5px; color:var(--primary-orange);"></i> Service Package</div>
             <select id="resPlans">
                 <option value="" disabled selected>Select Plan</option>
                 <option value="699" data-commi="300">CV-699</option>
@@ -623,6 +627,7 @@
                 <option value="6000" data-commi="2400">BIZ 6</option>
             </select>
             
+            <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; margin-top:5px;"><i class="fa-solid fa-handshake" style="margin-right:5px; color:var(--primary-orange);"></i> Deal Ownership</div>
             <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                 <select id="borrowStatus" onchange="toggleBorrowInput()" style="flex: 1; margin-bottom: 0;">
                     <option value="own" selected>My Own Client</option>
@@ -1149,6 +1154,7 @@ window.copyBilling = (installDate, planString, area) => {
             list.innerHTML = ""; lList.innerHTML = "";
             let rT = 0, bT = 0, rC = 0, bC = 0;
             let pendingCount = 0, installedCount = 0, cancelledCount = 0;
+            let visibleClientsCount = 0; // Dagdag na tracker para sa empty state
             const sorted = [...clients].sort((a,b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
             sorted.forEach(c => {
                 // Count all for mini stats (no month/search filter)
@@ -1240,8 +1246,21 @@ window.copyBilling = (installDate, planString, area) => {
                         </div>
                     `;
                     list.appendChild(card);
+                    visibleClientsCount++; // Plus isa kapag may card na pumasok sa filter
                 }
             });
+
+            // KAPAG WALANG LUMABAS NA CLIENT CARD, POPULATE EMPTY STATE
+            if (visibleClientsCount === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted); border: 1px dashed rgba(255,106,0,0.15); border-radius: 16px; background: rgba(0,0,0,0.15);">
+                        <i class="fa-solid fa-folder-open" style="font-size: 2rem; color: rgba(255,106,0,0.3); margin-bottom: 10px; display: block;"></i>
+                        <span style="font-size: 0.85rem; font-weight: 600;">No active targets found</span><br>
+                        <small style="font-size: 0.75rem; opacity: 0.7;">Database is clear or filters don't match.</small>
+                    </div>
+                `;
+            }
+
             document.getElementById('resCommi').innerText = `₱${rT.toLocaleString()}`;
             document.getElementById('bizCommi').innerText = `₱${bT.toLocaleString()}`;
             document.getElementById('totalCommi').innerText = `₱${(rT+bT).toLocaleString()}`;
