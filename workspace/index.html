@@ -71,7 +71,8 @@
         .workspace {
             background: var(--card-dark);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            width: 100%; max-width: 550px; padding: 40px;
+            width: 100%; max-width: 550px; 
+            padding: clamp(20px, 5vw, 40px); /* Kusa liliit ang padding sa phone */
             border-radius: 20px; 
             border: 1px solid var(--glass-border); 
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -86,7 +87,7 @@
 
         .header { text-align: center; margin-bottom: 30px; }
 
-        h2 { margin: 0; font-weight: 800; font-size: 2rem; letter-spacing: 1px; }
+        h2 { margin: 0; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem); letter-spacing: 1px; word-break: break-word; }
         h2 span { color: var(--primary-orange); }
 
         .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
@@ -658,21 +659,37 @@ PLAN VALUE:</pre>
             PDF <span style="color:var(--primary-orange)">STAMPER</span>
         </h3>
         
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+<div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
             <input type="file" id="stampUpload" accept="image/*" style="display:none;" onchange="addStamp(this)">
-            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--blue-biz); flex: 1;" onclick="document.getElementById('stampUpload').click()">
-                + Add Signature / Sketch / ID
+            
+            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--blue-biz); flex: 1; min-width: 120px;" onclick="document.getElementById('stampUpload').click()">
+                + Add Stamp
             </button>
-            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--green-installed); flex: 1;" onclick="burnAndDownload()">
-                ✨ Burn to PDF & Download
+
+            <button id="panModeBtn" class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: rgba(255,255,255,0.1); flex: 1; min-width: 120px; box-shadow: none;" onclick="togglePanMode()">
+                🖱️ Drag Mode
+            </button>
+            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--red-alert); flex: 1; min-width: 120px; box-shadow: none;" onclick="clearAllStamps()">
+                🗑️ Clear All
+            </button>
+            
+            <div style="display: flex; gap: 5px; flex: 1; min-width: 120px; justify-content: center;">
+                <button class="primary-btn" style="padding: 10px; width: 40px; background: rgba(255,255,255,0.1); flex: none; box-shadow: none;" onclick="zoomPdf('out')">➖</button>
+                <div id="zoomText" style="display: flex; align-items: center; justify-content: center; width: 45px; font-size: 0.8rem; font-weight: bold; color: white;">100%</div>
+                <button class="primary-btn" style="padding: 10px; width: 40px; background: rgba(255,255,255,0.1); flex: none; box-shadow: none;" onclick="zoomPdf('in')">➕</button>
+            </div>
+
+            <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--green-installed); flex: 1; min-width: 100%; margin-top: 5px;" onclick="burnAndDownload()">
+                ✨ Burn & Download
             </button>
         </div>
         
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; text-align: left;">
-            💡 <strong>Tip:</strong> I-drag ang image para i-position. Mag-scroll up/down sa ibabaw ng image para ma-resize.
+        <div style="font-size: 0.75rem; color: var(--accent-orange); margin-bottom: 10px; text-align: left; background: rgba(255, 106, 0, 0.1); padding: 8px; border-radius: 6px;">
+            💡 <strong>TIP:</strong> <strong>Double-tap/Double-click</strong> ang stamp para burahin. I-on ang <strong>🖐️ Pan Mode</strong> para madaling maka-scroll sa phone kahit naka-zoom!
         </div>
 
-        <div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 20px 0;">
+        <div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 20px;">
+            <div id="pdfWrapper" style="transform-origin: top left; transition: transform 0.2s ease;"></div>
         </div>
     </div>
 </div>
@@ -1153,10 +1170,70 @@ Indoor Fiber:
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+let currentZoomScale = 1;
+
+    function zoomPdf(direction) {
+        const wrapper = document.getElementById('pdfWrapper');
+        if (!wrapper) return;
+
+        if (direction === 'in') {
+            currentZoomScale += 0.2;
+        } else if (direction === 'out') {
+            // Wag natin hayaang lumiit masyado (min 40%)
+            currentZoomScale = Math.max(0.4, currentZoomScale - 0.2); 
+        }
+
+wrapper.style.transform = `scale(${currentZoomScale})`;
+        document.getElementById('zoomText').innerText = Math.round(currentZoomScale * 100) + '%';
+    }
+
+    let isPanMode = false;
+
+    function togglePanMode() {
+        isPanMode = !isPanMode;
+        const btn = document.getElementById('panModeBtn');
+        const stamps = document.querySelectorAll('.draggable-stamp');
+
+        if (isPanMode) {
+            btn.innerHTML = "🖐️ Pan Mode";
+            btn.style.background = "var(--primary-orange)";
+            btn.style.color = "white";
+            // Patayin ang drag/resize para maka-scroll
+            interact('.draggable-stamp').draggable({ enabled: false }).resizable({ enabled: false });
+            // Tagusan ang touch sa stamps
+            stamps.forEach(s => s.style.pointerEvents = "none"); 
+        } else {
+            btn.innerHTML = "🖱️ Drag Mode";
+            btn.style.background = "rgba(255,255,255,0.1)";
+            // Buhayin ulit ang drag/resize
+            interact('.draggable-stamp').draggable({ enabled: true }).resizable({ enabled: true });
+            // Mahahawakan na ulit ang stamps
+            stamps.forEach(s => s.style.pointerEvents = "auto");
+        }
+    }
+
+    function clearAllStamps() {
+        if(confirm("Sigurado ka bang gusto mong burahin LAHAT ng stamps/pirma?")) {
+            const stamps = document.querySelectorAll('.draggable-stamp');
+            stamps.forEach(stamp => stamp.remove());
+        }
+    }
+    
     async function openPdfEditor(base64Data, fileName) {
         currentPdfName = fileName;
-        const container = document.getElementById('pdfContainer');
-        container.innerHTML = ''; 
+        const wrapper = document.getElementById('pdfWrapper');
+        wrapper.innerHTML = ''; 
+        currentZoomScale = 1; // Reset zoom kapag may bagong PDF
+        if(document.getElementById('zoomText')) document.getElementById('zoomText').innerText = '100%';
+        wrapper.style.transform = `scale(1)`;
+
+        // Reset Pan Mode to Drag Mode
+        isPanMode = false;
+        if(document.getElementById('panModeBtn')) {
+            document.getElementById('panModeBtn').innerHTML = "🖱️ Drag Mode";
+            document.getElementById('panModeBtn').style.background = "rgba(255,255,255,0.1)";
+        }
+        interact('.draggable-stamp').draggable({ enabled: true }).resizable({ enabled: true });
         
         const binary_string = window.atob(base64Data);
         const len = binary_string.length;
@@ -1187,7 +1264,7 @@ Indoor Fiber:
             
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-            container.appendChild(canvas);
+            wrapper.appendChild(canvas); // Sa wrapper na idadagdag
 
             const renderContext = { canvasContext: canvas.getContext('2d'), viewport: viewport };
             await page.render(renderContext).promise;
@@ -1239,14 +1316,29 @@ function createDraggableImage(src) {
         img.style.width = '150px'; 
         
         // Ngayon, babasahin na niya ng tama kung nasaan ka naka-scroll!
-        const startX = container.scrollLeft + 50;
-        const startY = container.scrollTop + 50; 
+        const wrapper = document.getElementById('pdfWrapper'); // Idagdag ito para makuha ang wrapper
+        
+        // Babasahin niya ng tama kahit naka-zoom in/out
+        const startX = (container.scrollLeft + 50) / currentZoomScale;
+        const startY = (container.scrollTop + 50) / currentZoomScale;
         
         img.setAttribute('data-x', startX);
         img.setAttribute('data-y', startY);
         img.style.transform = `translate(${startX}px, ${startY}px)`;
         
-        container.appendChild(img);
+        // Double Tap / Double Click para mabura yung specific na stamp
+        img.addEventListener('dblclick', function() {
+            if(confirm("Burahin itong stamp?")) {
+                this.remove();
+            }
+        });
+
+        // Para masiguro na susunod siya sa current mode kapag in-add habang naka-Pan Mode
+        if (isPanMode) {
+            img.style.pointerEvents = "none";
+        }
+        
+        wrapper.appendChild(img);
     }
 
     interact('.draggable-stamp')
@@ -1289,8 +1381,9 @@ function createDraggableImage(src) {
 
     function dragMoveListener(event) {
         var target = event.target;
-        var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-        var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+        // Hahatiin sa zoom scale para sumakto sa daliri mo yung drag
+        var x = (parseFloat(target.getAttribute('data-x')) || 0) + (event.dx / currentZoomScale);
+        var y = (parseFloat(target.getAttribute('data-y')) || 0) + (event.dy / currentZoomScale);
 
         target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         target.setAttribute('data-x', x);
