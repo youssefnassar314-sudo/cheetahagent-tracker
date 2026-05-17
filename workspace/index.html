@@ -23,7 +23,7 @@
             user-select: none;
             border: 2px dashed rgba(255, 106, 0, 0.5);
             box-sizing: border-box;
-            transition: none !important; /* ITO YUNG MAGIC FIX PARA HINDI NAHIHILA! */
+            transition: none !important; 
         }
         .draggable-stamp:hover, .draggable-stamp:focus {
             border: 2px solid var(--primary-orange);
@@ -72,7 +72,7 @@
             background: var(--card-dark);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             width: 100%; max-width: 550px; 
-            padding: clamp(20px, 5vw, 40px); /* Kusa liliit ang padding sa phone */
+            padding: clamp(20px, 5vw, 40px); /* RESPONSIVE PADDING */
             border-radius: 20px; 
             border: 1px solid var(--glass-border); 
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -87,7 +87,7 @@
 
         .header { text-align: center; margin-bottom: 30px; }
 
-        h2 { margin: 0; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem); letter-spacing: 1px; word-break: break-word; }
+        h2 { margin: 0; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem); letter-spacing: 1px; word-break: break-word; } /* RESPONSIVE TITLE */
         h2 span { color: var(--primary-orange); }
 
         .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
@@ -330,7 +330,7 @@
     </style>
 </head>
 
-    <body>
+<body>
 
 <div class="left-panel" id="leftPanel">
     <div class="panel-header" style="border-bottom: 1px solid var(--glass-border);">
@@ -498,7 +498,7 @@ PLAN VALUE:</pre>
         </div>
     </div>
     
-<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
         <label style="margin-bottom: 0;">2. Client Information Block</label>
         <button onclick="toggleLeftPanel()" style="background: rgba(255,106,0,0.1); border: 1px solid var(--primary-orange); color: var(--primary-orange); border-radius: 6px; padding: 4px 10px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.2s;">
             🖼️ View Requirements
@@ -659,16 +659,13 @@ PLAN VALUE:</pre>
             PDF <span style="color:var(--primary-orange)">STAMPER</span>
         </h3>
         
-<div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
             <input type="file" id="stampUpload" accept="image/*" style="display:none;" onchange="addStamp(this)">
             
             <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--blue-biz); flex: 1; min-width: 120px;" onclick="document.getElementById('stampUpload').click()">
                 + Add Stamp
             </button>
 
-            <button id="panModeBtn" class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: rgba(255,255,255,0.1); flex: 1; min-width: 120px; box-shadow: none;" onclick="togglePanMode()">
-                🖱️ Drag Mode
-            </button>
             <button class="primary-btn" style="padding: 10px; font-size: 0.8rem; background: var(--red-alert); flex: 1; min-width: 120px; box-shadow: none;" onclick="clearAllStamps()">
                 🗑️ Clear All
             </button>
@@ -685,7 +682,7 @@ PLAN VALUE:</pre>
         </div>
         
         <div style="font-size: 0.75rem; color: var(--accent-orange); margin-bottom: 10px; text-align: left; background: rgba(255, 106, 0, 0.1); padding: 8px; border-radius: 6px;">
-            💡 <strong>TIP:</strong> <strong>Double-tap/Double-click</strong> ang stamp para burahin. I-on ang <strong>🖐️ Pan Mode</strong> para madaling maka-scroll sa phone kahit naka-zoom!
+            💡 <strong>TIP:</strong> <strong>Double-tap/Double-click</strong> ang stamp para burahin. Mag-scroll up/down sa ibabaw ng image para ma-resize.
         </div>
 
         <div id="pdfContainer" style="position: relative; flex: 1; overflow: auto; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; padding: 20px;">
@@ -776,42 +773,7 @@ PLAN VALUE:</pre>
 
     function updatePlanTerms() {
         const plan = document.getElementById('planSelect').value;
-        const termsText = `📌PLAN ${plan} 
-
-📌Payment & Installation
-• ₱${plan} lamang ang babayaran upon installation
-• Ito ay deposit na magagamit kapag ipapatanggal ang service
-• May 24-month lock-in period (2 years)
-
-📌Disconnection & Contract
-• Para sa voluntary disconnection, kailangan mag-submit ng written request sa branch at least 30 days before
-• Priority disconnection kapag fully paid at walang outstanding balance
-• Kung walang written request, magtutuloy ang contract
-• Kailangang ibalik ang modem/router o cable box kapag terminated ang service
-
-📌Changes & Transfers
-• May ₱500 fee para sa upgrade/downgrade habang nasa lock-in period
-• Pwede ilipat ang modem/router, pero kailangan iprocess sa branch
-
-📌Excess Materials
-(Applicable lang kung may excess na sasabihin ang installer)
-Outdoor Fiber:
-• Free hanggang 120 meters
-• 200 meters – ₱700
-• 300 meters – ₱1,000
-Indoor Fiber:
-• Free hanggang 15 meters
-• ₱10 per meter kapag sumobra
-• Ang excess materials ay idadagdag sa bill at payable within 2 months
-• Kailangang maibalik ang materials in good condition kapag nag-terminate para maiwasan ang extra charges
-
-📌Billing
-• Installation (1–15): lalabas ang bill sa 17th ng same month
-• Installation (16–31): lalabas sa 17th ng next month (or upon request)
-• First bill: Pro-rated (₱${plan} ÷ 30 × days used)
-• Next bills: ₱${plan}/month
-• Due date: 30/31 ng buwan
-• May extension hanggang 10 ng next month`;
+        const termsText = `📌PLAN ${plan} \n\n📌Payment & Installation\n• ₱${plan} lamang ang babayaran upon installation\n• Ito ay deposit na magagamit kapag ipapatanggal ang service\n• May 24-month lock-in period (2 years)\n\n📌Disconnection & Contract\n• Para sa voluntary disconnection, kailangan mag-submit ng written request sa branch at least 30 days before\n• Priority disconnection kapag fully paid at walang outstanding balance\n• Kung walang written request, magtutuloy ang contract\n• Kailangang ibalik ang modem/router o cable box kapag terminated ang service\n\n📌Changes & Transfers\n• May ₱500 fee para sa upgrade/downgrade habang nasa lock-in period\n• Pwede ilipat ang modem/router, pero kailangan iprocess sa branch\n\n📌Excess Materials\n(Applicable lang kung may excess na sasabihin ang installer)\nOutdoor Fiber:\n• Free hanggang 120 meters\n• 200 meters – ₱700\n• 300 meters – ₱1,000\nIndoor Fiber:\n• Free hanggang 15 meters\n• ₱10 per meter kapag sumobra\n• Ang excess materials ay idadagdag sa bill at payable within 2 months\n• Kailangang maibalik ang materials in good condition kapag nag-terminate para maiwasan ang extra charges\n\n📌Billing\n• Installation (1–15): lalabas ang bill sa 17th ng same month\n• Installation (16–31): lalabas sa 17th ng next month (or upon request)\n• First bill: Pro-rated (₱${plan} ÷ 30 × days used)\n• Next bills: ₱${plan}/month\n• Due date: 30/31 ng buwan\n• May extension hanggang 10 ng next month`;
         document.getElementById('planTermsBox').innerText = termsText;
     }
 
@@ -1167,10 +1129,9 @@ Indoor Fiber:
     let currentPdfBytes = null;
     let currentPdfName = "";
     let pdfScale = 1.3; 
+    let currentZoomScale = 1;
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-let currentZoomScale = 1;
 
     function zoomPdf(direction) {
         const wrapper = document.getElementById('pdfWrapper');
@@ -1179,37 +1140,12 @@ let currentZoomScale = 1;
         if (direction === 'in') {
             currentZoomScale += 0.2;
         } else if (direction === 'out') {
-            // Wag natin hayaang lumiit masyado (min 40%)
             currentZoomScale = Math.max(0.4, currentZoomScale - 0.2); 
         }
 
-wrapper.style.transform = `scale(${currentZoomScale})`;
-        document.getElementById('zoomText').innerText = Math.round(currentZoomScale * 100) + '%';
-    }
-
-    let isPanMode = false;
-
-    function togglePanMode() {
-        isPanMode = !isPanMode;
-        const btn = document.getElementById('panModeBtn');
-        const stamps = document.querySelectorAll('.draggable-stamp');
-
-        if (isPanMode) {
-            btn.innerHTML = "🖐️ Pan Mode";
-            btn.style.background = "var(--primary-orange)";
-            btn.style.color = "white";
-            // Patayin ang drag/resize para maka-scroll
-            interact('.draggable-stamp').draggable({ enabled: false }).resizable({ enabled: false });
-            // Tagusan ang touch sa stamps
-            stamps.forEach(s => s.style.pointerEvents = "none"); 
-        } else {
-            btn.innerHTML = "🖱️ Drag Mode";
-            btn.style.background = "rgba(255,255,255,0.1)";
-            // Buhayin ulit ang drag/resize
-            interact('.draggable-stamp').draggable({ enabled: true }).resizable({ enabled: true });
-            // Mahahawakan na ulit ang stamps
-            stamps.forEach(s => s.style.pointerEvents = "auto");
-        }
+        wrapper.style.transform = `scale(${currentZoomScale})`;
+        const zoomText = document.getElementById('zoomText');
+        if(zoomText) zoomText.innerText = Math.round(currentZoomScale * 100) + '%';
     }
 
     function clearAllStamps() {
@@ -1218,22 +1154,16 @@ wrapper.style.transform = `scale(${currentZoomScale})`;
             stamps.forEach(stamp => stamp.remove());
         }
     }
-    
+
     async function openPdfEditor(base64Data, fileName) {
         currentPdfName = fileName;
+        const container = document.getElementById('pdfContainer');
         const wrapper = document.getElementById('pdfWrapper');
+        
         wrapper.innerHTML = ''; 
-        currentZoomScale = 1; // Reset zoom kapag may bagong PDF
+        currentZoomScale = 1;
         if(document.getElementById('zoomText')) document.getElementById('zoomText').innerText = '100%';
         wrapper.style.transform = `scale(1)`;
-
-        // Reset Pan Mode to Drag Mode
-        isPanMode = false;
-        if(document.getElementById('panModeBtn')) {
-            document.getElementById('panModeBtn').innerHTML = "🖱️ Drag Mode";
-            document.getElementById('panModeBtn').style.background = "rgba(255,255,255,0.1)";
-        }
-        interact('.draggable-stamp').draggable({ enabled: true }).resizable({ enabled: true });
         
         const binary_string = window.atob(base64Data);
         const len = binary_string.length;
@@ -1264,7 +1194,7 @@ wrapper.style.transform = `scale(${currentZoomScale})`;
             
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-            wrapper.appendChild(canvas); // Sa wrapper na idadagdag
+            wrapper.appendChild(canvas);
 
             const renderContext = { canvasContext: canvas.getContext('2d'), viewport: viewport };
             await page.render(renderContext).promise;
@@ -1303,40 +1233,30 @@ wrapper.style.transform = `scale(${currentZoomScale})`;
         input.value = ""; 
     }
 
-function createDraggableImage(src) {
+    function createDraggableImage(src) {
         const container = document.getElementById('pdfContainer');
+        const wrapper = document.getElementById('pdfWrapper');
         
         const img = document.createElement('img');
         img.src = src;
         img.className = 'draggable-stamp';
         
-        // ITO YUNG MAGIC FIX: Pilitin siyang mag-umpisa sa top-left bago gumalaw
         img.style.top = '0px';
         img.style.left = '0px';
         img.style.width = '150px'; 
         
-        // Ngayon, babasahin na niya ng tama kung nasaan ka naka-scroll!
-        const wrapper = document.getElementById('pdfWrapper'); // Idagdag ito para makuha ang wrapper
-        
-        // Babasahin niya ng tama kahit naka-zoom in/out
         const startX = (container.scrollLeft + 50) / currentZoomScale;
-        const startY = (container.scrollTop + 50) / currentZoomScale;
+        const startY = (container.scrollTop + 50) / currentZoomScale; 
         
         img.setAttribute('data-x', startX);
         img.setAttribute('data-y', startY);
         img.style.transform = `translate(${startX}px, ${startY}px)`;
         
-        // Double Tap / Double Click para mabura yung specific na stamp
         img.addEventListener('dblclick', function() {
             if(confirm("Burahin itong stamp?")) {
                 this.remove();
             }
         });
-
-        // Para masiguro na susunod siya sa current mode kapag in-add habang naka-Pan Mode
-        if (isPanMode) {
-            img.style.pointerEvents = "none";
-        }
         
         wrapper.appendChild(img);
     }
@@ -1361,11 +1281,12 @@ function createDraggableImage(src) {
                     let x = (parseFloat(target.getAttribute('data-x')) || 0);
                     let y = (parseFloat(target.getAttribute('data-y')) || 0);
 
-                    target.style.width = event.rect.width + 'px';
-                    target.style.height = event.rect.height + 'px';
+                    // Divide resize deltas by zoom scale to match pointer exactly
+                    target.style.width = (event.rect.width / currentZoomScale) + 'px';
+                    target.style.height = (event.rect.height / currentZoomScale) + 'px';
 
-                    x += event.deltaRect.left;
-                    y += event.deltaRect.top;
+                    x += (event.deltaRect.left / currentZoomScale);
+                    y += (event.deltaRect.top / currentZoomScale);
 
                     target.style.transform = `translate3d(${x}px, ${y}px, 0)`;
                     target.setAttribute('data-x', x);
@@ -1381,7 +1302,6 @@ function createDraggableImage(src) {
 
     function dragMoveListener(event) {
         var target = event.target;
-        // Hahatiin sa zoom scale para sumakto sa daliri mo yung drag
         var x = (parseFloat(target.getAttribute('data-x')) || 0) + (event.dx / currentZoomScale);
         var y = (parseFloat(target.getAttribute('data-y')) || 0) + (event.dy / currentZoomScale);
 
@@ -1402,24 +1322,26 @@ function createDraggableImage(src) {
             const pages = pdfDoc.getPages();
             const stamps = document.querySelectorAll('.draggable-stamp');
             const canvases = document.querySelectorAll('.pdf-page-canvas');
-            const container = document.getElementById('pdfContainer');
+            const wrapper = document.getElementById('pdfWrapper');
             
             for (let stamp of stamps) {
                 const imgRect = stamp.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
+                const wrapperRect = wrapper.getBoundingClientRect();
                 
-                const imgAbsoluteY = imgRect.top - containerRect.top + container.scrollTop;
-                const imgAbsoluteX = imgRect.left - containerRect.left + container.scrollLeft;
+                const imgAbsoluteY = (imgRect.top - wrapperRect.top) / currentZoomScale;
+                const imgAbsoluteX = (imgRect.left - wrapperRect.left) / currentZoomScale;
+                const imgHeight = imgRect.height / currentZoomScale;
+                const imgWidth = imgRect.width / currentZoomScale;
 
                 let targetPageNum = 1;
                 let targetCanvas = canvases[0];
 
                 for (let canvas of canvases) {
                     const cRect = canvas.getBoundingClientRect();
-                    const cAbsoluteTop = cRect.top - containerRect.top + container.scrollTop;
-                    const cAbsoluteBottom = cAbsoluteTop + cRect.height;
+                    const cAbsoluteTop = (cRect.top - wrapperRect.top) / currentZoomScale;
+                    const cAbsoluteBottom = cAbsoluteTop + (cRect.height / currentZoomScale);
                     
-                    const imgCenterY = imgAbsoluteY + (imgRect.height / 2);
+                    const imgCenterY = imgAbsoluteY + (imgHeight / 2);
                     if (imgCenterY >= cAbsoluteTop && imgCenterY <= cAbsoluteBottom) {
                         targetPageNum = parseInt(canvas.dataset.pageNum);
                         targetCanvas = canvas;
@@ -1432,17 +1354,17 @@ function createDraggableImage(src) {
                 const pdfPageHeight = pdfPage.getHeight();
 
                 const cRect = targetCanvas.getBoundingClientRect();
-                const cAbsoluteTop = cRect.top - containerRect.top + container.scrollTop;
-                const cAbsoluteLeft = cRect.left - containerRect.left + container.scrollLeft;
+                const cAbsoluteTop = (cRect.top - wrapperRect.top) / currentZoomScale;
+                const cAbsoluteLeft = (cRect.left - wrapperRect.left) / currentZoomScale;
 
                 const relativeX = imgAbsoluteX - cAbsoluteLeft;
                 const relativeY = imgAbsoluteY - cAbsoluteTop;
 
-                const scaleX = pdfPageWidth / cRect.width;
-                const scaleY = pdfPageHeight / cRect.height;
+                const scaleX = pdfPageWidth / (cRect.width / currentZoomScale);
+                const scaleY = pdfPageHeight / (cRect.height / currentZoomScale);
 
-                const finalWidth = imgRect.width * scaleX;
-                const finalHeight = imgRect.height * scaleY;
+                const finalWidth = imgWidth * scaleX;
+                const finalHeight = imgHeight * scaleY;
                 const finalX = relativeX * scaleX;
                 const finalY = pdfPageHeight - (relativeY * scaleY) - finalHeight;
 
@@ -1477,7 +1399,7 @@ function createDraggableImage(src) {
         const gallery = document.getElementById('reqGallery');
         
         if (input.files && input.files.length > 0) {
-            gallery.innerHTML = ''; // Tatanggalin yung default text kapag may inupload
+            gallery.innerHTML = ''; 
             
             Array.from(input.files).forEach(file => {
                 const reader = new FileReader();
@@ -1487,7 +1409,6 @@ function createDraggableImage(src) {
                     img.className = 'preview-img';
                     gallery.appendChild(img);
                 }
-                // Ginagamit natin ang DataURL para HD at di lumalabo
                 reader.readAsDataURL(file);
             });
         }
