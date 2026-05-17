@@ -1264,12 +1264,6 @@ PLAN VALUE:</pre>
     interact('.draggable-stamp')
         .draggable({
             inertia: false, 
-            modifiers: [
-                interact.modifiers.restrictRect({
-                    restriction: 'parent',
-                    endOnly: true
-                })
-            ],
             autoScroll: false,
             listeners: { move: dragMoveListener }
         })
@@ -1281,7 +1275,6 @@ PLAN VALUE:</pre>
                     let x = (parseFloat(target.getAttribute('data-x')) || 0);
                     let y = (parseFloat(target.getAttribute('data-y')) || 0);
 
-                    // Divide resize deltas by zoom scale to match pointer exactly
                     target.style.width = (event.rect.width / currentZoomScale) + 'px';
                     target.style.height = (event.rect.height / currentZoomScale) + 'px';
 
@@ -1294,7 +1287,6 @@ PLAN VALUE:</pre>
                 }
             },
             modifiers: [
-                interact.modifiers.restrictEdges({ outer: 'parent' }),
                 interact.modifiers.restrictSize({ min: { width: 50, height: 50 } })
             ],
             inertia: false 
