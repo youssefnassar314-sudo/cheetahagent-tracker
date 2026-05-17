@@ -921,8 +921,7 @@ onAuthStateChanged(auth, user => {
                 }
             }
         });
-            }
-        });
+
         
         function syncData() {
             onSnapshot(query(collection(db, "clients"), where("uid", "==", currentUser.uid)), snap => {
