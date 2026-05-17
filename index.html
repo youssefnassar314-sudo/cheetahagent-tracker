@@ -81,6 +81,15 @@
             background: rgba(0, 0, 0, 0.6);
         }
         select option { background-color: var(--bg-deep); color: white; }
+        
+        /* PASSWORD EYE ICON STYLE */
+        .pwd-container { position: relative; width: 100%; margin-bottom: 12px; }
+        .pwd-container input { margin-bottom: 0; padding-right: 45px; } /* Para hindi matabunan ng mata yung text */
+        .pwd-toggle {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); cursor: pointer; transition: 0.3s; font-size: 1.1rem;
+        }
+        .pwd-toggle:hover { color: var(--primary-orange); }
         /* Neon Buttons */
         .primary-btn { 
             background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
@@ -301,7 +310,10 @@
             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Agent Secure Access</p>
             
             <input type="email" id="authEmail" placeholder="Agent Email">
-            <input type="password" id="authPass" placeholder="Password">
+            <div class="pwd-container">
+                <input type="password" id="authPass" placeholder="Password">
+                <i class="fa-solid fa-eye pwd-toggle" onclick="togglePassword('authPass', this)"></i>
+            </div>
             
             <button class="primary-btn" onclick="handleAuth('login')">Access Systems</button>
             <button class="primary-btn" style="background:transparent; border:1px solid rgba(255,106,0,0.5); box-shadow:none; margin-top:10px; margin-bottom: 5px;" onclick="toggleAuthView('signup')">Register New Agent</button>
@@ -316,8 +328,14 @@
             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Join the Cheetah Network</p>
             
             <input type="email" id="regEmail" placeholder="New Agent Email">
-            <input type="password" id="regPass" placeholder="Create Password">
-            <input type="password" id="regPassConfirm" placeholder="Confirm Password">
+            <div class="pwd-container">
+                <input type="password" id="regPass" placeholder="Create Password">
+                <i class="fa-solid fa-eye pwd-toggle" onclick="togglePassword('regPass', this)"></i>
+            </div>
+            <div class="pwd-container">
+                <input type="password" id="regPassConfirm" placeholder="Confirm Password">
+                <i class="fa-solid fa-eye pwd-toggle" onclick="togglePassword('regPassConfirm', this)"></i>
+            </div>
             
             <button class="primary-btn" onclick="handleSignup()">Complete Registration</button>
             <button class="primary-btn" style="background:transparent; border:1px solid rgba(255,255,255,0.2); box-shadow:none; margin-top:10px; margin-bottom: 5px; color: var(--text-muted);" onclick="toggleAuthView('login')">Back to Login</button>
@@ -834,6 +852,21 @@
             } else {
                 document.getElementById('signupPanel').style.display = 'none';
                 document.getElementById('loginPanel').style.display = 'block';
+            }
+        };
+
+        window.togglePassword = (inputId, icon) => {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+                icon.style.color = "var(--primary-orange)"; // Magiging orange pag nakikita
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+                icon.style.color = "var(--text-muted)"; // Babalik sa gray pag nakatago
             }
         };
 
