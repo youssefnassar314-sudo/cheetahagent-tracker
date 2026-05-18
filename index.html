@@ -748,61 +748,98 @@
         </div>
     </div>
 <div class="modal-overlay" id="helpCenterModal">
-    <div class="about-box" style="text-align: left; max-width: 450px; padding: 40px 30px; border: 1px solid rgba(255, 106, 0, 0.3); box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,106,0,0.05);">
+    <div class="about-box" style="text-align: left; max-width: 500px; padding: 35px 25px; border: 1px solid rgba(255, 106, 0, 0.4); box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(255,106,0,0.05); max-height: 85vh; display: flex; flex-direction: column;">
         <button class="modal-close" onclick="toggleHelpCenter()">&times;</button>
         
-        <div style="text-align: center; margin-bottom: 30px;">
+        <div style="text-align: center; margin-bottom: 25px; flex-shrink: 0;">
             <div style="background: rgba(255,106,0,0.1); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; border: 1px solid var(--primary-orange); box-shadow: 0 0 15px rgba(255,106,0,0.2);">
                 <i class="fa-solid fa-terminal" style="font-size: 1.5rem; color: var(--primary-orange);"></i>
             </div>
             <h2 style="color: white; margin: 0; font-weight: 800; letter-spacing: 2px; font-size: 1.4rem;">COMMAND CENTER</h2>
             <div style="width: 40px; height: 3px; background: var(--primary-orange); margin: 10px auto; border-radius: 10px;"></div>
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Agent Operations Manual</p>
         </div>
 
         <style>
-            /* Custom Scrollbar for Modal */
-            #helpCenterModal .about-box::-webkit-scrollbar { width: 4px; }
-            /* Custom Details Styling */
-            .help-item { margin-bottom: 15px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+            /* Enhanced Custom Scrollbar for the Help List */
+            .help-scroll-area::-webkit-scrollbar { width: 6px; }
+            .help-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+            .help-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
+            .help-scroll-area::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+
+            /* Smooth Accordion Styling */
+            .help-item { margin-bottom: 12px; background: rgba(20, 24, 36, 0.9); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; transition: all 0.3s ease; }
+            .help-item:hover { border-color: rgba(255, 106, 0, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+            
             .help-item summary { 
-                padding: 15px; color: white; font-weight: 700; cursor: pointer; list-style: none; 
+                padding: 16px; color: white; font-weight: 700; cursor: pointer; list-style: none; 
                 display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
+                font-size: 0.9rem;
             }
             .help-item summary::-webkit-details-marker { display: none; }
-            .help-item summary:hover { background: rgba(255,106,0,0.05); }
-            .help-item[open] summary { border-bottom: 1px solid rgba(255,106,0,0.2); color: var(--primary-orange); }
-            .help-content { padding: 15px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.7; }
+            .help-item summary:hover { background: rgba(255,106,0,0.08); }
+            
+            .help-item[open] { border-color: rgba(255,106,0,0.4); box-shadow: 0 4px 20px rgba(255,106,0,0.1); }
+            .help-item[open] summary { border-bottom: 1px solid rgba(255,106,0,0.2); color: var(--primary-orange); background: rgba(255,106,0,0.05); }
+            
+            .help-item summary .fa-chevron-down { transition: transform 0.3s ease; }
+            .help-item[open] summary .fa-chevron-down { transform: rotate(180deg); color: var(--primary-orange); }
+            
+            .help-content { padding: 16px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.7; background: rgba(0,0,0,0.2); }
             .help-content b { color: var(--primary-orange); }
-            .help-dot { color: var(--primary-orange); margin-right: 8px; font-size: 0.6rem; vertical-align: middle; }
+            .help-dot { color: var(--primary-orange); margin-right: 8px; font-size: 0.5rem; vertical-align: middle; transform: translateY(-1px); display: inline-block;}
         </style>
 
-<details class="help-item">
-    <summary><i class="fa-solid fa-crosshairs" style="color:var(--primary-orange); margin-right:8px;"></i>Target Management <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
-    <div class="help-content">
-        <div><i class="fa-solid fa-circle help-dot"></i><b>Add Target:</b> I-save ang prospect details at napiling plan.</div>
-        <div style="margin-top: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Install:</b> I-trigger ang billing computation at confetti kapag successful ang kabit.</div>
-    </div>
-</details>
+        <div class="help-scroll-area" style="overflow-y: auto; padding-right: 8px; flex-grow: 1; margin-bottom: 20px;">
+            
+            <details class="help-item">
+                <summary><div style="display:flex; align-items:center;"><i class="fa-solid fa-crosshairs" style="color:var(--primary-orange); margin-right:12px; font-size: 1.1rem;"></i>Target Management</div> <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></summary>
+                <div class="help-content">
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Add Target:</b> I-save ang prospect details, area, at plan. Pwede ring i-tag kung sariling benta o hiniram.</div>
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Install:</b> I-trigger ang billing computation at lalabas ang confetti kapag successful ang kabit!</div>
+                    <div><i class="fa-solid fa-circle help-dot"></i><b>Copy Billing Message:</b> Auto-generated na ang message format para sa bill ng client na pwede mong i-paste agad sa Messenger.</div>
+                </div>
+            </details>
 
-<details class="help-item">
-    <summary><i class="fa-solid fa-bolt" style="color:var(--primary-orange); margin-right:8px;"></i>Agent Power Tools (FAB) <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
-    <div class="help-content">
-        <div><i class="fa-solid fa-circle help-dot"></i><b>Area Locator:</b> Interactive database map para i-verify kung covered ng fiber ang area ng client.</div>
-        <div style="margin-top: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>ID Generator:</b> Gagawa ng digital agent ID para sa legitimacy mo sa harap ng client.</div>
-        <div style="margin-top: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Prorated Calc:</b> Quick tool para malaman ang partial bill ng client base sa araw ng installation.</div>
-        <div style="margin-top: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Workspace:</b> Dito nakatago ang mga hardcoded documents (docx/pdf) para sa application forms.</div>
-    </div>
-</details>
+            <details class="help-item">
+                <summary><div style="display:flex; align-items:center;"><i class="fa-solid fa-chart-pie" style="color:var(--primary-orange); margin-right:12px; font-size: 1.1rem;"></i>Summary Board</div> <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></summary>
+                <div class="help-content">
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Total Commission:</b> Real-time computation ng potential income mo base sa mga <i>Installed</i> clients ngayong buwan.</div>
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Mini Stats:</b> Mabilisang bilang ng iyong Pending, Installed, at Cancelled accounts.</div>
+                    <div><i class="fa-solid fa-circle help-dot"></i><b>Monthly Target:</b> Visual tracker ng progress mo para ma-hit ang 20 installs na quota.</div>
+                </div>
+            </details>
 
-<details class="help-item">
-    <summary><i class="fa-solid fa-wallet" style="color:var(--primary-orange); margin-right:8px;"></i>Ledger System <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
-    <div class="help-content">
-        <i class="fa-solid fa-circle help-dot"></i>Personal recorder ng iyong commissions at field expenses (gas, food, flyers). Dito mo makikita ang totoong <b>Net Balance</b> o malinis na kita mo.
-    </div>
-</details>
+            <details class="help-item">
+                <summary><div style="display:flex; align-items:center;"><i class="fa-solid fa-bolt" style="color:var(--primary-orange); margin-right:12px; font-size: 1.1rem;"></i>Agent Power Tools (FAB)</div> <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></summary>
+                <div class="help-content">
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Area Locator:</b> Searchable locations para i-verify kung covered ng fiber ang area ng client.</div>
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>ID Generator:</b> Gumagawa ng digital agent ID para mas legit tignan.</div>
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Prorated Calc and MBPS Estimator:</b> Calculator tools para mas ma-assist ng maayos ang mga client</div>
+                    <div><i class="fa-solid fa-circle help-dot"></i><b>Workspace:</b> Automatic na panggawa ng application forms (docx/pdf).</div>
+                </div>
+            </details>
 
-        <button class="primary-btn" style="margin-top: 20px; letter-spacing: 2px;" onclick="toggleHelpCenter()">
-            INITIALIZE SYSTEMS <i class="fa-solid fa-check-double" style="margin-left: 8px;"></i>
+            <details class="help-item">
+                <summary><div style="display:flex; align-items:center;"><i class="fa-solid fa-wallet" style="color:var(--primary-orange); margin-right:12px; font-size: 1.1rem;"></i>Ledger System</div> <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></summary>
+                <div class="help-content">
+                    <i class="fa-solid fa-circle help-dot"></i>I-record dito ang iyong commissions/allowances/incentives kung magkano ang <b>Kinita</b> mo.
+                </div>
+            </details>
+
+            <details class="help-item">
+                <summary><div style="display:flex; align-items:center;"><i class="fa-solid fa-gear" style="color:var(--primary-orange); margin-right:12px; font-size: 1.1rem;"></i>Account & Settings</div> <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: var(--text-muted);"></i></summary>
+                <div class="help-content">
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Profile:</b> Pwede mong i-set ang iyong Agent Name / Callsign na lalabas sa system.</div>
+                    <div style="margin-bottom: 8px;"><i class="fa-solid fa-circle help-dot"></i><b>Theme Switcher:</b> Piliin ang kulay na swak sa mata mo (Dark Space o Sketch Theme).</div>
+                    <div><i class="fa-solid fa-circle help-dot"></i><b>Refresh Data:</b> I-click ito para i-clear ang cache kung hindi nag-uupdate ang database.</div>
+                </div>
+            </details>
+
+        </div>
+
+        <button class="primary-btn" style="letter-spacing: 2px; flex-shrink: 0;" onclick="toggleHelpCenter()">
+            ACKNOWLEDGE <i class="fa-solid fa-check-double" style="margin-left: 8px;"></i>
         </button>
     </div>
 </div>
