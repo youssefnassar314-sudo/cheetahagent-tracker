@@ -39,12 +39,44 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
+        /* --- INITIAL LOADING SCREEN (Aligned with main app) --- */
+        #initLoader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; 
+            transition: opacity 0.5s ease;
+        }
+        .loader-ring {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(255, 106, 0, 0.1);
+            border-top: 4px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader-text {
+            color: white; font-weight: 800; letter-spacing: 2px; font-size: 1.2rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
         .container { width: 100%; max-width: 480px; } 
         
-        .header { text-align: center; margin-bottom: 30px; }
+        .header { text-align: center; margin-bottom: 30px; position: relative; }
         .header h1 { margin: 0; font-weight: 800; font-size: 2rem; letter-spacing: 1px; }
         .header h1 span { color: var(--primary-orange); }
         .header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .back-btn {
+            position: absolute; left: 0; top: 10px;
+            background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px;
+            border-radius: 8px; cursor: pointer; text-decoration: none;
+            font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
+        }
+        .back-btn:hover { background: rgba(255,106,0,0.1); color: var(--primary-orange); border-color: var(--primary-orange); }
 
         .glass-panel { 
             background: var(--card-dark); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -138,8 +170,15 @@
 </head>
 <body>
 
-    <div class="container">
+    <div id="initLoader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">CHEETAH<span style="color:var(--primary-orange)">//</span>CALC</div>
+        <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 10px;">Verifying Agent Credentials...</div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
         <div class="header">
+            <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
             <h1>CHEETAH<span style="color:var(--primary-orange)">//</span>CALC</h1>
             <p>Prorated First Bill Estimator</p>
         </div>
@@ -231,6 +270,42 @@
 
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Must match your exact main index.html config!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHZATQBgAesBsbPy5W2xoUS7GBMPkl3hk",
+            authDomain: "cheetah-tracker-app.firebaseapp.com",
+            projectId: "cheetah-tracker-app",
+            storageBucket: "cheetah-tracker-app.firebasestorage.app",
+            messagingSenderId: "981209296948",
+            appId: "1:981209296948:web:5bc5db3ad94d11f5d2da61",
+            measurementId: "G-KGTBSKD57D"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, user => {
+            const loader = document.getElementById('initLoader');
+            
+            if (user) {
+                // Agent is logged in -> Fade out loader and show content
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                }, 500); 
+            } else {
+                // Agent is NOT logged in -> Kick them back to login page
+                // Adjust the href below if your main page is not at the root level "/"
+                window.location.href = '/'; 
+            }
+        });
+    </script>
+
     <script>
         // Set today's date as default
         document.getElementById('installDate').valueAsDate = new Date();
@@ -294,7 +369,6 @@
         }
 
         // Run calculation on load
-// Run calculation on load
         calculateProrated();
 
         // --- REALISTIC MBPS ESTIMATOR LOGIC ---
