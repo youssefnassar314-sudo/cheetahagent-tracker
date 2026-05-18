@@ -734,8 +734,11 @@ PLAN VALUE:</pre>
         return new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    function parseData(rawText) {
-        const lines = rawText.split('\n'); 
+function parseData(rawText) {
+        // TANGGALIN ANG MGA INVISIBLE CHARACTERS (LRM/RLM/Zero-width) GALING MESSENGER
+        const cleanText = rawText.replace(/[\u200B-\u200D\uFEFF\u200E\u200F]/g, '');
+        
+        const lines = cleanText.split('\n'); 
         const data = {}; 
         let currentKey = "";
         
