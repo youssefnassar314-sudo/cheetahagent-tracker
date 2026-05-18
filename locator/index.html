@@ -44,8 +44,35 @@
 
         .container { width: 100%; max-width: 500px; padding-bottom: 80px; margin-top: 20px; } 
         
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-weight: 800; font-size: 2rem; letter-spacing: 1px; }
+        /* HEADER & BACK BUTTON ALIGNMENT */
+        .header { text-align: center; margin-bottom: 30px; position: relative; }
+        
+        .header-container {
+            display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 5px;
+        }
+
+        .back-btn {
+            position: absolute; left: 0; background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px;
+            border-radius: 8px; cursor: pointer; text-decoration: none;
+            font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
+        }
+        .back-btn:hover { background: rgba(255,106,0,0.1); color: var(--primary-orange); border-color: var(--primary-orange); }
+
+        .help-icon-btn {
+            position: absolute; top: 0; right: 0; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz);
+            border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 50%; width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;
+        }
+        .help-icon-btn:hover { background: var(--blue-biz); color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); transform: scale(1.1); }
+
+        @media (max-width: 400px) {
+            .header-container { flex-direction: column; gap: 15px; }
+            .back-btn { position: static; align-self: flex-start; }
+            .help-icon-btn { top: -5px; right: 0; }
+        }
+
+        .header h1 { margin: 0; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem); letter-spacing: 1px; }
         .header h1 span { color: var(--primary-orange); }
         .header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -58,36 +85,33 @@
             border-radius: 16px; color: white; font-size: 0.95rem; 
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
-        #areaSearch:focus {
-            outline: none; border-color: var(--primary-orange);
-            box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
-            background: rgba(0, 0, 0, 0.6);
-        }
+        #areaSearch:focus { outline: none; border-color: var(--primary-orange); box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15); background: rgba(0, 0, 0, 0.6); }
 
         .status-msg { font-size: 0.8rem; text-align: center; margin-bottom: 20px; color: var(--text-muted); font-weight: 600; }
         
-        /* Area Cards with Glassmorphism */
+        /* AREA CARDS (Fixed Overflow Issue) */
         .area-card { 
             background: var(--card-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             padding: 20px; border-radius: 16px; margin-bottom: 15px; 
             border: 1px solid rgba(255,255,255,0.05); border-left: 4px solid rgba(255,255,255,0.1);
+            word-wrap: break-word; overflow-wrap: break-word; /* FIX PARA HINDI LUMAMPAS ANG TEXT SA PHONE */
         }
         .area-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.1); }
         
         .area-card.available { border-left-color: var(--green-installed); }
         .area-card.non-commissionable { border-left-color: var(--red-alert); opacity: 0.8; }
         
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .card-top strong { font-size: 1.05rem; font-weight: 700; color: white; line-height: 1.3; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 10px; }
+        .card-top strong { font-size: 1.05rem; font-weight: 700; color: white; line-height: 1.3; flex: 1; }
         
-        .status-badge { font-size: 0.65rem; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-left: 10px; }
+        .status-badge { font-size: 0.65rem; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
         .status-available { background: rgba(16, 185, 129, 0.15); color: var(--green-installed); border: 1px solid rgba(16,185,129,0.3); }
         .status-non-commissionable { background: rgba(244, 63, 94, 0.15); color: var(--red-alert); border: 1px solid rgba(244,63,94,0.3); }
         
         .card-details { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; }
         .card-details i { color: var(--primary-orange); margin-right: 5px; }
 
-        /* Floating Action Button */
+        /* FLOATING ACTION BUTTON */
         .fab { 
             position: fixed; bottom: 30px; right: 30px; 
             background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
@@ -97,8 +121,10 @@
         }
         .fab:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 30px rgba(255,106,0,0.6); }
 
-        /* Suggestion Bottom Sheet */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 10, 15, 0.8); backdrop-filter: blur(5px); display: none; z-index: 1999; }
+        /* MODALS & BOTTOM SHEETS */
+        .overlay, .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 10, 15, 0.8); backdrop-filter: blur(5px); display: none; z-index: 1999; opacity: 0; transition: opacity 0.3s ease; }
+        .overlay { display: none; opacity: 1; } /* Specific for bottom sheet */
+        .modal-overlay.active { display: flex; opacity: 1; justify-content: center; align-items: center; }
         
         .suggestion-box { 
             position: fixed; bottom: -100%; left: 0; right: 0; width: 100%; max-width: 500px; margin: 0 auto; 
@@ -109,7 +135,6 @@
             transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .suggestion-box.active { bottom: 0; }
-        
         .suggestion-box h3 { margin: 0 0 20px 0; color: white; font-weight: 800; display: flex; align-items: center; gap: 10px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
         .suggestion-box h3 i { color: var(--primary-orange); }
         
@@ -119,21 +144,81 @@
             padding: 14px 15px; box-sizing: border-box; margin-bottom: 12px; font-size: 0.9rem; 
         }
         .suggest-input:focus { outline: none; border-color: var(--primary-orange); background: rgba(0, 0, 0, 0.6); }
-        
-        #submitBtn { 
+
+        /* BUTTONS */
+        .primary-btn { 
             width: 100%; background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
             color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; 
             cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;
             text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem; margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3); transition: 0.3s;
         }
-        #submitBtn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); }
+
+        /* ABOUT / MODAL BOX */
+        .modal-box {
+            background: var(--card-dark); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+            width: 100%; max-width: 480px; border-radius: 20px; padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.3s ease;
+            position: relative; text-align: left;
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+        .modal-close {
+            position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--red-alert); }
+
+        /* HELP ACCORDION */
+        .help-scroll-area::-webkit-scrollbar { width: 4px; }
+        .help-scroll-area::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); border-radius: 10px; }
+        .help-item { margin-bottom: 12px; background: rgba(20, 24, 36, 0.9); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; transition: all 0.3s ease; }
+        .help-item:hover { border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .help-item summary { padding: 16px; color: white; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .help-item summary::-webkit-details-marker { display: none; }
+        .help-item[open] { border-color: rgba(59, 130, 246, 0.4); }
+        .help-item[open] summary { border-bottom: 1px solid rgba(59, 130, 246, 0.2); color: var(--blue-biz); background: rgba(59, 130, 246, 0.05); }
+        .help-item[open] summary i.fa-chevron-down { transform: rotate(180deg); color: var(--blue-biz); transition: 0.3s; }
+        .help-content { padding: 16px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; background: rgba(0,0,0,0.2); }
+        .help-content b { color: var(--blue-biz); }
+
+        /* SKETCH THEME ALIGNMENT */
+        body[data-theme="sketch"] {
+            --bg-dark: #ffffff; --bg-deep: #f4f4f0; --card-dark: #ffffff;
+            --primary-orange: #000000; --accent-orange: #333333; 
+            --text-main: #000000; --text-muted: #555555; --glass-border: #000000;
+            background: radial-gradient(#cccccc 1px, transparent 1px); background-size: 20px 20px; background-color: var(--bg-deep); color: black;
+        }
+        body[data-theme="sketch"] .area-card, body[data-theme="sketch"] .modal-box, body[data-theme="sketch"] .suggestion-box {
+            backdrop-filter: none; -webkit-backdrop-filter: none; border-radius: 8px;
+            border: 2px solid black; box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); background: white;
+        }
+        body[data-theme="sketch"] .primary-btn, body[data-theme="sketch"] .fab { background: white !important; border: 2px solid black !important; box-shadow: 4px 4px 0px black !important; color: black !important; border-radius: 4px; text-shadow: none !important; }
+        body[data-theme="sketch"] .primary-btn:hover, body[data-theme="sketch"] .fab:hover { transform: translate(2px, 2px) !important; box-shadow: 2px 2px 0px black !important; }
+        body[data-theme="sketch"] #areaSearch, body[data-theme="sketch"] .suggest-input { background: transparent !important; border: 2px solid black !important; border-radius: 4px; color: black !important; }
+        body[data-theme="sketch"] #areaSearch:focus, body[data-theme="sketch"] .suggest-input:focus { box-shadow: 4px 4px 0px black !important; background: white !important; }
+        body[data-theme="sketch"] h1, body[data-theme="sketch"] h2, body[data-theme="sketch"] h3, body[data-theme="sketch"] p, body[data-theme="sketch"] strong, body[data-theme="sketch"] span, body[data-theme="sketch"] i { color: black !important; }
+        body[data-theme="sketch"] .status-available { border: 2px solid black; background: #e0e0e0; }
+        body[data-theme="sketch"] .status-non-commissionable { border: 2px dashed black; background: white; }
     </style>
 </head>
+
 <body>
 
     <div class="container" id="mainApp">
+        
         <div class="header">
-            <h1>CHEETAH<span style="color:var(--primary-orange)">//</span>LOCATOR</h1>
+            <div class="header-container">
+                <a href="/" class="back-btn">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Home
+                </a>
+                
+                <h1>CHEETAH<span style="color:var(--primary-orange)">//</span>LOCATOR</h1>
+                
+                <button class="help-icon-btn" onclick="toggleHelpModal()" title="How to Use">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </button>
+            </div>
             <p>Live Coverage Checker</p>
         </div>
         
@@ -156,18 +241,103 @@
         <input type="text" id="suggestStreet" placeholder="📍 Street / Sitio / Phase" class="suggest-input">
         <input type="text" id="suggestBrgy" placeholder="🏘️ Barangay" class="suggest-input">
         <input type="text" id="suggestBayan" placeholder="🏙️ Town / City" class="suggest-input">
-        <button id="submitBtn" onclick="sendToTelegram(event)">
+        <button id="submitBtn" class="primary-btn" onclick="sendToTelegram(event)" style="margin-top: 5px;">
             <span>Transmit Data</span>
             <i class="fa-solid fa-satellite-dish"></i>
         </button>
     </div>
 
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="toggleHelpModal()">&times;</button>
+            
+            <div style="text-align: center; margin-bottom: 25px; flex-shrink: 0;">
+                <div style="background: rgba(59, 130, 246, 0.1); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto; border: 1px solid var(--blue-biz); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);">
+                    <svg width="28" height="28" fill="none" stroke="var(--blue-biz)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                </div>
+                <h3 style="margin: 0; color: white; font-size: 1.3rem; font-weight: 800; letter-spacing: 1px;">HOW IT <span style="color:var(--blue-biz)">WORKS</span></h3>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Locator Operations Manual</p>
+            </div>
+
+            <div class="help-scroll-area" style="max-height: 50vh; overflow-y: auto; padding-right: 8px;">
+                
+                <details class="help-item">
+                    <summary>1. Searching for an Area <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
+                    <div class="help-content">
+                        I-type ang pangalan ng Street, Sitio, Subdivision, o Barangay sa search bar. Maga-auto suggest ang system habang nagta-type ka.
+                    </div>
+                </details>
+
+                <details class="help-item">
+                    <summary>2. Reading the Status <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
+                    <div class="help-content">
+                        <div style="margin-bottom: 8px;"><span class="status-badge status-available" style="margin-left:0; margin-right:5px;">AVAILABLE</span> <b>Green Line:</b> Goods ang area. Pwedeng kabitan at commissionable ito.</div>
+                        <div><span class="status-badge status-non-commissionable" style="margin-left:0; margin-right:5px;">NOT AVAIL</span> <b>Red Line:</b> Hindi covered, puno na ang box, o kaya ay non-commissionable na area. Hindi pwede ikabit.</div>
+                    </div>
+                </details>
+
+                <details class="help-item">
+                    <summary>3. Suggesting an Area <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem;"></i></summary>
+                    <div class="help-content">
+                        Wala ba sa listahan ang hinahanap mong lugar? I-click ang malaking orange na <b>Map Icon</b> sa ibaba para mag-submit ng bagong area suggestion diretso sa admin.
+                    </div>
+                </details>
+
+            </div>
+            
+            <button class="primary-btn" onclick="toggleHelpModal()" style="background: linear-gradient(135deg, var(--blue-biz), #2563eb); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3); margin-top: 20px; letter-spacing: 2px;">
+                ACKNOWLEDGE <i class="fa-solid fa-check-double" style="margin-left: 5px;"></i>
+            </button>
+        </div>
+    </div>
+
     <script>
+        // --- HELP CENTER ACCORDION LOGIC ---
+        document.querySelectorAll('.help-item').forEach((targetDetail) => {
+            targetDetail.addEventListener('click', () => {
+                document.querySelectorAll('.help-item').forEach((detail) => {
+                    if (detail !== targetDetail) detail.removeAttribute('open');
+                });
+            });
+        });
+
+        // --- HELP MODAL TOGGLE ---
+        function toggleHelpModal() {
+            const modal = document.getElementById('helpModal');
+            if(modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+            } else {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+            }
+        }
+
+        // --- BOTTOM SHEET SUGGEST LOGIC ---
+        function toggleSuggest() {
+            const box = document.getElementById('suggestBox');
+            const overlay = document.getElementById('overlay');
+            const isActive = box.classList.contains('active');
+            
+            if (isActive) {
+                box.classList.remove('active');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            } else {
+                overlay.style.display = 'block';
+                setTimeout(() => box.classList.add('active'), 10);
+            }
+        }
+
         // --- CSV & SEARCH LOGIC ---
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSZsOoXLFwGqdPDq7WzBFSbyGxLrHiQTwylDU2lW5BN9cCt3oPhgBi79bOHBen8u2HD2oBhV9GGHoJ/pub?output=csv"; 
         let areaData = [];
 
         function init() {
+            // Check theme bago mag-load
+            if(localStorage.getItem('cheetah_theme') === 'sketch') {
+                document.body.setAttribute('data-theme', 'sketch');
+            }
+
             Papa.parse(CSV_URL, {
                 download: true,
                 header: true,
@@ -211,21 +381,6 @@
             });
         }
 
-        // --- BOTTOM SHEET LOGIC ---
-        function toggleSuggest() {
-            const box = document.getElementById('suggestBox');
-            const overlay = document.getElementById('overlay');
-            const isActive = box.classList.contains('active');
-            
-            if (isActive) {
-                box.classList.remove('active');
-                setTimeout(() => overlay.style.display = 'none', 300); // Wait for slide down
-            } else {
-                overlay.style.display = 'block';
-                setTimeout(() => box.classList.add('active'), 10); // Trigger slide up
-            }
-        }
-
         // --- TELEGRAM LOGIC ---
         async function sendToTelegram(e) {
             if (e) e.preventDefault();
@@ -233,6 +388,7 @@
             const brgy = document.getElementById('suggestBrgy').value.trim();
             const bayan = document.getElementById('suggestBayan').value.trim();
             const btn = document.getElementById('submitBtn');
+            
             if (!street || !brgy || !bayan) return alert("⚠️ Kumpletuhin ang details bago mag-submit.");
 
             const botToken = "8432694449:AAEbMBiUTNzIaabNXWkhhZhFgtr0_PSC-eM"; 
@@ -266,7 +422,7 @@
             }
         }
 
-        // Initialize App
+        // Initialize App on Load
         window.onload = init;
     </script>
 </body>
