@@ -272,6 +272,73 @@
         body[data-theme="sketch"] .tag { border: 1px solid black !important; background: transparent !important; color: black !important; border-radius: 4px; }
         body[data-theme="sketch"] .tag-biz { background: #e0e0e0 !important; }
 
+        /* --- DAGDAG NA SKETCH OVERRIDES PARA SA MODALS AT BAGONG UI --- */
+        
+        /* 1. Modals (Profile, Settings, Help Center, Guide) */
+        body[data-theme="sketch"] .about-box {
+            background: white !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: 2px solid black !important;
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 1) !important;
+        }
+        body[data-theme="sketch"] .modal-close {
+            color: black !important;
+        }
+
+        /* 2. Help Center Accordion Items */
+        body[data-theme="sketch"] .help-item {
+            background: white !important;
+            border: 2px solid black !important;
+            box-shadow: 4px 4px 0px black !important;
+        }
+        body[data-theme="sketch"] .help-item:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px black !important;
+        }
+        body[data-theme="sketch"] .help-item[open] {
+            box-shadow: none !important;
+            transform: translate(2px, 2px);
+        }
+        body[data-theme="sketch"] .help-item[open] summary {
+            background: black !important;
+            color: white !important;
+        }
+        body[data-theme="sketch"] .help-item[open] summary i {
+            color: white !important;
+        }
+        body[data-theme="sketch"] .help-content {
+            background: white !important;
+            color: black !important;
+            border-top: 2px solid black !important;
+        }
+        body[data-theme="sketch"] .help-dot {
+            color: black !important;
+        }
+
+        /* 3. Ledger Sidebar */
+        body[data-theme="sketch"] .sidebar {
+            background: white !important;
+            border-left: 4px solid black !important;
+            box-shadow: -8px 0px 0px rgba(0,0,0,1) !important;
+        }
+        
+        /* 4. Motivation Box */
+        body[data-theme="sketch"] #motivationBox {
+            background: white !important;
+            border: 2px solid black !important;
+            box-shadow: 4px 4px 0px black !important;
+        }
+
+        /* 5. Avatar / Command Center Terminal Icon Fixes */
+        body[data-theme="sketch"] .creator-avatar div,
+        body[data-theme="sketch"] [style*="background: rgba(255,106,0,0.1)"] {
+            background: white !important;
+            border: 2px solid black !important;
+            color: black !important;
+            box-shadow: 2px 2px 0px black !important;
+        }
+
         /* --- INITIAL LOADING SCREEN --- */
         #initLoader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
