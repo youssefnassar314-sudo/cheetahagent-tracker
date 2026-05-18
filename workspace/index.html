@@ -191,18 +191,7 @@
         .copy-btn:hover { background: var(--primary-orange); box-shadow: 0 0 10px rgba(255,106,0,0.4); }
         .options-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
 
-        /* --- SIDE PANEL STYLES --- */
-        .toggle-panel-btn {
-            position: fixed; top: 100px; right: 20px; 
-            background: rgba(255, 106, 0, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--primary-orange); color: var(--primary-orange);
-            width: 45px; height: 45px; border-radius: 50%; box-shadow: 0 4px 15px rgba(255,106,0,0.3);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease; z-index: 100;
-        }
-        .toggle-panel-btn:hover { 
-            background: var(--primary-orange); color: white; transform: scale(1.1); 
-        }
+        
         .side-panel {
             position: fixed; top: 0; right: -400px; width: 360px; height: 100%;
             background: var(--bg-deep); border-left: 1px solid rgba(255,255,255,0.05);
@@ -311,12 +300,7 @@
 </div>
 
 <button class="toggle-panel-btn" onclick="togglePanel()">
-<button class="toggle-panel-btn" onclick="togglePanel()" title="Open App Form Template">
-    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-    </svg>
-</button>
+
 
 <div class="side-panel" id="sidePanel">
     <div class="panel-header">
@@ -438,9 +422,18 @@ PLAN VALUE:</pre>
             🖌️ Signature BG Remover
         </button>
 
-        <button class="help-icon-btn" onclick="toggleHelpModal()" title="How to Use">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        </button>
+<div style="position: absolute; top: 0; right: 0; display: flex; gap: 8px; z-index: 100;">
+            <button class="help-icon-btn" style="position: static; background: rgba(255, 106, 0, 0.1); color: var(--primary-orange); border-color: rgba(255, 106, 0, 0.3);" onclick="togglePanel()" title="Open App Form Template">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+            </button>
+            
+            <button class="help-icon-btn" style="position: static;" onclick="toggleHelpModal()" title="How to Use">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </button>
+        </div>
     </div>
 
     <label>Agent Name / AE</label>
