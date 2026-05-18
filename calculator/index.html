@@ -69,14 +69,37 @@
         .header h1 span { color: var(--primary-orange); }
         .header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
+/* Flexbox approach para hindi mag-overlap ang button at title */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
         .back-btn {
-            position: absolute; left: 0; top: 10px;
+            position: absolute;
+            left: 0;
             background: rgba(255,255,255,0.05); color: var(--text-muted);
             border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px;
             border-radius: 8px; cursor: pointer; text-decoration: none;
             font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
         }
+        
         .back-btn:hover { background: rgba(255,106,0,0.1); color: var(--primary-orange); border-color: var(--primary-orange); }
+        
+        /* Media query para bumaba ang title at hindi matakpan sa small screens */
+        @media (max-width: 400px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .back-btn {
+                position: static;
+                align-self: flex-start;
+            }
+        }
 
         .glass-panel { 
             background: var(--card-dark); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -177,9 +200,11 @@
     </div>
 
     <div class="container" id="mainContent" style="display: none;">
-        <div class="header">
-            <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
-            <h1>CHEETAH<span style="color:var(--primary-orange)">//</span>CALC</h1>
+<div class="header">
+            <div class="header-container">
+                <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+                <h1>CHEETAH<span style="color:var(--primary-orange)">//</span>CALC</h1>
+            </div>
             <p>Prorated First Bill Estimator</p>
         </div>
 
