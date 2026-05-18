@@ -85,12 +85,38 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .header { text-align: center; margin-bottom: 30px; }
+.header { text-align: center; margin-bottom: 30px; }
+
+        /* Flexbox approach para hindi mag-overlap ang button at title */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 0;
+            background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px;
+            border-radius: 8px; cursor: pointer; text-decoration: none;
+            font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
+        }
+        
+        .back-btn:hover { background: rgba(255,106,0,0.1); color: var(--primary-orange); border-color: var(--primary-orange); }
+
+        /* Media query para bumaba ang title sa mobile screens */
+        @media (max-width: 400px) {
+            .header-container { flex-direction: column; gap: 15px; }
+            .back-btn { position: static; align-self: flex-start; }
+        }
 
         h2 { margin: 0; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem); letter-spacing: 1px; word-break: break-word; } /* RESPONSIVE TITLE */
         h2 span { color: var(--primary-orange); }
 
-        .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+        .subtitle { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
 
         label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 
@@ -397,8 +423,13 @@ PLAN VALUE:</pre>
 </div>
 
 <div class="workspace">
-    <div class="header" style="position: relative;">
-        <h2>CHEETAH<span style="color:var(--primary-orange)">//</span>WORKSPACE</h2>
+<div class="header-container">
+            <a href="/" class="back-btn">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5"></path><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Home
+            </a>
+            <h2>CHEETAH<span style="color:var(--primary-orange)">//</span>WORKSPACE</h2>
+        </div>
         <div class="subtitle">Document Generator</div>
         
         <button class="primary-btn" onclick="toggleSigModal()" style="margin-top: 15px; padding: 10px; font-size: 0.8rem; background: rgba(255,106,0,0.1); color: var(--primary-orange); border: 1px dashed var(--primary-orange); box-shadow: none;">
@@ -614,6 +645,7 @@ PLAN VALUE:</pre>
     function togglePanel() { document.getElementById('sidePanel').classList.toggle('active'); }
     
 // --- ACCORDION LOGIC (Auto-close kapag may binuksang iba) ---
+// --- ACCORDION LOGIC (Auto-close kapag may binuksang iba) ---
     document.querySelectorAll('.help-item').forEach((targetDetail) => {
         targetDetail.addEventListener('click', () => {
             document.querySelectorAll('.help-item').forEach((detail) => {
@@ -621,6 +653,26 @@ PLAN VALUE:</pre>
             });
         });
     });
+
+    // --- NAWALANG MODAL TOGGLES ---
+    function toggleHelpModal() {
+        const modal = document.getElementById('helpModal');
+        if(modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        } else {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+    }
+
+    function closeVaultModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
 
     // --- TEMPLATE LOGIC ---
     function copyTemplateBox(btnElement) {
