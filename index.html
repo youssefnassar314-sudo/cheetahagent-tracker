@@ -361,6 +361,48 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* --- TARGET FORM IMPROVEMENTS (ADD TARGET SECTION) --- */
+        .form-section-title {
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            color: var(--text-muted); 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase; 
+            margin-bottom: 12px; 
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+        }
+        
+        /* Tanggalin ang top margin sa unang title para pantay */
+        .form-section-title:first-of-type { margin-top: 0; }
+        
+        /* Grid system para sa mga inputs */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Default: 1 column para sa mobile */
+            gap: 12px;
+        }
+        
+        /* Kapag malaki ang screen (Tablet/Laptop), magiging 2 columns */
+        @media (min-width: 600px) {
+            .input-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .input-grid > .full-width {
+                grid-column: 1 / -1; /* Sasakupin ang buong width */
+            }
+        }
+        
+        /* Sketch Theme Override para sa bagong divider */
+        body[data-theme="sketch"] .form-section-title {
+            color: black !important;
+            border-bottom: 2px solid black !important;
+        }
     </style>
 </head>
 <body>
@@ -659,52 +701,62 @@
             <small id="subQuote" style="color: var(--text-muted);">Secure the line, secure the bag.</small>
         </div>
         <div class="glass-panel">
-            <div class="type-toggle">
+            <div class="type-toggle" style="margin-bottom: 25px;">
                 <button class="type-btn active" id="resBtn" onclick="setClientType('residential')">Residential</button>
                 <button class="type-btn" id="bizBtn" onclick="setClientType('business')">Business</button>
             </div>
             
-            <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;"><i class="fa-solid fa-user-tag" style="margin-right:5px; color:var(--primary-orange);"></i> Client Information</div>
-            <div style="display:flex; gap:10px">
-                <input type="text" id="fn" placeholder="First Name">
-                <input type="text" id="ln" placeholder="Last Name">
+            <div class="form-section-title">
+                <i class="fa-solid fa-user-tag" style="color:var(--primary-orange);"></i> Client Information
             </div>
-            <select id="areaSelect">
-                <option value="" disabled selected>Select Area Designation</option>
-                <option value="Baras">Baras</option><option value="Tanay">Tanay</option><option value="Morong">Morong</option>
-                <option value="Pililla">Pililla</option><option value="Angono">Angono</option><option value="Binangonan">Binangonan</option>
-                <option value="Antipolo">Antipolo</option><option value="Taytay">Taytay</option><option value="Teresa">Teresa</option>
-                <option value="Cardona">Cardona</option><option value="Jala-Jala">Jala-Jala</option>
-            </select>
+            <div class="input-grid">
+                <input type="text" id="fn" placeholder="First Name" style="margin-bottom: 0;">
+                <input type="text" id="ln" placeholder="Last Name" style="margin-bottom: 0;">
+                <select id="areaSelect" class="full-width" style="margin-bottom: 0;">
+                    <option value="" disabled selected>Select Area Designation</option>
+                    <option value="Baras">Baras</option><option value="Tanay">Tanay</option><option value="Morong">Morong</option>
+                    <option value="Pililla">Pililla</option><option value="Angono">Angono</option><option value="Binangonan">Binangonan</option>
+                    <option value="Antipolo">Antipolo</option><option value="Taytay">Taytay</option><option value="Teresa">Teresa</option>
+                    <option value="Cardona">Cardona</option><option value="Jala-Jala">Jala-Jala</option>
+                </select>
+            </div>
 
-            <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; margin-top:5px;"><i class="fa-solid fa-wifi" style="margin-right:5px; color:var(--primary-orange);"></i> Service Package</div>
-            <select id="resPlans">
-                <option value="" disabled selected>Select Plan</option>
-                <option value="699" data-commi="300">CV-699</option>
-                <option value="999" data-commi="400">CV-999</option>
-                <option value="1250" data-commi="500">C-HOME 1.25F</option>
-                <option value="1500" data-commi="600">C-HOME 1.5F</option>
-                <option value="2500" data-commi="800">C-HOME 2.5F</option>
-                <option value="4000" data-commi="1000">C-HOME 4F</option>
-            </select>
-            <select id="bizPlans" class="hidden">
-                <option value="" disabled selected>Select Biz Plan</option>
-                <option value="1500" data-commi="600">BIZ LITE</option>
-                <option value="3000" data-commi="1200">BIZ 3</option>
-                <option value="6000" data-commi="2400">BIZ 6</option>
-            </select>
+            <div class="form-section-title">
+                <i class="fa-solid fa-wifi" style="color:var(--primary-orange);"></i> Service Package
+            </div>
+            <div class="input-grid">
+                <select id="resPlans" class="full-width" style="margin-bottom: 0;">
+                    <option value="" disabled selected>Select Plan</option>
+                    <option value="699" data-commi="300">CV-699</option>
+                    <option value="999" data-commi="400">CV-999</option>
+                    <option value="1250" data-commi="500">C-HOME 1.25F</option>
+                    <option value="1500" data-commi="600">C-HOME 1.5F</option>
+                    <option value="2500" data-commi="800">C-HOME 2.5F</option>
+                    <option value="4000" data-commi="1000">C-HOME 4F</option>
+                </select>
+                <select id="bizPlans" class="hidden full-width" style="margin-bottom: 0;">
+                    <option value="" disabled selected>Select Biz Plan</option>
+                    <option value="1500" data-commi="600">BIZ LITE</option>
+                    <option value="3000" data-commi="1200">BIZ 3</option>
+                    <option value="6000" data-commi="2400">BIZ 6</option>
+                </select>
+            </div>
             
-            <div style="font-size:0.7rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; margin-top:5px;"><i class="fa-solid fa-handshake" style="margin-right:5px; color:var(--primary-orange);"></i> Deal Ownership</div>
-            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                <select id="borrowStatus" onchange="toggleBorrowInput()" style="flex: 1; margin-bottom: 0;">
+            <div class="form-section-title">
+                <i class="fa-solid fa-handshake" style="color:var(--primary-orange);"></i> Deal Ownership
+            </div>
+            <div class="input-grid" style="margin-bottom: 25px;">
+                <select id="borrowStatus" onchange="toggleBorrowInput()" style="margin-bottom: 0;">
                     <option value="own" selected>My Own Client</option>
                     <option value="borrowed">Borrowed from...</option>
                     <option value="lent">Lent to...</option>
                 </select>
-                <input type="text" id="borrowName" placeholder="Agent Name?" style="display: none; flex: 1; margin-bottom: 0;">
+                <input type="text" id="borrowName" placeholder="Agent Name?" style="display: none; margin-bottom: 0;">
             </div>
 
-            <button class="primary-btn" onclick="addClient()"><i class="fa-solid fa-plus" style="margin-right:5px;"></i> Add Target</button>
+            <button class="primary-btn" onclick="addClient()" style="padding: 16px; font-size: 0.95rem;">
+                <i class="fa-solid fa-plus" style="margin-right:8px;"></i> Add Target
+            </button>
         </div>
         <input type="text" id="searchInput" placeholder="Search Database..." onkeyup="render()">
         <div class="filter-row">
