@@ -276,10 +276,36 @@
             width: 100%; border-radius: 8px; margin-bottom: 15px; 
             border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
         }
+
+        /* --- GLOBAL LOADING SCREEN --- */
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(9, 10, 15, 0.9); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 9999; flex-direction: column; text-align: center;
+        }
+        .loader-overlay.active { display: flex; }
+        .spinner {
+            width: 55px; height: 55px;
+            border: 5px solid rgba(255, 106, 0, 0.1);
+            border-top: 5px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader-title { margin-top: 20px; color: white; font-size: 1.2rem; font-weight: 800; letter-spacing: 2px; }
+        .loader-text { color: var(--primary-orange); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-top: 5px; }
     </style>
 </head>
 
 <body>
+
+<div id="globalLoader" class="loader-overlay">
+    <div class="spinner"></div>
+    <div class="loader-title">CHEETAH<span style="color:var(--primary-orange)">//</span>SYSTEM</div>
+    <div class="loader-text" id="loaderText">Initializing...</div>
+</div>
 
 <div class="left-panel" id="leftPanel">
     <div class="panel-header" style="border-bottom: 1px solid var(--glass-border);">
@@ -801,6 +827,10 @@ function parseData(rawText) {
         status.style.color = "var(--blue-biz)";
         document.getElementById('emailSection').style.display = "none";
         
+        // IPAKITA ANG LOADING SCREEN
+        document.getElementById('globalLoader').classList.add('active');
+        document.getElementById('loaderText').innerText = "Fetching Template...";
+
         setTimeout(() => processDocument(fileNameToFetch, rawText, status, outputType), 50);
     }
 
@@ -809,10 +839,15 @@ function parseData(rawText) {
             const response = await fetch(fileName);
             if (!response.ok) throw new Error(`Hindi ma-load ang template: ${fileName}`);
             
+            document.getElementById('loaderText').innerText = "Applying Client Data...";
+
             const tBuf = await response.arrayBuffer(); 
             const zip = new PizZip(tBuf);
             const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-            const clientData = parseData(rawText);
+            
+            // CLEAN INVISIBLE CHARACTERS PARA SURE PUMASOK
+            const cleanText = rawText.replace(/[\u200B-\u200D\uFEFF\u200E\u200F]/g, '');
+            const clientData = parseData(cleanText);
 
             function get(key, isEmail = false) {
                 let val = clientData[key.toUpperCase()] || "";
@@ -849,11 +884,13 @@ function parseData(rawText) {
                 status.innerHTML = "✨ DOCX Generated and Downloaded!"; 
                 status.style.color = "var(--green-installed)";
                 document.getElementById('raw').value = "";
+                document.getElementById('globalLoader').classList.remove('active'); // ITAGO ANG LOADER
                 return; 
             }
 
             status.innerHTML = "Converting to PDF... Please wait."; 
             status.style.color = "var(--accent-orange)";
+            document.getElementById('loaderText').innerText = "Converting to PDF Cloud...";
 
             const reader = new FileReader();
             reader.readAsDataURL(outDocx);
@@ -877,6 +914,7 @@ function parseData(rawText) {
                         document.getElementById('raw').value = "";
                         
                         setTimeout(() => {
+                            document.getElementById('globalLoader').classList.remove('active'); // ITAGO ANG LOADER BAGO MAG-OPEN ANG PDF
                             openPdfEditor(data.pdfBase64, fileBaseName);
                         }, 500);
                     } else {
@@ -886,11 +924,13 @@ function parseData(rawText) {
                     console.error(err); 
                     status.innerHTML = "❌ PDF Error. Check console logs."; 
                     status.style.color = "var(--red-alert)";
+                    document.getElementById('globalLoader').classList.remove('active'); // ITAGO ANG LOADER KUNG ERROR
                 }
             };
             
         } catch (err) {
             console.error(err); status.innerHTML = "❌ System Error. Check logs."; status.style.color = "var(--red-alert)";
+            document.getElementById('globalLoader').classList.remove('active'); // ITAGO ANG LOADER KUNG ERROR
         }
     }
 
