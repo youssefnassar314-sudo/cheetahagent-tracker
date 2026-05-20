@@ -551,10 +551,14 @@ PLAN VALUE:</pre>
         </div>
         <div style="font-size: 0.75rem; color: var(--accent-orange); margin-bottom: 10px;">💡 Tip: Adjust slider first, then drag on the image to manually erase stubborn lines!</div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <button class="primary-btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin: 0; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid var(--blue-biz); box-shadow: none;" onclick="undoSignature()">
-                <i class="fa-solid fa-rotate-left"></i> Undo
-            </button>
+       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 5px;">
+                <button id="btnToolMove" class="primary-btn" style="width: auto; padding: 6px 10px; font-size: 0.75rem; margin: 0; background: rgba(255,255,255,0.1); box-shadow: none;" onclick="setSigTool('move')" title="Move / Pan">✋</button>
+                <button id="btnToolErase" class="primary-btn" style="width: auto; padding: 6px 10px; font-size: 0.75rem; margin: 0; background: var(--primary-orange); box-shadow: none;" onclick="setSigTool('erase')" title="Eraser">🧽</button>
+                <button class="primary-btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin: 0; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid var(--blue-biz); box-shadow: none; margin-left: 5px;" onclick="undoSignature()">
+                    <i class="fa-solid fa-rotate-left"></i> Undo
+                </button>
+            </div>
             <div style="display: flex; gap: 5px; align-items: center;">
                 <button class="primary-btn" style="width: auto; padding: 6px 10px; font-size: 0.75rem; margin: 0; background: rgba(255,255,255,0.1); box-shadow: none;" onclick="zoomSig('out')">➖</button>
                 <span id="sigZoomText" style="font-size: 0.8rem; font-weight: bold; color: white; width: 40px; text-align: center;">100%</span>
@@ -562,9 +566,9 @@ PLAN VALUE:</pre>
             </div>
         </div>
 
-        <div id="sigCanvasWrapper" style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; overflow: auto; max-height: 250px; position: relative;">
-            <canvas id="sigCanvas" style="max-width: 100%; display: none; cursor: crosshair; touch-action: none; transform-origin: top center; transition: transform 0.2s;"></canvas>
-            <p id="canvasPlaceholder" style="color: black; font-size: 0.8rem; margin: 20px 0;">Preview will appear here</p>
+        <div id="sigCanvasWrapper" style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: left; overflow: auto; max-height: 40vh; min-height: 200px; position: relative;">
+            <canvas id="sigCanvas" style="max-width: 100%; display: none; cursor: crosshair; touch-action: none; transform-origin: top left; transition: transform 0.2s;"></canvas>
+            <p id="canvasPlaceholder" style="color: black; font-size: 0.8rem; margin: 20px 0; text-align: center;">Preview will appear here</p>
         </div>
 
         <div style="display: flex; gap: 10px;">
@@ -1119,9 +1123,29 @@ function parseData(rawText) {
     }
 
     // --- ERASER TOOL LOGIC ---
+// --- ERASER & MOVE TOOL LOGIC ---
     const canvas = document.getElementById('sigCanvas');
     const ctx = canvas.getContext('2d');
     let isErasing = false;
+    let currentSigTool = 'erase';
+
+    function setSigTool(tool) {
+        currentSigTool = tool;
+        const btnMove = document.getElementById('btnToolMove');
+        const btnErase = document.getElementById('btnToolErase');
+        
+        if(tool === 'move') {
+            btnMove.style.background = 'var(--primary-orange)';
+            btnErase.style.background = 'rgba(255,255,255,0.1)';
+            canvas.style.cursor = 'grab';
+            canvas.style.touchAction = 'auto'; // I-allow ang pag-scroll at pan
+        } else {
+            btnErase.style.background = 'var(--primary-orange)';
+            btnMove.style.background = 'rgba(255,255,255,0.1)';
+            canvas.style.cursor = 'crosshair';
+            canvas.style.touchAction = 'none'; // I-lock ang scroll para makabura
+        }
+    }
 
     function getPointerPos(e) {
         const rect = canvas.getBoundingClientRect();
@@ -1143,19 +1167,21 @@ function parseData(rawText) {
     }
 
     function startErase(e) {
+        if (currentSigTool === 'move') return; // Dedma kung gusto lang mag-pan
         e.preventDefault(); 
-        saveSigState(); // Save state bago simulan ang pagbura
+        saveSigState(); 
         isErasing = true;
         erase(e);
     }
 
     function stopErase() {
+        if (currentSigTool === 'move') return;
         isErasing = false;
         ctx.beginPath(); 
     }
 
     function erase(e) {
-        if (!isErasing) return;
+        if (!isErasing || currentSigTool === 'move') return;
         e.preventDefault();
         
         const pos = getPointerPos(e);
