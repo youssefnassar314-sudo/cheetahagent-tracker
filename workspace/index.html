@@ -488,14 +488,86 @@ PLAN VALUE:</pre>
     </div>
     <textarea id="raw" class="main-input" placeholder="Paste full client format here, add dot (.) for house and home type..."></textarea>
 
-    <button class="primary-btn" onclick="handleGenerate()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-        </svg>
-        Generate Application
+    <button class="primary-btn" id="btnReview" onclick="reviewData()">
+        🔍 Review & Edit Details
     </button>
+    
+    <div id="editableFormSection" style="display: none; margin-top: 25px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--glass-border); max-height: 500px; overflow-y: auto;">
+        <h3 style="font-size: 1.1rem; color: var(--primary-orange); margin-top: 0; margin-bottom: 15px; text-align: center;">📝 VERIFY CLIENT DETAILS</h3>
+        
+        <h4 style="color: var(--blue-biz); font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 10px;">📌 PERSONAL INFO</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div><label>Last Name</label><input type="text" id="edit_lastName" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>First Name</label><input type="text" id="edit_firstName" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Middle Name</label><input type="text" id="edit_middleName" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Birthdate</label><input type="text" id="edit_birthdate" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Age</label><input type="text" id="edit_age" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Sex</label><input type="text" id="edit_sex" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Civil Status</label><input type="text" id="edit_civilStatus" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Spouse Name</label><input type="text" id="edit_spouseName" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+        </div>
+
+        <h4 style="color: var(--blue-biz); font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 10px;">📌 CONTACT & IDS</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div><label>Mobile Phone</label><input type="text" id="edit_mobile" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>House Phone</label><input type="text" id="edit_housePhone" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Office Phone</label><input type="text" id="edit_officePhone" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Email Address</label><input type="text" id="edit_email" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>ID Type/No.</label><input type="text" id="edit_idNo" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>POB Address</label><input type="text" id="edit_pob" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+        </div>
+
+        <h4 style="color: var(--blue-biz); font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 10px;">📌 HOME ADDRESS</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div><label>House/Unit No.</label><input type="text" id="edit_houseNo" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Street</label><input type="text" id="edit_street" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Building</label><input type="text" id="edit_building" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Subdivision</label><input type="text" id="edit_subd" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Barangay</label><input type="text" id="edit_brgy" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Municipality</label><input type="text" id="edit_municipality" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+        </div>
+
+        <h4 style="color: var(--blue-biz); font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 10px;">📌 WORK INFO</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div><label>Occupation</label><input type="text" id="edit_occ" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Employer</label><input type="text" id="edit_emp" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div style="grid-column: span 2;"><label>Employer Address</label><input type="text" id="edit_occAdd" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Spouse Occ.</label><input type="text" id="edit_spOcc" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Spouse Emp.</label><input type="text" id="edit_spEmp" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div style="grid-column: span 2;"><label>Spouse Emp. Address</label><input type="text" id="edit_spEmpAdd" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+        </div>
+
+        <h4 style="color: var(--blue-biz); font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; margin-bottom: 10px;">📌 HOUSE & PLAN DETAILS</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div>
+                <label>House Status</label>
+                <select id="edit_houseStatus" class="main-input" style="padding: 10px; margin-bottom: 0;">
+                    <option value="none">-- Select Status --</option>
+                    <option value="owned">Owned</option>
+                    <option value="rent">Rent</option>
+                    <option value="living_with_relatives">Living with Relatives</option>
+                </select>
+            </div>
+            <div>
+                <label>Home Type</label>
+                <select id="edit_homeType" class="main-input" style="padding: 10px; margin-bottom: 0;">
+                    <option value="none">-- Select Type --</option>
+                    <option value="single_detached">Single Detached</option>
+                    <option value="condominium">Condominium</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="townhouse">Townhouse</option>
+                    <option value="others">Others</option>
+                </select>
+            </div>
+            <div><label>Plan Name</label><input type="text" id="edit_plan" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+            <div><label>Plan Value</label><input type="text" id="edit_planVal" class="main-input" style="padding: 10px; margin-bottom: 0;"></div>
+        </div>
+
+        <button class="primary-btn" onclick="handleGenerate()" style="background: var(--green-installed); margin-top: 10px; position: sticky; bottom: 0;">
+            ✨ CONFIRM & GENERATE DOCUMENT
+        </button>
+    </div>
+
     <div id="status"></div>
 
     <div class="email-section" id="emailSection">
@@ -825,7 +897,79 @@ function parseData(rawText) {
         btnElement.innerText = "COPIED!"; btnElement.style.background = "var(--primary-orange)"; btnElement.style.color = "white";
         setTimeout(() => { btnElement.innerText = originalText; btnElement.style.background = ""; btnElement.style.color = ""; }, 1500);
     }
+    // --- REVIEW DATA LOGIC ---
+    function reviewData() {
+        const rawText = document.getElementById('raw').value;
+        if (!rawText) {
+            document.getElementById('status').innerHTML = "⚠️ Paste client data first."; 
+            document.getElementById('status').style.color = "var(--red-alert)"; 
+            return;
+        }
 
+        document.getElementById('status').innerHTML = ""; // Clear status
+        const cleanText = rawText.replace(/[\u200B-\u200D\uFEFF\u200E\u200F]/g, '');
+        const pData = parseData(cleanText); // parsed Data
+
+        // Helper function para iwas 'undefined' kung walang laman
+        const getP = (key) => pData[key] || "";
+
+        // PERSONAL INFO
+        document.getElementById('edit_lastName').value = getP("LAST NAME");
+        document.getElementById('edit_firstName').value = getP("FIRST NAME");
+        document.getElementById('edit_middleName').value = getP("MIDDLE NAME");
+        document.getElementById('edit_birthdate').value = getP("BIRTHDATE");
+        document.getElementById('edit_age').value = getP("AGE");
+        document.getElementById('edit_sex').value = getP("SEX");
+        document.getElementById('edit_civilStatus').value = getP("CIVIL STATUS");
+        document.getElementById('edit_spouseName').value = getP("SPOUSE NAME");
+
+        // CONTACT & IDS
+        document.getElementById('edit_mobile').value = getP("MOBILE PHONE");
+        document.getElementById('edit_housePhone').value = getP("HOUSE PHONE");
+        document.getElementById('edit_officePhone').value = getP("OFFICE PHONE");
+        document.getElementById('edit_email').value = getP("EMAIL ADDRESS");
+        document.getElementById('edit_idNo').value = getP("ID TYPE/NO.");
+        document.getElementById('edit_pob').value = getP("PROOF OF BILL ADDRESS");
+
+        // HOME ADDRESS
+        document.getElementById('edit_houseNo').value = getP("HOUSE/BLOCK/UNIT NO.");
+        document.getElementById('edit_street').value = getP("STREET");
+        document.getElementById('edit_building').value = getP("BUILDING");
+        document.getElementById('edit_subd').value = getP("DISTRICT/SUBDIVISION");
+        document.getElementById('edit_brgy').value = getP("BARANGAY");
+        document.getElementById('edit_municipality').value = getP("MUNICIPALITY");
+
+        // WORK INFO
+        document.getElementById('edit_occ').value = getP("OCCUPATION/POSITION");
+        document.getElementById('edit_emp').value = getP("EMPLOYER");
+        document.getElementById('edit_occAdd').value = getP("ADDRESS");
+        document.getElementById('edit_spOcc').value = getP("SPOUSE OCCUPATION");
+        document.getElementById('edit_spEmp').value = getP("SPOUSE EMPLOYER");
+        document.getElementById('edit_spEmpAdd').value = getP("SPOUSE EMPLOYER ADDRESS");
+
+        // PLAN
+        document.getElementById('edit_plan').value = getP("PLAN");
+        document.getElementById('edit_planVal').value = getP("PLAN VALUE");
+
+        // CHECKBOXES TO DROPDOWN LOGIC
+        // Para sa House Status
+        if (pData["box_owned"] === "☑") document.getElementById('edit_houseStatus').value = "owned";
+        else if (pData["box_rent"] === "☑") document.getElementById('edit_houseStatus').value = "rent";
+        else if (pData["box_living_with_relatives"] === "☑") document.getElementById('edit_houseStatus').value = "living_with_relatives";
+        else document.getElementById('edit_houseStatus').value = "none";
+
+        // Para sa Home Type
+        if (pData["box_single_detached"] === "☑") document.getElementById('edit_homeType').value = "single_detached";
+        else if (pData["box_condominium"] === "☑") document.getElementById('edit_homeType').value = "condominium";
+        else if (pData["box_apartment"] === "☑") document.getElementById('edit_homeType').value = "apartment";
+        else if (pData["box_townhouse"] === "☑") document.getElementById('edit_homeType').value = "townhouse";
+        else if (pData["box_others"] === "☑") document.getElementById('edit_homeType').value = "others";
+        else document.getElementById('edit_homeType').value = "none";
+
+        // Ipakita ang form
+        document.getElementById('editableFormSection').style.display = "block";
+        document.getElementById('btnReview').style.display = "none";
+    }
     function handleGenerate() {
         const status = document.getElementById('status');
         const selectedArea = document.getElementById('areaSelect').value; 
@@ -861,30 +1005,78 @@ function parseData(rawText) {
             const doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
             
             // CLEAN INVISIBLE CHARACTERS PARA SURE PUMASOK
-            const cleanText = rawText.replace(/[\u200B-\u200D\uFEFF\u200E\u200F]/g, '');
-            const clientData = parseData(cleanText);
-
-            function get(key, isEmail = false) {
-                let val = clientData[key.toUpperCase()] || "";
+            // Helper function para kunin ang value sa Edit UI natin
+            const getUI = (id, isEmail = false) => {
+                let val = document.getElementById(id).value.trim();
                 return isEmail ? val : val.toUpperCase();
-            }
+            };
 
-            doc.render({
-                ...clientData, 
+            // I-process pabalik ang dropdown papuntang Checkbox markers ng docx
+            const hStatus = document.getElementById('edit_houseStatus').value;
+            const hType = document.getElementById('edit_homeType').value;
+
+            const finalData = {
                 agent_name: document.getElementById('agentName').value.trim().toUpperCase(),
-                date: getFormattedDate().toUpperCase(), last_name: get("LAST NAME"), first_name: get("FIRST NAME"), middle_name: get("MIDDLE NAME"),
-                hp: get("HOUSE PHONE"), op: get("OFFICE PHONE"), mobile: get("MOBILE PHONE"), email: get("EMAIL ADDRESS", true), id_no: get("ID TYPE/NO."), POB: get("PROOF OF BILL ADDRESS"),
-                birthdate: get("BIRTHDATE"), age: get("AGE"), sex: get("SEX"), civil_status: get("CIVIL STATUS"), spouse_name: get("SPOUSE NAME"),
-                house_no: get("HOUSE/BLOCK/UNIT NO."), street: get("STREET"), building: get("BUILDING"), subd: get("DISTRICT/SUBDIVISION"), barangay: get("BARANGAY"), municipality: get("MUNICIPALITY"),
-                occupation: get("OCCUPATION/POSITION"), employer: get("EMPLOYER"), occ_address: get("ADDRESS"), spouse_occ: get("SPOUSE OCCUPATION"), spouse_emp: get("SPOUSE EMPLOYER"), spouse_add_occ: get("SPOUSE EMPLOYER ADDRESS"),
-                plan_name: get("PLAN"), plan_value: get("PLAN VALUE")
-            });
+                date: getFormattedDate().toUpperCase(),
+                
+                // PERSONAL
+                last_name: getUI('edit_lastName'),
+                first_name: getUI('edit_firstName'),
+                middle_name: getUI('edit_middleName'),
+                birthdate: getUI('edit_birthdate'),
+                age: getUI('edit_age'),
+                sex: getUI('edit_sex'),
+                civil_status: getUI('edit_civilStatus'),
+                spouse_name: getUI('edit_spouseName'),
+
+                // CONTACTS
+                mobile: getUI('edit_mobile'),
+                hp: getUI('edit_housePhone'),
+                op: getUI('edit_officePhone'),
+                email: getUI('edit_email', true), // Wag uppercase ang email
+                id_no: getUI('edit_idNo'),
+                POB: getUI('edit_pob'),
+
+                // ADDRESS
+                house_no: getUI('edit_houseNo'),
+                street: getUI('edit_street'),
+                building: getUI('edit_building'),
+                subd: getUI('edit_subd'),
+                barangay: getUI('edit_brgy'),
+                municipality: getUI('edit_municipality'),
+
+                // WORK
+                occupation: getUI('edit_occ'),
+                employer: getUI('edit_emp'),
+                occ_address: getUI('edit_occAdd'),
+                spouse_occ: getUI('edit_spOcc'),
+                spouse_emp: getUI('edit_spEmp'),
+                spouse_add_occ: getUI('edit_spEmpAdd'),
+
+                // PLAN
+                plan_name: getUI('edit_plan'),
+                plan_value: getUI('edit_planVal'),
+
+                // CHECKBOXES MAP (Rebuilt from dropdowns)
+                box_owned: hStatus === 'owned' ? "☑" : "☐",
+                box_rent: hStatus === 'rent' ? "☑" : "☐",
+                box_living_with_relatives: hStatus === 'living_with_relatives' ? "☑" : "☐",
+
+                box_single_detached: hType === 'single_detached' ? "☑" : "☐",
+                box_condominium: hType === 'condominium' ? "☑" : "☐",
+                box_apartment: hType === 'apartment' ? "☑" : "☐",
+                box_townhouse: hType === 'townhouse' ? "☑" : "☐",
+                box_others: hType === 'others' ? "☑" : "☐"
+            };
+
+            // Ilagay sa template engine
+            doc.render(finalData);
             
             const outDocx = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-            const lName = get("LAST NAME") || "UNKNOWN"; 
-            const fName = get("FIRST NAME") || "CLIENT"; 
-            const muni = get("MUNICIPALITY") || "NO_CITY"; 
-            const plan = get("PLAN") || "NO_PLAN";
+            const lName = getUI("edit_lastName") || "UNKNOWN"; 
+            const fName = getUI("edit_firstName") || "CLIENT"; 
+            const muni = getUI("edit_municipality") || "NO_CITY"; 
+            const plan = getUI("edit_plan") || "NO_PLAN";
             const fileBaseName = `${lName}, ${fName} - ${muni}`;
 
             document.getElementById('snip-subject').value = `${fileBaseName} - ${plan}`;
