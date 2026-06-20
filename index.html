@@ -1024,6 +1024,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         let currentUser = null, clients = [], ledger = [], currentType = 'residential', currentStatusFilter = 'all';
+        let expandedCards = new Set();
+        
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         window.toggleAuthView = (view) => {
             if(view === 'signup') {
@@ -1321,7 +1323,14 @@ window.copyBilling = (installDate, planString, area) => {
         // --- HANGGANG DITO LANG ---
         window.toggleCard = (id) => {
             const card = document.querySelector(`.client-card[data-id="${id}"]`);
-            if (card) card.classList.toggle('expanded');
+            if (card) {
+                card.classList.toggle('expanded');
+                if (card.classList.contains('expanded')) {
+                    expandedCards.add(id);
+                } else {
+                    expandedCards.delete(id);
+                }
+            }
         };
         window.render = () => {
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
@@ -1357,6 +1366,9 @@ window.copyBilling = (installDate, planString, area) => {
                     const statusClass = c.installed ? 'client-installed' : c.cancelled ? 'client-cancelled' : 'client-pending';
                     const card = document.createElement('div');
                     card.className = `client-card ${statusClass}`;
+                    if (expandedCards.has(c.id)) {
+                        card.classList.add('expanded');
+                    }
                     card.dataset.id = c.id;
 
                     const statusBadge = c.installed
