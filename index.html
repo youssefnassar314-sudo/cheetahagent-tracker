@@ -1006,6 +1006,18 @@
         </div>
     </div>
     </div>
+    <div class="modal-overlay" id="dateModal">
+        <div class="about-box" style="max-width: 320px; text-align: center;">
+            <button class="modal-close" onclick="closeDatePicker()">&times;</button>
+            <h3 style="margin-top: 0; color: white; font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;">
+                <i class="fa-solid fa-calendar-days" style="color: var(--primary-orange); margin-right: 8px;"></i>INSTALL DATE
+            </h3>
+            
+            <input type="date" id="modalDatePicker" style="margin: 20px 0; padding: 15px; font-size: 1rem; text-align: center;">
+            
+            <button class="primary-btn" onclick="savePickedDate()">Save Date</button>
+        </div>
+    </div>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -1332,6 +1344,27 @@ window.copyBilling = (installDate, planString, area) => {
                 }
             }
         };
+        let activeDateClientId = null;
+        
+        window.openDatePicker = (id, currentVal) => {
+            activeDateClientId = id;
+            document.getElementById('modalDatePicker').value = currentVal || new Date().toISOString().split('T')[0];
+            document.getElementById('dateModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('dateModal').classList.add('active'), 10);
+        };
+        
+        window.closeDatePicker = () => {
+            document.getElementById('dateModal').classList.remove('active');
+            setTimeout(() => document.getElementById('dateModal').style.display = 'none', 300);
+        };
+        
+        window.savePickedDate = async () => {
+            const newDate = document.getElementById('modalDatePicker').value;
+            if (activeDateClientId && newDate) {
+                await updateField(activeDateClientId, 'installDate', newDate);
+                closeDatePicker();
+            }
+        };
         window.render = () => {
             const list = document.getElementById('clientList'), lList = document.getElementById('ledgerList');
             const st = document.getElementById('searchInput').value.toLowerCase();
@@ -1402,7 +1435,10 @@ window.copyBilling = (installDate, planString, area) => {
                                 ${c.installed ? `
                                 <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 10px;">
                                     <label style="color: var(--text-muted); font-weight: 600; white-space:nowrap;"><i class="fa-regular fa-calendar-check"></i> Install Date:</label>
-                                    <input type="date" value="${c.installDate || ''}" onchange="updateField('${c.id}', 'installDate', this.value)" style="margin: 0; padding: 6px; width: auto; flex: 1; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5);">
+                                    <button onclick="openDatePicker('${c.id}', '${c.installDate || ''}')" style="margin: 0; padding: 8px; width: auto; flex: 1; border-radius: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                                        <span>${c.installDate || 'Select Date...'}</span>
+                                        <i class="fa-solid fa-calendar-days" style="color: var(--primary-orange);"></i>
+                                    </button>
                                 </div>
                                 <div style="display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
                                     <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main); font-weight: 600;">
