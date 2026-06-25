@@ -403,6 +403,31 @@
             color: black !important;
             border-bottom: 2px solid black !important;
         }
+        /* --- COLLAPSIBLE TABLE STYLES --- */
+        .client-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-top: 10px; }
+        .client-table th { color: var(--text-muted); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; padding: 0 12px 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .table-row-main { background: var(--card-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .table-row-main:hover { background: rgba(20, 24, 36, 0.9); box-shadow: 0 4px 15px rgba(0,0,0,0.2); transform: translateY(-1px); }
+        .table-row-main td { padding: 14px 12px; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .table-row-main td:first-child { border-left: 1px solid rgba(255,255,255,0.05); border-radius: 12px 0 0 12px; }
+        .table-row-main td:last-child { border-right: 1px solid rgba(255,255,255,0.05); border-radius: 0 12px 12px 0; }
+        .table-row-main.installed td:first-child { border-left: 3px solid var(--green-installed); }
+        .table-row-main.cancelled td:first-child { border-left: 3px solid var(--red-alert); opacity: 0.6; }
+        .table-row-main.pending td:first-child { border-left: 3px solid rgba(234,179,8,0.6); }
+
+        .table-row-details { display: none; }
+        .table-row-details.expanded { display: table-row; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .table-row-details td { padding: 0; border: none; }
+        .details-container { padding: 16px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.03); border-radius: 0 0 12px 12px; border-top: none; margin-top: -6px; margin-bottom: 8px; box-shadow: inset 0 4px 15px rgba(0,0,0,0.2); }
+
+        body[data-theme="sketch"] .client-table th { color: black; border-bottom: 2px solid black; }
+        body[data-theme="sketch"] .table-row-main { background: white; border-radius: 8px; box-shadow: 4px 4px 0px black; }
+        body[data-theme="sketch"] .table-row-main:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px black; }
+        body[data-theme="sketch"] .table-row-main td { border-top: 2px solid black; border-bottom: 2px solid black; color: black !important; }
+        body[data-theme="sketch"] .table-row-main td:first-child { border-left: 2px solid black; border-radius: 8px 0 0 8px; }
+        body[data-theme="sketch"] .table-row-main td:last-child { border-right: 2px solid black; border-radius: 0 8px 8px 0; }
+        body[data-theme="sketch"] .details-container { background: white; border: 2px solid black; border-top: none; box-shadow: 4px 4px 0px black; margin-top: 0; }
     </style>
 </head>
 <body>
@@ -972,6 +997,10 @@
                 <i class="fa-solid fa-palette" style="margin-right: 10px; color: var(--primary-orange);"></i> Change Theme
             </button>
 
+            <button class="primary-btn" id="layoutToggleBtn" style="background: rgba(255,255,255,0.05); text-align: left; text-transform: none; border: 1px solid rgba(255,255,255,0.1); box-shadow: none;" onclick="toggleLayout()">
+                <i class="fa-solid fa-table-list" style="margin-right: 10px; color: #a855f7;"></i> Switch Layout View
+            </button>
+
             <button class="primary-btn" style="background: rgba(255,255,255,0.05); text-align: left; text-transform: none; border: 1px solid rgba(255,255,255,0.1); box-shadow: none;" onclick="toggleHelpCenter(); toggleSettingsModal();">
                 <i class="fa-solid fa-circle-question" style="margin-right: 10px; color: #3b82f6;"></i> Help Center
             </button>
@@ -1333,14 +1362,35 @@ window.copyBilling = (installDate, planString, area) => {
             });
         };
         // --- HANGGANG DITO LANG ---
-        window.toggleCard = (id) => {
-            const card = document.querySelector(`.client-card[data-id="${id}"]`);
-            if (card) {
-                card.classList.toggle('expanded');
-                if (card.classList.contains('expanded')) {
-                    expandedCards.add(id);
-                } else {
-                    expandedCards.delete(id);
+        let currentLayout = localStorage.getItem('cheetah_layout') || 'card';
+
+        window.toggleLayout = () => {
+            currentLayout = currentLayout === 'card' ? 'table' : 'card';
+            localStorage.setItem('cheetah_layout', currentLayout);
+            render();
+            toggleSettingsModal(); // Isasara ang modal pagkatapos mag-switch
+        };
+
+        window.toggleItem = (id) => {
+            if (currentLayout === 'card') {
+                const card = document.querySelector(`.client-card[data-id="${id}"]`);
+                if (card) {
+                    card.classList.toggle('expanded');
+                    if (card.classList.contains('expanded')) expandedCards.add(id);
+                    else expandedCards.delete(id);
+                }
+            } else {
+                const detailsRow = document.getElementById(`details-${id}`);
+                const icon = document.getElementById(`icon-${id}`);
+                if (detailsRow) {
+                    detailsRow.classList.toggle('expanded');
+                    if (detailsRow.classList.contains('expanded')) {
+                        expandedCards.add(id);
+                        if(icon) { icon.style.transform = "rotate(180deg)"; icon.style.color = "var(--primary-orange)"; }
+                    } else {
+                        expandedCards.delete(id);
+                        if(icon) { icon.style.transform = "rotate(0deg)"; icon.style.color = "var(--text-muted)"; }
+                    }
                 }
             }
         };
@@ -1371,10 +1421,17 @@ window.copyBilling = (installDate, planString, area) => {
             list.innerHTML = ""; lList.innerHTML = "";
             let rT = 0, bT = 0, rC = 0, bC = 0;
             let pendingCount = 0, installedCount = 0, cancelledCount = 0;
-            let visibleClientsCount = 0; // Dagdag na tracker para sa empty state
+            let visibleClientsCount = 0;
             const sorted = [...clients].sort((a,b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
+
+            let tableHTML = `<table class="client-table">
+                <thead><tr>
+                    <th style="width: 45%;">Target Info</th>
+                    <th style="width: 35%;">Plan & Area</th>
+                    <th style="width: 20%; text-align: right;">Commi</th>
+                </tr></thead><tbody>`;
+
             sorted.forEach(c => {
-                // Count all for mini stats (no month/search filter)
                 if (!c.installed && !c.cancelled) pendingCount++;
                 else if (c.installed) installedCount++;
                 else if (c.cancelled) cancelledCount++;
@@ -1395,85 +1452,106 @@ window.copyBilling = (installDate, planString, area) => {
                         if(c.type === 'business') { bT += c.commi; } else { rT += c.commi; }
                     }
                 } else if(c.cancelled) show = true;
-                if(show) {
-                    const statusClass = c.installed ? 'client-installed' : c.cancelled ? 'client-cancelled' : 'client-pending';
-                    const card = document.createElement('div');
-                    card.className = `client-card ${statusClass}`;
-                    if (expandedCards.has(c.id)) {
-                        card.classList.add('expanded');
-                    }
-                    card.dataset.id = c.id;
 
+                if(show) {
+                    visibleClientsCount++;
+                    const statusClass = c.installed ? 'client-installed' : c.cancelled ? 'client-cancelled' : 'client-pending';
                     const statusBadge = c.installed
                         ? `<span style="font-size:0.65rem; font-weight:800; letter-spacing:1px; color: var(--green-installed); background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); padding: 2px 8px; border-radius: 6px;">INSTALLED</span>`
                         : c.cancelled
                         ? `<span style="font-size:0.65rem; font-weight:800; letter-spacing:1px; color: var(--red-alert); background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.25); padding: 2px 8px; border-radius: 6px;">CANCELLED</span>`
                         : `<span style="font-size:0.65rem; font-weight:800; letter-spacing:1px; color: #eab308; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.25); padding: 2px 8px; border-radius: 6px;">PENDING</span>`;
+                    
+                    const borrowBadge = c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);"><i class="fa-solid fa-handshake" style="margin-right:4px;"></i>${c.borrowName}</span>` : '';
+                    const lentBadge = c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);"><i class="fa-solid fa-share-from-square" style="margin-right:4px;"></i>${c.borrowName}</span>` : '';
 
-                    card.innerHTML = `
-                        <div class="card-header" onclick="toggleCard('${c.id}')">
-                            <div class="card-header-info">
-                                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
-                                    <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>
-                                    ${statusBadge}
-                                    ${c.borrowStatus === 'borrowed' ? `<span class="tag" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);"><i class="fa-solid fa-handshake" style="margin-right:4px;"></i>${c.borrowName}</span>` : ''}
-                                    ${c.borrowStatus === 'lent' ? `<span class="tag" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);"><i class="fa-solid fa-share-from-square" style="margin-right:4px;"></i>${c.borrowName}</span>` : ''}
-                                </div>
-                                <strong style="font-size: 1rem; font-weight: 700; color: white; display:block;">${c.name}</strong>
-                                <div style="display:flex; gap:12px; margin-top:3px; flex-wrap:wrap;">
-                                    <small style="color:var(--text-muted); font-size: 0.72rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange); margin-right:3px;"></i>${c.area}</small>
-                                    <small style="color:var(--text-muted); font-size: 0.72rem;"><i class="fa-solid fa-wifi" style="color:var(--primary-orange); margin-right:3px;"></i>${c.plan}</small>
-                                </div>
-                            </div>
-                            <div class="card-header-right">
-                                <span style="font-weight: 800; font-size: 1.05rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi.toLocaleString()}</span>
-                                <i class="fa-solid fa-chevron-down card-chevron"></i>
-                            </div>
+                    const actionsHTML = `
+                        ${c.installed ? `
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 10px;">
+                            <label style="color: var(--text-muted); font-weight: 600; white-space:nowrap;"><i class="fa-regular fa-calendar-check"></i> Install Date:</label>
+                            <button onclick="openDatePicker('${c.id}', '${c.installDate || ''}')" style="margin: 0; padding: 8px; width: auto; flex: 1; border-radius: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                                <span>${c.installDate || 'Select Date...'}</span><i class="fa-solid fa-calendar-days" style="color: var(--primary-orange);"></i>
+                            </button>
                         </div>
-                        <div class="card-body">
-                            <div class="card-body-inner">
-                                ${c.installed ? `
-                                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 10px;">
-                                    <label style="color: var(--text-muted); font-weight: 600; white-space:nowrap;"><i class="fa-regular fa-calendar-check"></i> Install Date:</label>
-                                    <button onclick="openDatePicker('${c.id}', '${c.installDate || ''}')" style="margin: 0; padding: 8px; width: auto; flex: 1; border-radius: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                                        <span>${c.installDate || 'Select Date...'}</span>
-                                        <i class="fa-solid fa-calendar-days" style="color: var(--primary-orange);"></i>
-                                    </button>
-                                </div>
-                                <div style="display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
-                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main); font-weight: 600;">
-                                        <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--primary-orange);">
-                                        Billing Explained
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'}; font-weight: 600; text-decoration: ${c.commiReceived ? 'line-through' : 'none'};">
-                                        <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--green-installed);">
-                                        Commi Received
-                                    </label>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}', '${c.area}')">
-                                        <i class="fa-solid fa-copy"></i> Copy Billing Message
-                                    </button>
-                                </div>
-                                ` : ''}
-                                ${c.cancelled ? `
-                                <div style="margin-bottom: 10px;">
-                                    <input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 10px; width: 100%; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.05); color: white;">
-                                </div>` : ''}
-                                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
-                                    <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background:${c.installed?'linear-gradient(135deg, #10b981, #059669)':'rgba(255,255,255,0.05)'}; color:white; box-shadow:${c.installed?'0 4px 15px rgba(16,185,129,0.3)':'none'}; border: 1px solid ${c.installed?'transparent':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">${c.installed ? '<i class="fa-solid fa-check"></i> Installed' : 'Install'}</button>
-                                    <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background:${c.cancelled?'rgba(244,63,94,0.1)':'rgba(255,255,255,0.05)'}; color:${c.cancelled?'#f43f5e':'white'}; box-shadow:none; border: 1px solid ${c.cancelled?'rgba(244,63,94,0.3)':'rgba(255,255,255,0.1)'};" onclick="toggleStatus('${c.id}', 'cancelled')">${c.cancelled ? 'Cancelled' : 'Cancel'}</button>
-                                    <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background: rgba(244,63,94,0.08); color: var(--red-alert); box-shadow:none; border: 1px solid rgba(244,63,94,0.2);" onclick="deleteItem('${c.id}', 'client')"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
+                        <div style="display: flex; justify-content: space-around; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-main); font-weight: 600;">
+                                <input type="checkbox" ${c.billingExplained ? 'checked' : ''} onchange="updateField('${c.id}', 'billingExplained', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--primary-orange);">
+                                Billing Explained
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; color: ${c.commiReceived ? 'var(--green-installed)' : 'var(--text-main)'}; font-weight: 600; text-decoration: ${c.commiReceived ? 'line-through' : 'none'};">
+                                <input type="checkbox" ${c.commiReceived ? 'checked' : ''} onchange="updateField('${c.id}', 'commiReceived', this.checked)" style="width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--green-installed);">
+                                Commi Received
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <button class="primary-btn" style="padding: 8px; font-size: 0.75rem; background: rgba(59, 130, 246, 0.1); color: var(--blue-biz); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: none; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="copyBilling('${c.installDate}', '${c.plan}', '${c.area}')">
+                                <i class="fa-solid fa-copy"></i> Copy Billing Message
+                            </button>
+                        </div>` : ''}
+                        ${c.cancelled ? `<div style="margin-bottom: 10px;"><input type="text" placeholder="Remarks (e.g., No ports, nag-back out)" value="${c.remarks || ''}" onchange="updateField('${c.id}', 'remarks', this.value)" style="margin: 0; padding: 10px; width: 100%; border-radius: 8px; font-size: 0.8rem; border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.05); color: white;"></div>` : ''}
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+                            <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background:${c.installed?'linear-gradient(135deg, #10b981, #059669)':'rgba(255,255,255,0.05)'}; color:white; box-shadow:${c.installed?'0 4px 15px rgba(16,185,129,0.3)':'none'}; border: 1px solid ${c.installed?'transparent':'rgba(255,255,255,0.1)'}" onclick="toggleStatus('${c.id}', 'installed')">${c.installed ? '<i class="fa-solid fa-check"></i> Installed' : 'Install'}</button>
+                            <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background:${c.cancelled?'rgba(244,63,94,0.1)':'rgba(255,255,255,0.05)'}; color:${c.cancelled?'#f43f5e':'white'}; box-shadow:none; border: 1px solid ${c.cancelled?'rgba(244,63,94,0.3)':'rgba(255,255,255,0.1)'};" onclick="toggleStatus('${c.id}', 'cancelled')">${c.cancelled ? 'Cancelled' : 'Cancel'}</button>
+                            <button class="primary-btn" style="padding:8px; font-size: 0.78rem; background: rgba(244,63,94,0.08); color: var(--red-alert); box-shadow:none; border: 1px solid rgba(244,63,94,0.2);" onclick="deleteItem('${c.id}', 'client')"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `;
-                    list.appendChild(card);
-                    visibleClientsCount++; // Plus isa kapag may card na pumasok sa filter
+
+                    if (currentLayout === 'card') {
+                        // CARD LAYOUT RENDER
+                        const card = document.createElement('div');
+                        card.className = `client-card ${statusClass}`;
+                        if (expandedCards.has(c.id)) card.classList.add('expanded');
+                        card.dataset.id = c.id;
+                        card.innerHTML = `
+                            <div class="card-header" onclick="toggleItem('${c.id}')">
+                                <div class="card-header-info">
+                                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                                        <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>${statusBadge}${borrowBadge}${lentBadge}
+                                    </div>
+                                    <strong style="font-size: 1rem; font-weight: 700; color: white; display:block;">${c.name}</strong>
+                                    <div style="display:flex; gap:12px; margin-top:3px; flex-wrap:wrap;">
+                                        <small style="color:var(--text-muted); font-size: 0.72rem;"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange); margin-right:3px;"></i>${c.area}</small>
+                                        <small style="color:var(--text-muted); font-size: 0.72rem;"><i class="fa-solid fa-wifi" style="color:var(--primary-orange); margin-right:3px;"></i>${c.plan}</small>
+                                    </div>
+                                </div>
+                                <div class="card-header-right">
+                                    <span style="font-weight: 800; font-size: 1.05rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi.toLocaleString()}</span>
+                                    <i class="fa-solid fa-chevron-down card-chevron"></i>
+                                </div>
+                            </div>
+                            <div class="card-body"><div class="card-body-inner">${actionsHTML}</div></div>
+                        `;
+                        list.appendChild(card);
+                    } else {
+                        // TABLE LAYOUT RENDER
+                        const tClass = c.installed ? 'installed' : c.cancelled ? 'cancelled' : 'pending';
+                        tableHTML += `
+                            <tr class="table-row-main ${tClass}" onclick="toggleItem('${c.id}')">
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-bottom:5px;">
+                                        <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>${statusBadge}${borrowBadge}${lentBadge}
+                                    </div>
+                                    <strong style="font-size: 0.95rem; font-weight: 700; color: white;">${c.name}</strong>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.85rem; color: white; font-weight: 600; margin-bottom: 2px;">${c.plan}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange); margin-right:3px;"></i>${c.area}</div>
+                                </td>
+                                <td style="text-align: right; vertical-align: middle;">
+                                    <span style="font-weight: 800; font-size: 1.05rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi.toLocaleString()}</span><br>
+                                    <i id="icon-${c.id}" class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: ${expandedCards.has(c.id) ? 'var(--primary-orange)' : 'var(--text-muted)'}; transform: ${expandedCards.has(c.id) ? 'rotate(180deg)' : 'rotate(0deg)'}; transition: 0.3s; margin-top: 5px;"></i>
+                                </td>
+                            </tr>
+                            <tr id="details-${c.id}" class="table-row-details ${expandedCards.has(c.id) ? 'expanded' : ''}">
+                                <td colspan="3"><div class="details-container">${actionsHTML}</div></td>
+                            </tr>
+                        `;
+                    }
                 }
             });
 
-            // KAPAG WALANG LUMABAS NA CLIENT CARD, POPULATE EMPTY STATE
+            tableHTML += `</tbody></table>`;
+
             if (visibleClientsCount === 0) {
                 list.innerHTML = `
                     <div style="text-align: center; padding: 40px 20px; color: var(--text-muted); border: 1px dashed rgba(255,106,0,0.15); border-radius: 16px; background: rgba(0,0,0,0.15);">
@@ -1482,6 +1560,8 @@ window.copyBilling = (installDate, planString, area) => {
                         <small style="font-size: 0.75rem; opacity: 0.7;">Database is clear or filters don't match.</small>
                     </div>
                 `;
+            } else if (currentLayout === 'table') {
+                list.innerHTML = tableHTML;
             }
 
             document.getElementById('resCommi').innerText = `₱${rT.toLocaleString()}`;
