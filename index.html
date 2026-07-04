@@ -421,6 +421,21 @@
         .table-row-details td { padding: 0; border: none; }
         .details-container { padding: 16px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.03); border-radius: 0 0 12px 12px; border-top: none; margin-top: -6px; margin-bottom: 8px; box-shadow: inset 0 4px 15px rgba(0,0,0,0.2); }
 
+        /* --- TABLE EXPAND-RIGHT (compact <-> full columns) --- */
+        .table-expand-toggle {
+            display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+            margin-bottom: 8px; cursor: pointer; user-select: none; -webkit-user-select: none;
+            color: var(--text-muted); font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .table-expand-toggle:hover { color: var(--primary-orange); }
+        .table-expand-toggle i { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .client-table { table-layout: fixed; }
+        .client-table th, .client-table td { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.3s ease; }
+        .client-table.table-compact .col-main { width: 100% !important; }
+        .client-table.table-compact .col-extra, .client-table.table-compact .col-commi {
+            width: 0 !important; opacity: 0; padding-left: 0; padding-right: 0; overflow: hidden; white-space: nowrap;
+        }
+
         body[data-theme="sketch"] .client-table th { color: black; border-bottom: 2px solid black; }
         body[data-theme="sketch"] .table-row-main { background: white; border-radius: 8px; box-shadow: 4px 4px 0px black; }
         body[data-theme="sketch"] .table-row-main:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px black; }
@@ -1363,12 +1378,28 @@ window.copyBilling = (installDate, planString, area) => {
         };
         // --- HANGGANG DITO LANG ---
         let currentLayout = localStorage.getItem('cheetah_layout') || 'card';
+        // Compact mode for the TABLE layout only: hides Plan/Area + Commi columns,
+        // sliding them out to the right. Defaults to OFF so existing table behavior
+        // (all columns visible) is unchanged unless the user opts in.
+        let tableCompact = localStorage.getItem('cheetah_table_compact') === 'true';
 
         window.toggleLayout = () => {
             currentLayout = currentLayout === 'card' ? 'table' : 'card';
             localStorage.setItem('cheetah_layout', currentLayout);
             render();
             toggleSettingsModal(); // Isasara ang modal pagkatapos mag-switch
+        };
+
+        window.toggleTableCompact = (evt) => {
+            if (evt) evt.stopPropagation(); // wag i-trigger yung row expand sa likod nito
+            tableCompact = !tableCompact;
+            localStorage.setItem('cheetah_table_compact', tableCompact);
+            const table = document.querySelector('.client-table');
+            const icon = document.getElementById('tableExpandIcon');
+            const label = document.getElementById('tableExpandLabel');
+            if (table) table.classList.toggle('table-compact', tableCompact);
+            if (icon) icon.style.transform = tableCompact ? 'rotate(0deg)' : 'rotate(180deg)';
+            if (label) label.innerText = tableCompact ? 'Show details' : 'Hide details';
         };
 
         window.toggleItem = (id) => {
@@ -1424,11 +1455,16 @@ window.copyBilling = (installDate, planString, area) => {
             let visibleClientsCount = 0;
             const sorted = [...clients].sort((a,b) => a.commiReceived - b.commiReceived || a.cancelled - b.cancelled);
 
-            let tableHTML = `<table class="client-table">
+            let tableHTML = `
+                <div class="table-expand-toggle" onclick="toggleTableCompact(event)">
+                    <span id="tableExpandLabel">${tableCompact ? 'Show details' : 'Hide details'}</span>
+                    <i id="tableExpandIcon" class="fa-solid fa-chevron-right" style="transform: rotate(${tableCompact ? '0deg' : '180deg'});"></i>
+                </div>
+                <table class="client-table ${tableCompact ? 'table-compact' : ''}">
                 <thead><tr>
-                    <th style="width: 45%;">Target Info</th>
-                    <th style="width: 35%;">Plan & Area</th>
-                    <th style="width: 20%; text-align: right;">Commi</th>
+                    <th class="col-main" style="width: 45%;">Target Info</th>
+                    <th class="col-extra" style="width: 35%;">Plan & Area</th>
+                    <th class="col-commi" style="width: 20%; text-align: right;">Commi</th>
                 </tr></thead><tbody>`;
 
             sorted.forEach(c => {
@@ -1527,17 +1563,17 @@ window.copyBilling = (installDate, planString, area) => {
                         const tClass = c.installed ? 'installed' : c.cancelled ? 'cancelled' : 'pending';
                         tableHTML += `
                             <tr class="table-row-main ${tClass}" onclick="toggleItem('${c.id}')">
-                                <td>
+                                <td class="col-main">
                                     <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-bottom:5px;">
                                         <span class="tag ${c.type==='business'?'tag-biz':'tag-res'}">${c.type}</span>${statusBadge}${borrowBadge}${lentBadge}
                                     </div>
                                     <strong style="font-size: 0.95rem; font-weight: 700; color: white;">${c.name}</strong>
                                 </td>
-                                <td>
+                                <td class="col-extra">
                                     <div style="font-size: 0.85rem; color: white; font-weight: 600; margin-bottom: 2px;">${c.plan}</div>
                                     <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot" style="color:var(--primary-orange); margin-right:3px;"></i>${c.area}</div>
                                 </td>
-                                <td style="text-align: right; vertical-align: middle;">
+                                <td class="col-commi" style="text-align: right; vertical-align: middle;">
                                     <span style="font-weight: 800; font-size: 1.05rem; color: var(--primary-orange); text-shadow: 0 0 10px rgba(255,106,0,0.3);">₱${c.commi.toLocaleString()}</span><br>
                                     <i id="icon-${c.id}" class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: ${expandedCards.has(c.id) ? 'var(--primary-orange)' : 'var(--text-muted)'}; transform: ${expandedCards.has(c.id) ? 'rotate(180deg)' : 'rotate(0deg)'}; transition: 0.3s; margin-top: 5px;"></i>
                                 </td>
