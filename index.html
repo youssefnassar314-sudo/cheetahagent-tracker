@@ -8,26 +8,36 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#090a0f">
     <link rel="apple-touch-icon" href="icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             /* DEEP SPACE DARK MODE COLORS */
-            --bg-dark: #090a0f; 
-            --bg-deep: #12141d;
-            --card-dark: rgba(20, 24, 36, 0.7);
-            /* CHEETAH ORANGE NEON */
+            --bg-dark: #08090d; 
+            --bg-deep: #101219;
+            --card-dark: rgba(22, 25, 36, 0.65);
+            /* CHEETAH ORANGE — richer, deeper amber-to-orange */
             --primary-orange: #ff6a00; 
-            --accent-orange: #ff9100; 
+            --accent-orange: #ffab40; 
             --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --glass-border: rgba(255, 106, 0, 0.15); /* Subtle orange border */
+            --text-muted: #8993a8;
+            --glass-border: rgba(255, 255, 255, 0.06);
             --green-installed: #10b981; 
             --red-alert: #f43f5e; 
             --blue-biz: #3b82f6;
+            --premium-shadow: 0 10px 40px rgba(0,0,0,0.35);
         }
-        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        h1, h2, h3, h4, .hero-amount, .target-num, .mini-stat-value, strong,
+        .hero-sub-value, .type-btn, .tag, .primary-btn, .form-section-title,
+        .target-label, .mini-stat-label, .card-header-right span, .table-expand-toggle,
+        .bottom-nav-item, .tool-card-title, .creator-name, .loader-text {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.2px;
+        }
         body {
             /* Ambient Orange & Blue Glow */
             background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
@@ -46,11 +56,11 @@
         /* Premium Glass Panels */
         .glass-panel { 
             background: var(--card-dark);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px; 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 22px; 
             border: 1px solid var(--glass-border); 
-            padding: 20px; margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 22px; margin-bottom: 20px;
+            box-shadow: var(--premium-shadow);
         }
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-card { 
@@ -93,26 +103,26 @@
         /* Neon Buttons */
         .primary-btn { 
             background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
-            padding: 14px; border-radius: 12px; border: none; font-weight: 800; color: white; 
+            padding: 15px; border-radius: 14px; border: none; font-weight: 700; color: white; 
             cursor: pointer; width: 100%; 
-            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.3);
-            text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.85rem;
+            box-shadow: 0 8px 24px rgba(255, 106, 0, 0.25);
+            text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;
         }
         .primary-btn:hover {
             transform: translateY(-2px); 
-            box-shadow: 0 8px 25px rgba(255, 106, 0, 0.5); 
+            box-shadow: 0 10px 28px rgba(255, 106, 0, 0.4); 
         }
         /* Client Cards - Collapsible */
         .client-card { 
-            background: var(--card-dark); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 16px; margin-bottom: 12px; 
-            border: 1px solid rgba(255,255,255,0.05); 
+            background: var(--card-dark); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 18px; margin-bottom: 12px; 
+            border: 1px solid var(--glass-border); 
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .client-card:hover {
-            border-color: rgba(255, 106, 0, 0.25);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+            border-color: rgba(255, 106, 0, 0.3);
+            box-shadow: var(--premium-shadow);
         }
         .card-header {
             padding: 16px 18px;
@@ -445,17 +455,19 @@
         body[data-theme="sketch"] .details-container { background: white; border: 2px solid black; border-top: none; box-shadow: 4px 4px 0px black; margin-top: 0; }
 
         /* ================= NEW: BOTTOM NAV + PAGE TABS ================= */
-        .main-app { padding-bottom: 90px; } /* room para di matakpan ng bottom nav */
+        .main-app { padding-bottom: 100px; } /* room para di matakpan ng floating bottom nav */
         .app-page { display: none; }
         .app-page.active { display: block; animation: fadeIn 0.25s ease; }
 
         .bottom-nav {
-            position: fixed; left: 0; right: 0; bottom: 0; z-index: 500;
-            max-width: 800px; margin: 0 auto;
-            background: rgba(15, 17, 26, 0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(255,255,255,0.06);
+            position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 500;
+            max-width: 776px; margin: 0 auto;
+            background: rgba(16, 18, 25, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 22px;
             display: flex; align-items: center; justify-content: space-around;
-            padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+            padding: 10px 10px calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
         }
         .bottom-nav-item {
             background: transparent; border: none; color: var(--text-muted); cursor: pointer;
@@ -579,12 +591,13 @@
             }
             /* Total Commi - Hero Card */
             .hero-commi-card {
-                background: linear-gradient(135deg, rgba(255,106,0,0.15) 0%, rgba(59,130,246,0.08) 100%);
-                border: 1px solid rgba(255,106,0,0.25);
-                border-radius: 20px;
-                padding: 20px 22px 16px;
+                background: linear-gradient(150deg, rgba(255,106,0,0.22) 0%, rgba(20,22,32,0.6) 55%, rgba(59,130,246,0.10) 100%);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 24px;
+                padding: 22px 24px 18px;
                 position: relative;
                 overflow: hidden;
+                box-shadow: var(--premium-shadow);
             }
             .hero-commi-card::before {
                 content: '';
