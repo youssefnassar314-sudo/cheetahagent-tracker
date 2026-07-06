@@ -742,25 +742,101 @@
             body[data-theme="sketch"] .mini-stat-value,
             body[data-theme="sketch"] .target-num { color: black !important; text-shadow: none !important; }
             body[data-theme="sketch"] .hero-sub-row { border-color: black !important; }
+
+        /* ================= REFERENCE-MATCH: vivid hero, pills, recent list ================= */
+        .hero-vivid {
+            background: linear-gradient(135deg, #ff7a1a 0%, #ff9d3d 100%) !important;
+            border: none !important;
+        }
+        .hero-vivid .hero-label { color: rgba(43,20,0,0.75); font-size: 0.78rem; margin-bottom: 2px; }
+        .hero-vivid .hero-amount { color: #2b1400; text-shadow: none; }
+        .hero-vivid .hero-sub-label { color: rgba(43,20,0,0.7) !important; }
+        .hero-vivid .hero-sub-value { color: #2b1400 !important; }
+        .hero-chip-row { display: flex; gap: 8px; margin-top: 14px; }
+        .hero-chip { flex: 1; background: rgba(0,0,0,0.14); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; }
+        .hero-chip-label { font-size: 0.65rem; color: rgba(43,20,0,0.7); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero-chip-value { font-size: 1rem; font-weight: 800; color: #2b1400; font-family: 'Outfit', sans-serif; }
+
+        .quick-pill-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .quick-pill {
+            flex: 1; padding: 11px 8px; border: none; border-radius: 12px; cursor: pointer;
+            background: var(--card-dark); color: var(--text-muted); font-weight: 700; font-size: 0.82rem;
+            font-family: 'Outfit', sans-serif; letter-spacing: 0.3px;
+        }
+        .quick-pill.active { background: var(--primary-orange); color: white; box-shadow: 0 6px 16px rgba(255,106,0,0.35); }
+
+        .recent-clients-block { margin-bottom: 18px; }
+        .recent-clients-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 2px; }
+        .recent-clients-header span { font-weight: 700; font-size: 0.95rem; font-family: 'Outfit', sans-serif; }
+        .recent-clients-header a { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; text-decoration: none; }
+        .recent-row { background: var(--card-dark); border: 1px solid var(--glass-border); border-radius: 14px; margin-bottom: 8px; overflow: hidden; cursor: pointer; }
+        .recent-row-main { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+        .recent-avatar { width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; font-family: 'Outfit', sans-serif; }
+        .recent-row-name { flex: 1; min-width: 0; font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .recent-row-status { font-size: 0.9rem; }
+        .recent-row-chevron { color: var(--text-muted); font-size: 0.8rem; transition: transform 0.3s ease; }
+        .recent-row.expanded .recent-row-chevron { transform: rotate(90deg); color: var(--primary-orange); }
+        .recent-row-details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; padding: 0 14px; }
+        .recent-row.expanded .recent-row-details { max-height: 120px; padding: 0 14px 12px; }
+        .recent-row-details-inner { display: flex; flex-direction: column; gap: 6px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; }
+        .recent-row-details-inner .rd-line { display: flex; justify-content: space-between; }
+        .recent-row-details-inner .rd-label { color: var(--text-muted); }
+
+        body[data-theme="sketch"] .hero-vivid { background: white !important; border: 2px solid black !important; }
+        body[data-theme="sketch"] .hero-vivid .hero-amount, body[data-theme="sketch"] .hero-chip-value { color: black !important; }
+        body[data-theme="sketch"] .hero-chip { background: transparent !important; border: 2px solid black !important; }
+        body[data-theme="sketch"] .quick-pill { background: white !important; border: 2px solid black !important; color: black !important; }
+        body[data-theme="sketch"] .quick-pill.active { background: black !important; color: white !important; }
+        body[data-theme="sketch"] .recent-row { background: white !important; border: 2px solid black !important; box-shadow: 4px 4px 0px black !important; }
         </style>
 
         <div id="page-home" class="app-page active">
         <div class="summary-board">
-            <!-- Hero: Total Commission -->
-            <div class="hero-commi-card">
-                <p class="hero-label"><i class="fa-solid fa-peso-sign" style="margin-right:6px;"></i>Total Commission</p>
+            <!-- Hero: Total Commission (vivid solid gradient, chips baked in) -->
+            <div class="hero-commi-card hero-vivid">
+                <p class="hero-label">Total commission this month</p>
                 <h2 class="hero-amount" id="totalCommi">₱0</h2>
-                <div class="hero-sub-row">
-                    <div class="hero-sub-item">
-                        <span class="hero-sub-label" style="color: var(--primary-orange);">Residential</span>
-                        <span class="hero-sub-value" id="resCommi" style="color: var(--primary-orange);">₱0</span>
+                <div class="hero-chip-row">
+                    <div class="hero-chip">
+                        <span class="hero-chip-label">Pending</span>
+                        <span class="hero-chip-value" id="heroPending">0</span>
                     </div>
-                    <div style="width:1px; background: rgba(255,255,255,0.08);"></div>
-                    <div class="hero-sub-item">
-                        <span class="hero-sub-label" style="color: var(--blue-biz);">Business</span>
-                        <span class="hero-sub-value" id="bizCommi" style="color: var(--blue-biz);">₱0</span>
+                    <div class="hero-chip">
+                        <span class="hero-chip-label">Installed</span>
+                        <span class="hero-chip-value" id="heroInstalled">0</span>
+                    </div>
+                    <div class="hero-chip">
+                        <span class="hero-chip-label">Target</span>
+                        <span class="hero-chip-value" id="heroTarget">0/20</span>
                     </div>
                 </div>
+                <div class="hero-sub-row" style="margin-top:14px;">
+                    <div class="hero-sub-item">
+                        <span class="hero-sub-label">Residential</span>
+                        <span class="hero-sub-value" id="resCommi">₱0</span>
+                    </div>
+                    <div style="width:1px; background: rgba(0,0,0,0.15);"></div>
+                    <div class="hero-sub-item">
+                        <span class="hero-sub-label">Business</span>
+                        <span class="hero-sub-value" id="bizCommi">₱0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick-access pills -->
+            <div class="quick-pill-row">
+                <button class="quick-pill active" id="qp-clients" onclick="switchPage('clients', document.getElementById('nav-clients'))">Clients</button>
+                <button class="quick-pill" id="qp-tools" onclick="switchPage('tools', document.getElementById('nav-tools'))">Tools</button>
+                <button class="quick-pill" id="qp-ledger" onclick="toggleLedger()">Ledger</button>
+            </div>
+
+            <!-- Recent clients preview -->
+            <div class="recent-clients-block">
+                <div class="recent-clients-header">
+                    <span>Recent clients</span>
+                    <a onclick="switchPage('clients', document.getElementById('nav-clients'))">details <i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+                <div id="recentClientsList"></div>
             </div>
 
             <!-- Mini stats: Pending / Installed / Cancelled -->
@@ -1186,6 +1262,56 @@
         const db = getFirestore(app);
         let currentUser = null, clients = [], ledger = [], currentType = 'residential', currentStatusFilter = 'all';
         let expandedCards = new Set();
+        let recentExpanded = new Set();
+
+        function avatarStyle(name) {
+            const palette = [
+                {bg:'#1f2b3d', color:'#7fb3ff'}, {bg:'#12291f', color:'#4ade9a'},
+                {bg:'#2b1a24', color:'#e07fb0'}, {bg:'#2b1414', color:'#e07f7f'},
+                {bg:'#241a2b', color:'#c78ae0'}, {bg:'#2a1f0a', color:'#e0a940'}
+            ];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            return palette[Math.abs(hash) % palette.length];
+        }
+        function initialsOf(name) {
+            return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+        }
+        window.toggleRecentExpand = (id, evt) => {
+            if (evt) evt.stopPropagation();
+            if (recentExpanded.has(id)) recentExpanded.delete(id); else recentExpanded.add(id);
+            renderRecentClients(window._lastSortedClients || []);
+        };
+        function renderRecentClients(sortedList) {
+            window._lastSortedClients = sortedList;
+            const box = document.getElementById('recentClientsList');
+            if (!box) return;
+            const recent = sortedList.slice(0, 4);
+            box.innerHTML = recent.map(c => {
+                const av = avatarStyle(c.name);
+                const statusIcon = c.cancelled
+                    ? '<i class="fa-solid fa-circle-xmark" style="color:var(--red-alert);"></i>'
+                    : c.installed
+                        ? '<i class="fa-solid fa-circle-check" style="color:var(--green-installed);"></i>'
+                        : '<i class="fa-regular fa-clock" style="color:#e0a940;"></i>';
+                const isOpen = recentExpanded.has(c.id);
+                return `
+                <div class="recent-row ${isOpen ? 'expanded' : ''}" onclick="toggleRecentExpand('${c.id}', event)">
+                    <div class="recent-row-main">
+                        <div class="recent-avatar" style="background:${av.bg}; color:${av.color};">${initialsOf(c.name)}</div>
+                        <span class="recent-row-name">${c.name}</span>
+                        <span class="recent-row-status">${statusIcon}</span>
+                        <i class="fa-solid fa-chevron-right recent-row-chevron"></i>
+                    </div>
+                    <div class="recent-row-details">
+                        <div class="recent-row-details-inner">
+                            <div class="rd-line"><span class="rd-label">Plan</span><span>${c.plan}mbps</span></div>
+                            <div class="rd-line"><span class="rd-label">Commission</span><span style="color:${c.commiReceived ? 'var(--green-installed)' : 'var(--text-muted)'}; font-weight:700;">₱${c.commi.toLocaleString()}${c.commiReceived ? ' · Received' : ''}</span></div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('') || `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:20px 0;">Wala pang clients.</p>`;
+        }
         
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         window.toggleAuthView = (view) => {
@@ -1726,6 +1852,13 @@ window.copyBilling = (installDate, planString, area) => {
             document.getElementById('targetCount').innerText = `${rC+bC}`;
             document.getElementById('targetBreakdown').innerText = `${rC} Res | ${bC} Biz`;
             document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/20)*100, 100)}%`;
+            const heroPending = document.getElementById('heroPending');
+            const heroInstalled = document.getElementById('heroInstalled');
+            const heroTarget = document.getElementById('heroTarget');
+            if (heroPending) heroPending.innerText = pendingCount;
+            if (heroInstalled) heroInstalled.innerText = installedCount;
+            if (heroTarget) heroTarget.innerText = `${rC+bC}/20`;
+            renderRecentClients(sorted);
             let exT = 0;
             ledger.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(l => {
                 exT += l.amount;
