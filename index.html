@@ -1480,7 +1480,17 @@ onAuthStateChanged(auth, user => {
             if(field === 'cancelled' && !c.cancelled) update.installed = false;
             await updateDoc(doc(db, "clients", id), update);
         };
-        window.updateField = async (id, field, val) => await updateDoc(doc(db, "clients", id), {[field]: val});
+        window.updateField = async (id, field, val) => {
+            const c = clients.find(x => x.id === id);
+            // Guard: huwag payagang mabura ang installDate ng isang installed client,
+            // dahil dito nagmumula yung "nawawalang records" bug (nagiging invisible sa lahat ng buwan)
+            if(field === 'installDate' && !val && c && c.installed) {
+                alert("Hindi puwedeng i-blangko ang Install Date habang naka-mark as Installed ang client na 'to.");
+                render();
+                return;
+            }
+            await updateDoc(doc(db, "clients", id), {[field]: val});
+        };
         window.deleteItem = async (id, type) => { if(confirm("Ide-delete ba itong record?")) await deleteDoc(doc(db, type === 'client' ? "clients" : "ledger", id)); };
 window.addLedgerEntry = async () => {
             const desc = document.getElementById('ledgerDesc').value, amt = document.getElementById('ledgerAmount').value, dt = document.getElementById('ledgerDate').value;
@@ -1721,7 +1731,15 @@ window.copyBilling = (installDate, planString, area) => {
                 if(currentStatusFilter === 'cancelled' && !c.cancelled) return;
                 let show = false;
                 if(!c.installed && !c.cancelled) show = true;
-                else if(c.installed && c.installDate) {
+                else if(c.installed && !c.installDate) {
+                    // Safety net: installed na pero walang installDate (dapat di na mangyari,
+                    // pero kung nangyari, laging ipakita imbes na maging invisible sa lahat ng buwan)
+                    show = true;
+                    if (c.borrowStatus !== 'lent') {
+                        if(c.type === 'business') { bC++; } else { rC++; }
+                    }
+                    if(c.type === 'business') { bT += c.commi; } else { rT += c.commi; }
+                } else if(c.installed && c.installDate) {
                     const iDate = new Date(c.installDate);
                     if(iDate.getMonth() === currentMonth && iDate.getFullYear() === currentYear) {
                         show = true;
