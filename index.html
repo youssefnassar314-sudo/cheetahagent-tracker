@@ -802,7 +802,7 @@
                         <span class="hero-chip-value" id="heroPending">0</span>
                     </div>
                     <div class="hero-chip">
-                        <span class="hero-chip-label">Installed</span>
+                        <span class="hero-chip-label">Installed this mo.</span>
                         <span class="hero-chip-value" id="heroInstalled">0</span>
                     </div>
                     <div class="hero-chip">
@@ -839,25 +839,6 @@
                 <div id="recentClientsList"></div>
             </div>
 
-            <!-- Mini stats: Pending / Installed / Cancelled -->
-            <div class="mini-stats-row">
-                <div class="mini-stat pending">
-                    <span class="mini-stat-icon"><i class="fa-regular fa-clock"></i></span>
-                    <span class="mini-stat-value" id="pendingCount">0</span>
-                    <span class="mini-stat-label">Pending</span>
-                </div>
-                <div class="mini-stat installed">
-                    <span class="mini-stat-icon"><i class="fa-solid fa-circle-check"></i></span>
-                    <span class="mini-stat-value" id="installedCount">0</span>
-                    <span class="mini-stat-label">Installed</span>
-                </div>
-                <div class="mini-stat cancelled">
-                    <span class="mini-stat-icon"><i class="fa-solid fa-circle-xmark"></i></span>
-                    <span class="mini-stat-value" id="cancelledCount">0</span>
-                    <span class="mini-stat-label">Cancelled</span>
-                </div>
-            </div>
-
             <!-- Target progress -->
             <div class="target-card">
                 <div class="target-header">
@@ -866,9 +847,15 @@
                 </div>
                 <div class="target-count-display" style="margin-bottom: 10px;">
                     <span class="target-num" id="targetCount">0</span>
-                    <span class="target-denom">/ 20 installs</span>
+                    <span class="target-denom">/ <span id="targetGoalLabel">20</span> installs</span>
                 </div>
                 <div class="progress-bar"><div id="progressFill"></div></div>
+                <div class="quick-pill-row" style="margin-top:12px;">
+                    <button class="quick-pill target-goal-pill" data-goal="20" onclick="setTargetGoal(20)">20</button>
+                    <button class="quick-pill target-goal-pill" data-goal="30" onclick="setTargetGoal(30)">30</button>
+                    <button class="quick-pill target-goal-pill" data-goal="40" onclick="setTargetGoal(40)">40</button>
+                    <button class="quick-pill target-goal-pill" data-goal="50" onclick="setTargetGoal(50)">50</button>
+                </div>
             </div>
         </div>
         <div id="motivationBox" class="glass-panel" style="text-align:center; border-color: rgba(255,106,0,0.2); background: linear-gradient(180deg, rgba(255,106,0,0.05), transparent);">
@@ -1261,6 +1248,23 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         let currentUser = null, clients = [], ledger = [], currentType = 'residential', currentStatusFilter = 'all';
+        // Editable monthly target (20/30/40/50) — naka-save sa localStorage ng device, hindi kailangan i-sync sa Firestore
+        let targetGoal = parseInt(localStorage.getItem('cheetahTargetGoal')) || 20;
+        window.setTargetGoal = (goal) => {
+            targetGoal = goal;
+            localStorage.setItem('cheetahTargetGoal', goal);
+            document.querySelectorAll('.target-goal-pill').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.goal) === goal);
+            });
+            render();
+        };
+        // I-highlight yung naka-save na goal pill agad pag na-load yung page,
+        // imbes na maghintay lang na mag-click ulit ang user
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.target-goal-pill').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.goal) === targetGoal);
+            });
+        });
         let expandedCards = new Set();
         let recentExpanded = new Set();
 
@@ -1881,18 +1885,17 @@ window.copyBilling = (installDate, planString, area) => {
             document.getElementById('resCommi').innerText = `₱${rT.toLocaleString()}`;
             document.getElementById('bizCommi').innerText = `₱${bT.toLocaleString()}`;
             document.getElementById('totalCommi').innerText = `₱${(rT+bT).toLocaleString()}`;
-            document.getElementById('pendingCount').innerText = pendingCount;
-            document.getElementById('installedCount').innerText = installedCount;
-            document.getElementById('cancelledCount').innerText = cancelledCount;
             document.getElementById('targetCount').innerText = `${rC+bC}`;
             document.getElementById('targetBreakdown').innerText = `${rC} Res | ${bC} Biz`;
-            document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/20)*100, 100)}%`;
+            document.getElementById('progressFill').style.width = `${Math.min(((rC+bC)/targetGoal)*100, 100)}%`;
+            const targetGoalLabel = document.getElementById('targetGoalLabel');
+            if (targetGoalLabel) targetGoalLabel.innerText = targetGoal;
             const heroPending = document.getElementById('heroPending');
             const heroInstalled = document.getElementById('heroInstalled');
             const heroTarget = document.getElementById('heroTarget');
             if (heroPending) heroPending.innerText = pendingCount;
-            if (heroInstalled) heroInstalled.innerText = installedCount;
-            if (heroTarget) heroTarget.innerText = `${rC+bC}/20`;
+            if (heroInstalled) heroInstalled.innerText = (rC + bC); // installed THIS MONTH, hindi all-time
+            if (heroTarget) heroTarget.innerText = `${rC+bC}/${targetGoal}`;
             // Hiwalay na pagkakasunod-sunod para sa "Recent" widget: batay talaga sa createdAt (kailan
             // idinagdag ang client), hindi sa commiReceived/cancelled tulad ng 'sorted' na para sa table.
             // Mga lumang record na walang createdAt (bago pa i-deploy ang fix na 'to) ay ilalagay na lang sa dulo.
