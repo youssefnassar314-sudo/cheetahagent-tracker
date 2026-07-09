@@ -1750,6 +1750,9 @@ window.copyBilling = (installDate, planString, area) => {
                 if(currentStatusFilter === 'pending' && (c.installed || c.cancelled)) return;
                 if(currentStatusFilter === 'installed' && !c.installed) return;
                 if(currentStatusFilter === 'cancelled' && !c.cancelled) return;
+                // Itago ang cancelled sa "All Targets" view para di na sila bumabara sa listahan —
+                // makikita pa rin sila kapag na-tap yung dedicated na "Cancelled" tab.
+                if(currentStatusFilter === 'all' && c.cancelled) return;
                 let show = false;
                 if(!c.installed && !c.cancelled) show = true;
                 else if(c.installed && !c.installDate) {
