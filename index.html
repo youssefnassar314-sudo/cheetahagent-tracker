@@ -1406,8 +1406,8 @@ onAuthStateChanged(auth, user => {
                 if(fabMenu) fabMenu.classList.remove('active');
 
                 // 2. Isara ang Ledger Sidebar
-                const ledger = document.getElementById('ledgerSidebar');
-                if(ledger) ledger.classList.remove('active');
+                const ledgerSidebarEl = document.getElementById('ledgerSidebar');
+                if(ledgerSidebarEl) ledgerSidebarEl.classList.remove('active');
 
                 // 3. Isara ang Settings Modal (kasi nandito yung Log Out button)
                 const settingsModal = document.getElementById('settingsModal');
