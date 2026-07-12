@@ -4,32 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheetah Space | ID Generator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root {
-            /* DEEP SPACE DARK MODE COLORS */
-            --bg-dark: #08090d; 
-            --bg-deep: #101219;
-            --card-dark: rgba(22, 25, 36, 0.65);
-            
-            /* CHEETAH ORANGE — richer, deeper amber-to-orange */
-            --primary-orange: #ff6a00; 
-            --accent-orange: #ffab40; 
-            
-            --text-main: #f8fafc;
-            --text-muted: #8993a8;
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --green-installed: #10b981;
-            --premium-shadow: 0 10px 40px rgba(0,0,0,0.35);
-        }
-
-        * { font-family: 'Inter', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        h1, h2, h3, h4, strong, .primary-btn, .back-btn { font-family: 'Outfit', sans-serif; letter-spacing: 0.2px; }
-        
         body {
             background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
                         radial-gradient(circle at 90% 90%, rgba(59,130,246,0.05), transparent 40%),
@@ -37,11 +15,6 @@
             background-attachment: fixed; color: var(--text-main); 
             margin: 0; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
         .container { width: 100%; max-width: 450px; } 
 
