@@ -4,29 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheetah Space//Locator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         :root {
             /* DEEP SPACE DARK MODE COLORS */
-            --bg-dark: #090a0f; 
-            --bg-deep: #12141d;
-            --card-dark: rgba(20, 24, 36, 0.7);
+            --bg-dark: #08090d; 
+            --bg-deep: #101219;
+            --card-dark: rgba(22, 25, 36, 0.65);
             
-            /* CHEETAH ORANGE NEON */
+            /* CHEETAH ORANGE — richer, deeper amber-to-orange */
             --primary-orange: #ff6a00; 
-            --accent-orange: #ff9100; 
+            --accent-orange: #ffab40; 
             
             --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --glass-border: rgba(255, 106, 0, 0.15);
+            --text-muted: #8993a8;
+            --glass-border: rgba(255, 255, 255, 0.06);
             --green-installed: #10b981; 
             --red-alert: #f43f5e; 
             --blue-biz: #3b82f6;
+            --premium-shadow: 0 10px 40px rgba(0,0,0,0.35);
         }
 
-        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        h1, h2, h3, h4, strong, .primary-btn, .back-btn, .header p, .status-badge, .suggestion-box h3, .help-item summary {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.2px;
+        }
         
         body {
             background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
