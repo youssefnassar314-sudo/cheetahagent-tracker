@@ -24,14 +24,6 @@
         .auth-container { max-width: 400px; margin: 100px auto; text-align: center; }
         .main-app { display: none; max-width: 800px; margin: 0 auto; }
         /* Premium Glass Panels */
-        .glass-panel { 
-            background: var(--card-dark);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 22px; 
-            border: 1px solid var(--glass-border); 
-            padding: 22px; margin-bottom: 20px;
-            box-shadow: var(--premium-shadow);
-        }
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-card { 
             background: linear-gradient(145deg, rgba(30, 35, 48, 0.8), rgba(20, 24, 36, 0.9)); 
@@ -70,18 +62,6 @@
             color: var(--text-muted); cursor: pointer; transition: 0.3s; font-size: 1.1rem;
         }
         .pwd-toggle:hover { color: var(--primary-orange); }
-        /* Neon Buttons */
-        .primary-btn { 
-            background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
-            padding: 15px; border-radius: 14px; border: none; font-weight: 700; color: white; 
-            cursor: pointer; width: 100%; 
-            box-shadow: 0 8px 24px rgba(255, 106, 0, 0.25);
-            text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;
-        }
-        .primary-btn:hover {
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 28px rgba(255, 106, 0, 0.4); 
-        }
         /* Client Cards - Collapsible */
         .client-card { 
             background: var(--card-dark); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -219,24 +199,14 @@
         /* =========================================
            SKETCH THEME OVERRIDES (BLACK & WHITE)
            ========================================= */
-        body[data-theme="sketch"] {
-            --bg-dark: #ffffff; --bg-deep: #f4f4f0; --card-dark: #ffffff;
-            --primary-orange: #000000; --accent-orange: #333333; 
-            --text-main: #000000; --text-muted: #555555; --glass-border: #000000;
-            background: radial-gradient(#cccccc 1px, transparent 1px); background-size: 20px 20px; background-color: var(--bg-deep); color: black;
-        }
-        body[data-theme="sketch"] .glass-panel, body[data-theme="sketch"] .client-card {
+        body[data-theme="sketch"] .client-card {
             backdrop-filter: none; -webkit-backdrop-filter: none; border-radius: 8px;
             border: 2px solid black; box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); background: white;
         }
         body[data-theme="sketch"] .client-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px rgba(0, 0, 0, 1); border-color: black !important; }
         body[data-theme="sketch"] .stat-card { background: white; border: 2px solid black; box-shadow: 4px 4px 0px black; border-radius: 8px; }
-        body[data-theme="sketch"] .primary-btn { background: white !important; border: 2px solid black !important; box-shadow: 4px 4px 0px black !important; color: black !important; border-radius: 4px; text-shadow: none !important; }
-        body[data-theme="sketch"] .primary-btn:hover { transform: translate(2px, 2px) !important; box-shadow: 2px 2px 0px black !important; }
         body[data-theme="sketch"] .filter-pill { background: white; border: 2px solid black; color: black; border-radius: 4px; box-shadow: 2px 2px 0px black; }
         body[data-theme="sketch"] .filter-pill.active { background: black; color: white; box-shadow: none; transform: translate(2px,2px); }
-        body[data-theme="sketch"] input, body[data-theme="sketch"] select, body[data-theme="sketch"] textarea { background: transparent !important; border: 2px solid black !important; border-radius: 4px; color: black !important; }
-        body[data-theme="sketch"] input:focus, body[data-theme="sketch"] select:focus { box-shadow: 4px 4px 0px black !important; background: white !important; }
         body[data-theme="sketch"] .type-toggle { background: white; border: 2px solid black; }
         body[data-theme="sketch"] .type-btn.active { background: black !important; color: white !important; box-shadow: none !important; }
         body[data-theme="sketch"] #progressFill { background: repeating-linear-gradient(45deg, #000, #000 2px, #fff 2px, #fff 6px) !important; box-shadow: none !important; }
@@ -246,9 +216,7 @@
         }
         body[data-theme="sketch"] .fab-menu.active .fab-main-btn { background: black !important; color: white !important; box-shadow: 2px 2px 0px black !important; }
         /* OVERRIDE INLINE JS STYLES */
-        body[data-theme="sketch"] h1, body[data-theme="sketch"] h2, body[data-theme="sketch"] h3, body[data-theme="sketch"] h4, body[data-theme="sketch"] p, body[data-theme="sketch"] strong, body[data-theme="sketch"] span, body[data-theme="sketch"] small, body[data-theme="sketch"] label, body[data-theme="sketch"] i { color: black !important; text-shadow: none !important; }
         body[data-theme="sketch"] .client-card div[style*="background: rgba(0,0,0,0.3)"] { background: white !important; border: 2px solid black !important; box-shadow: 2px 2px 0px black !important; border-radius: 4px !important; }
-        body[data-theme="sketch"] input[type="checkbox"] { accent-color: black !important; border: 2px solid black !important; }
         body[data-theme="sketch"] .tag { border: 1px solid black !important; background: transparent !important; color: black !important; border-radius: 4px; }
         body[data-theme="sketch"] .tag-biz { background: #e0e0e0 !important; }
 
