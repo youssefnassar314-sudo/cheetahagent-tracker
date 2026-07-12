@@ -8,9 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -35,28 +33,6 @@
     </style>
 
     <style>
-        :root {
-            /* DEEP SPACE DARK MODE COLORS */
-            --bg-dark: #08090d; 
-            --bg-deep: #101219;
-            --card-dark: rgba(22, 25, 36, 0.65);
-            
-            /* CHEETAH ORANGE — richer, deeper amber-to-orange */
-            --primary-orange: #ff6a00; 
-            --accent-orange: #ffab40; 
-            
-            --text-main: #f8fafc;
-            --text-muted: #8993a8;
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --green-installed: #10b981; 
-            --red-alert: #f43f5e; 
-            --blue-biz: #3b82f6;
-            --premium-shadow: 0 10px 40px rgba(0,0,0,0.35);
-        }
-
-        * { font-family: 'Inter', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        h1, h2, h3, h4, strong, .primary-btn, .back-btn, .subtitle { font-family: 'Outfit', sans-serif; letter-spacing: 0.2px; }
-        
         body {
             /* Ambient Orange & Blue Glow */
             background: radial-gradient(circle at 10% 10%, rgba(255,106,0,0.08), transparent 40%),
@@ -66,12 +42,6 @@
             color: var(--text-main); margin: 0; padding: 40px 20px; min-height: 100vh;
             display: flex; justify-content: center; align-items: flex-start;
         }
-
-        /* Sleek Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,106,0,0.3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
 
         .workspace {
             background: var(--card-dark);
