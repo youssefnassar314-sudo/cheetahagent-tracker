@@ -8,7 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
     <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -34,23 +37,25 @@
     <style>
         :root {
             /* DEEP SPACE DARK MODE COLORS */
-            --bg-dark: #090a0f; 
-            --bg-deep: #12141d;
-            --card-dark: rgba(20, 24, 36, 0.7);
+            --bg-dark: #08090d; 
+            --bg-deep: #101219;
+            --card-dark: rgba(22, 25, 36, 0.65);
             
-            /* CHEETAH ORANGE NEON */
+            /* CHEETAH ORANGE — richer, deeper amber-to-orange */
             --primary-orange: #ff6a00; 
-            --accent-orange: #ff9100; 
+            --accent-orange: #ffab40; 
             
             --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --glass-border: rgba(255, 106, 0, 0.15);
+            --text-muted: #8993a8;
+            --glass-border: rgba(255, 255, 255, 0.06);
             --green-installed: #10b981; 
             --red-alert: #f43f5e; 
             --blue-biz: #3b82f6;
+            --premium-shadow: 0 10px 40px rgba(0,0,0,0.35);
         }
 
-        * { font-family: 'Poppins', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        h1, h2, h3, h4, strong, .primary-btn, .back-btn, .subtitle { font-family: 'Outfit', sans-serif; letter-spacing: 0.2px; }
         
         body {
             /* Ambient Orange & Blue Glow */
@@ -70,12 +75,12 @@
 
         .workspace {
             background: var(--card-dark);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             width: 100%; max-width: 550px; 
             padding: clamp(20px, 5vw, 40px); /* RESPONSIVE PADDING */
-            border-radius: 20px; 
+            border-radius: 22px; 
             border: 1px solid var(--glass-border); 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--premium-shadow);
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 10;
         }
