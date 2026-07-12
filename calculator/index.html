@@ -45,44 +45,6 @@
         .header h1 span { color: var(--primary-orange); }
         .header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Flexbox approach para hindi mag-overlap ang button at title */
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 5px;
-        }
-
-        .back-btn {
-            position: absolute;
-            left: 0;
-            background: rgba(255,255,255,0.05); color: var(--text-muted);
-            border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px;
-            border-radius: 8px; cursor: pointer; text-decoration: none;
-            font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
-        }
-        
-        .back-btn:hover { background: rgba(255,106,0,0.1); color: var(--primary-orange); border-color: var(--primary-orange); }
-        
-        /* Media query para bumaba ang title at hindi matakpan sa small screens */
-        @media (max-width: 400px) {
-            .header-container {
-                flex-direction: column;
-                gap: 15px;
-            }
-            .back-btn {
-                position: static;
-                align-self: flex-start;
-            }
-        }
-
-        .glass-panel { 
-            background: var(--card-dark); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 25px; border-radius: 22px; margin-bottom: 20px; 
-            border: 1px solid var(--glass-border); box-shadow: var(--premium-shadow);
-        }
-
         label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 
         select, input[type="date"] { 
@@ -157,17 +119,15 @@
         .est-result-box p { margin: 5px 0 15px 0; font-size: 0.85rem; color: #a7f3d0; }
         .est-tip { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; font-size: 0.75rem; color: #cbd5e1; text-align: left; border-left: 3px solid var(--primary-orange); line-height: 1.5; }
         
-        .primary-btn { 
-            background: linear-gradient(135deg, var(--primary-orange), var(--accent-orange)); 
-            padding: 15px; border-radius: 14px; border: none; font-weight: 700; color: white; 
-            cursor: pointer; width: 100%; box-shadow: 0 8px 24px rgba(255, 106, 0, 0.25);
-            text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; margin-top: 10px;
-        }
-        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255, 106, 0, 0.4); }
+        .primary-btn { margin-top: 10px; }
 
     </style>
 </head>
 <body>
+    <script>
+        // Apply saved theme agad-agad (kasabay ng main app / ibang tools) para walang flash
+        if (localStorage.getItem('cheetah_theme') === 'sketch') document.body.setAttribute('data-theme', 'sketch');
+    </script>
 
     <div id="initLoader">
         <div class="loader-ring"></div>
