@@ -168,7 +168,7 @@
         
         <div class="search-wrapper">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="areaSearch" placeholder="Search Street, Brgy, or Town..." onkeyup="doSearch()">
+            <input type="text" id="areaSearch" placeholder="Search Street or Subdivision name..." onkeyup="doSearch()">
         </div>
         
         <div id="statusMsg" class="status-msg"><i class="fa-solid fa-satellite-dish fa-spin" style="margin-right: 5px;"></i> Initializing database...</div>
@@ -302,14 +302,14 @@
             if (query.length < 2) return;
             
             const matches = areaData.filter(row => {
-                const b = (row.Bayan || "").toString().toLowerCase();
-                const br = (row.Barangay || "").toString().toLowerCase();
                 const s = (row.Street || "").toString().trim();
                 const sLower = s.toLowerCase();
-                // Palagpasan ang mga walang laman sa Street — hindi kasi kapaki-pakinabang
-                // ang resulta kung walang alam na specific street/subdivision.
+                // Palagpasan ang mga walang laman sa Street.
                 if (s === "") return false;
-                return b.includes(query) || br.includes(query) || sLower.includes(query);
+                // Street field na lang ang tinitingnan — para hindi nagkakahalo ang
+                // resulta kapag magkapareho ang pangalan ng Street at ng isang Barangay/Bayan
+                // (hal. "Rizal" bilang street name vs "Rizal" bilang barangay).
+                return sLower.includes(query);
             }).slice(0, 30);
 
             matches.forEach(row => {
